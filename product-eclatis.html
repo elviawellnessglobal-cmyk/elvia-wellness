@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ELVIA ÉCLATIS™ — SPF 50+ PA++++</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">ELVIA Wellness</div>
+    <nav class="nav">
+      <a href="shop.html">Shop</a>
+      <a href="#">About</a>
+      <a href="#">Journal</a>
+      <a href="#">Cart</a>
+    </nav>
+  </header>
+
+  <!-- Product Section -->
+  <section class="product-page">
+
+    <div class="product-gallery">
+      <div class="product-main-image">
+        <!-- Product image goes here later -->
+      </div>
+    </div>
+
+    <div class="product-info">
+      <h1>ELVIA ÉCLATIS™</h1>
+      <p class="subtitle">SPF 50+ PA++++</p>
+
+      <p class="product-description">
+        A refined daily sunscreen designed to offer high-performance UV protection
+        while maintaining skin calm, comfort, and luminous clarity.
+      </p>
+
+      <p class="price">₹ —</p>
+
+      <button class="primary-btn" onclick="addToCart()">Add to ritual</button>
+
+<script>
+  function addToCart() {
+    const product = {
+      name: "ELVIA ÉCLATIS™ — SPF 50+ PA++++",
+      price: "₹ —"
+    };
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push(product);
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    window.location.href = "cart.html";
+  }
+</script>
+
+
+      <div class="product-details">
+        <p><strong>Texture:</strong> Lightweight, non-greasy</p>
+        <p><strong>Finish:</strong> Natural, soft-focus</p>
+        <p><strong>Skin Type:</strong> All skin types</p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© ELVIA Wellness. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

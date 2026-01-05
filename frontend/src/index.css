@@ -1,0 +1,76 @@
+/* ---------------- RESET ---------------- */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------------- BODY ---------------- */
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #fafafa;
+  color: #111;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* ---------------- LINKS ---------------- */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ---------------- BUTTONS ---------------- */
+
+button {
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* ---------------- INPUTS ---------------- */
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  outline: none;
+}
+
+/* ---------------- ELVIA UTILITIES ---------------- */
+
+.elvia-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+/* ---------------- ELVIA BUTTON ---------------- */
+
+.elvia-btn {
+  background-color: #111;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  transition: all 0.3s ease;
+}
+
+.elvia-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.elvia-btn-outline {
+  background: transparent;
+  color: #111;
+  border: 1px solid #111;
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-size: 14px;
+}

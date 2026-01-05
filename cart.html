@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart — ELVIA Wellness</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">ELVIA Wellness</div>
+    <nav class="nav">
+      <a href="shop.html">Shop</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </header>
+
+  <!-- Cart -->
+  <section class="cart">
+    <h1>Your Ritual</h1>
+
+    <div id="cart-items"></div>
+
+<div class="discount">
+  <input type="text" id="discount-code" placeholder="Discount code" />
+  <button onclick="applyDiscount()">Apply</button>
+</div>
+<a href="checkout.html" class="primary-btn" style="margin-top:40px; display:inline-block;">
+  Continue to checkout
+</a>
+<p id="discount-message"></p>
+
+<p id="empty-cart">Your ritual is currently empty.</p>
+
+  </section>
+
+  <footer class="footer">
+    <p>© ELVIA Wellness. All rights reserved.</p>
+  </footer>
+
+  <script src="cart.js"></script>
+</body>
+</html>
