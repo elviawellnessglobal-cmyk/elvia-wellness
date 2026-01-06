@@ -35,6 +35,13 @@ export default function Address() {
         Please enter the address where you’d like your order delivered.
       </p>
 
+      {/* TRUST STRIP */}
+      <div style={styles.trust}>
+        <span>🔒 Secure Checkout</span>
+        <span>📦 Discreet Packaging</span>
+        <span>↩ Easy Returns</span>
+      </div>
+
       <form style={styles.form} onSubmit={handleSubmit}>
         <input
           name="name"
@@ -109,6 +116,11 @@ export default function Address() {
           style={styles.input}
         />
 
+        {/* MICRO COPY */}
+        <p style={styles.helperText}>
+          We’ll use this address only for order delivery and updates.
+        </p>
+
         <button type="submit" style={styles.button}>
           Continue to Payment
         </button>
@@ -124,6 +136,7 @@ const styles = {
     maxWidth: "560px",
     margin: "0 auto",
     padding: "56px 20px",
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
   },
 
   heading: {
@@ -136,8 +149,18 @@ const styles = {
   subtext: {
     fontSize: "14px",
     color: "#666",
-    marginBottom: "36px",
+    marginBottom: "24px",
     lineHeight: 1.7,
+  },
+
+  trust: {
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: "13px",
+    color: "#666",
+    marginBottom: "32px",
+    flexWrap: "wrap",
+    gap: "12px",
   },
 
   form: {
@@ -163,6 +186,12 @@ const styles = {
     resize: "none",
     outline: "none",
     transition: "border 0.25s ease, box-shadow 0.25s ease",
+  },
+
+  helperText: {
+    fontSize: "12px",
+    color: "#777",
+    marginTop: "-6px",
   },
 
   button: {

@@ -43,6 +43,14 @@ export default function Home() {
           </button>
         </section>
 
+        {/* TRUST STRIP */}
+        <section style={styles.trustStrip}>
+          <span>SPF 50+ Broad Spectrum</span>
+          <span>Dermatologically Tested</span>
+          <span>No White Cast</span>
+          <span>Made in India</span>
+        </section>
+
         {/* PHILOSOPHY */}
         <section style={styles.philosophy}>
           <h2 style={styles.sectionTitle}>OUR PHILOSOPHY</h2>
@@ -69,7 +77,7 @@ const styles = {
     textAlign: "center",
     padding: "0 24px",
     background:
-      "radial-gradient(1200px 600px at 50% -10%, #f3f3f3 0%, #ffffff 60%)",
+      "radial-gradient(1200px 600px at 50% -10%, #f2f2f2 0%, #ffffff 60%)",
   },
 
   eyebrow: {
@@ -101,6 +109,18 @@ const styles = {
     color: "#fff",
     border: "none",
     cursor: "pointer",
+  },
+
+  trustStrip: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "28px",
+    flexWrap: "wrap",
+    padding: "48px 20px",
+    fontSize: "13px",
+    color: "#666",
+    borderTop: "1px solid #eee",
+    borderBottom: "1px solid #eee",
   },
 
   philosophy: {

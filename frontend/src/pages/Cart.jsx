@@ -29,12 +29,12 @@ export default function Cart() {
     );
   }
 
-  /* ---------------- UI ---------------- */
+  /* ---------------- CART UI ---------------- */
   return (
     <div style={styles.page}>
       <h1 style={styles.heading}>Your Cart</h1>
 
-      {/* CART ITEMS */}
+      {/* ITEMS */}
       <div style={styles.itemsWrap}>
         {cartItems.map((item) => (
           <div key={item.id} style={styles.card}>
@@ -83,7 +83,7 @@ export default function Cart() {
         ))}
       </div>
 
-      {/* OFFER */}
+      {/* OFFER CODE */}
       <div style={styles.offerBox}>
         <input
           placeholder="Enter offer code"
@@ -117,6 +117,10 @@ export default function Cart() {
       >
         Proceed to Checkout
       </button>
+
+      <p style={styles.checkoutNote}>
+        Free shipping · Secure checkout · Easy returns
+      </p>
     </div>
   );
 }
@@ -309,5 +313,12 @@ const styles = {
     color: "white",
     fontSize: "16px",
     cursor: "pointer",
+  },
+
+  checkoutNote: {
+    marginTop: "14px",
+    fontSize: "13px",
+    color: "#777",
+    textAlign: "center",
   },
 };
