@@ -87,7 +87,9 @@ export default function App() {
 
       {/* HEADER */}
       <header style={styles.header}>
-        <h2 style={styles.logo}>ELVIA WELLNESS</h2>
+        <h2 style={styles.logo} onClick={() => navigate("/")}>
+          ELVIA WELLNESS
+        </h2>
 
         <div style={styles.headerRight}>
           {/* DESKTOP LINKS */}
@@ -256,10 +258,25 @@ const styles = {
     maxWidth: "1200px",
     margin: "0 auto",
   },
-  logo: { letterSpacing: "3px", fontWeight: "500" },
-  headerRight: { display: "flex", gap: "18px", alignItems: "center" },
-  link: { textDecoration: "none", color: "#111", fontSize: "14px" },
-  iconLink: { color: "#111", display: "flex", alignItems: "center" },
+  logo: {
+    letterSpacing: "3px",
+    fontWeight: "500",
+  },
+  headerRight: {
+    display: "flex",
+    gap: "18px",
+    alignItems: "center",
+  },
+  link: {
+    textDecoration: "none",
+    color: "#111",
+    fontSize: "14px",
+  },
+  iconLink: {
+    color: "#111",
+    display: "flex",
+    alignItems: "center",
+  },
   authBtn: {
     border: "1px solid #111",
     background: "transparent",
@@ -268,7 +285,10 @@ const styles = {
     cursor: "pointer",
     fontSize: "13px",
   },
-  cart: { fontSize: "18px", cursor: "pointer" },
+  cart: {
+    fontSize: "18px",
+    cursor: "pointer",
+  },
 
   productSection: {
     display: "flex",
@@ -276,15 +296,29 @@ const styles = {
     maxWidth: "1200px",
     padding: "0 24px",
   },
-  productHidden: { opacity: 0, transform: "translateY(40px)" },
+  productHidden: {
+    opacity: 0,
+    transform: "translateY(40px)",
+  },
   productVisible: {
     opacity: 1,
     transform: "translateY(0)",
     transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
   },
-  imageColumn: { flex: 1, minWidth: "300px" },
-  mainImage: { width: "100%", borderRadius: "18px" },
-  thumbnailRow: { display: "flex", gap: "12px", marginTop: "18px" },
+
+  imageColumn: {
+    flex: 1,
+    minWidth: "300px",
+  },
+  mainImage: {
+    width: "100%",
+    borderRadius: "18px",
+  },
+  thumbnailRow: {
+    display: "flex",
+    gap: "12px",
+    marginTop: "18px",
+  },
   thumbnail: {
     width: "72px",
     height: "72px",
@@ -292,12 +326,65 @@ const styles = {
     objectFit: "cover",
     cursor: "pointer",
   },
-  detailsColumn: { flex: 1, minWidth: "300px" },
+
+  detailsColumn: {
+    flex: 1,
+    minWidth: "300px",
+  },
   category: {
     fontSize: "12px",
     letterSpacing: "2px",
     color: "#888",
     marginBottom: "8px",
   },
-  productTitle: { fontSize: "34px", marginBottom: "8px" },
-  subtitle: { color: "#666", l
+  productTitle: {
+    fontSize: "34px",
+    marginBottom: "8px",
+  },
+  subtitle: {
+    color: "#666",
+    lineHeight: 1.6,
+    marginBottom: "16px",
+  },
+  price: {
+    fontSize: "22px",
+    fontWeight: "500",
+    marginBottom: "24px",
+  },
+  buyButton: {
+    padding: "14px 28px",
+    borderRadius: "40px",
+    border: "none",
+    background: "#111",
+    color: "#fff",
+    fontSize: "15px",
+    cursor: "pointer",
+    marginBottom: "32px",
+  },
+
+  section: {
+    marginBottom: "24px",
+  },
+  sectionTitle: {
+    fontSize: "13px",
+    letterSpacing: "1.5px",
+    marginBottom: "8px",
+  },
+  list: {
+    paddingLeft: "18px",
+    lineHeight: 1.7,
+    color: "#444",
+  },
+
+  inlineInfo: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  inlineBlock: {
+    flex: 1,
+  },
+  text: {
+    lineHeight: 1.7,
+    color: "#444",
+  },
+};

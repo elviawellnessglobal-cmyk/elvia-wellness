@@ -17,6 +17,9 @@ import Privacy from "./pages/legal/Privacy";
 import Terms from "./pages/legal/Terms";
 import Refund from "./pages/legal/Refund";
 import Shipping from "./pages/legal/Shipping";
+import Home from "./pages/Home";
+
+
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -32,7 +35,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/refund-policy" element={<Refund />} />
             <Route path="/shipping-policy" element={<Shipping />} />
             {/* HOME / PRODUCT PAGE */}
-            <Route path="/" element={<App />} />
+            import Home from "./pages/Home";
+
+            <Route path="/" element={<Home />} />
+            <Route path="/product" element={<App />} />
+
 
             {/* CART (PROTECTED) */}
             <Route
