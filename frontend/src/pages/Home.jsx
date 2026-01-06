@@ -12,14 +12,7 @@ export default function Home() {
   return (
     <main style={styles.page}>
       {/* HERO */}
-      <section
-        style={{
-          ...styles.hero,
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(12px)",
-          transition: "all 1s cubic-bezier(0.22,1,0.36,1)",
-        }}
-      >
+      <section style={styles.hero}>
         <p style={styles.eyebrow}>ELVIA WELLNESS</p>
 
         <h1 style={styles.heroTitle}>
@@ -85,6 +78,7 @@ const styles = {
     fontFamily: "Inter, sans-serif",
   },
 
+  /* HERO with soft luxury texture */
   hero: {
     minHeight: "92vh",
     display: "flex",
@@ -93,6 +87,9 @@ const styles = {
     alignItems: "center",
     textAlign: "center",
     padding: "0 24px",
+
+    background:
+      "radial-gradient(1200px 600px at 50% -10%, rgba(0,0,0,0.04), transparent 60%), linear-gradient(180deg, #fafafa 0%, #ffffff 60%)",
   },
 
   eyebrow: {
@@ -107,6 +104,7 @@ const styles = {
     fontWeight: "500",
     lineHeight: 1.25,
     marginBottom: "24px",
+    color: "#111",
   },
 
   heroText: {
@@ -128,10 +126,10 @@ const styles = {
   },
 
   philosophy: {
-    maxWidth: "760px",
-    margin: "140px auto",
+    maxWidth: "800px",
+    margin: "120px auto",
     textAlign: "center",
-    padding: "0 24px",
+    padding: "0 20px",
   },
 
   sectionTitle: {
@@ -143,13 +141,13 @@ const styles = {
 
   sectionText: {
     fontSize: "17px",
-    lineHeight: 1.9,
-    color: "#555",
+    lineHeight: 1.8,
+    color: "#444",
   },
 
   productPreview: {
     textAlign: "center",
-    padding: "120px 24px",
+    padding: "120px 20px",
     background: "#fafafa",
   },
 
@@ -172,9 +170,9 @@ const styles = {
   trust: {
     display: "flex",
     justifyContent: "center",
-    gap: "36px",
+    gap: "28px",
     flexWrap: "wrap",
-    padding: "96px 24px",
+    padding: "80px 20px",
     fontSize: "14px",
     color: "#666",
   },
