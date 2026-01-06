@@ -85,14 +85,13 @@ export default function App() {
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
 
-      {/* HEADER */}
+      {/* STICKY HEADER */}
       <header style={styles.header}>
         <h2 style={styles.logo} onClick={() => navigate("/")}>
           ELVIA WELLNESS
         </h2>
 
         <div style={styles.headerRight}>
-          {/* DESKTOP LINKS */}
           {!isMobile && (
             <>
               <a
@@ -114,7 +113,6 @@ export default function App() {
             </>
           )}
 
-          {/* MOBILE ICONS */}
           {isMobile && (
             <>
               <a
@@ -170,7 +168,6 @@ export default function App() {
           ...(productVisible ? styles.productVisible : styles.productHidden),
         }}
       >
-        {/* LEFT: IMAGES */}
         <div style={styles.imageColumn}>
           <img
             src={activeImage}
@@ -196,7 +193,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* RIGHT: DETAILS */}
         <div style={styles.detailsColumn}>
           <p style={styles.category}>SUN PROTECTION</p>
           <h1 style={styles.productTitle}>ÉCLATIS™ SPF 50+</h1>
@@ -219,12 +215,7 @@ export default function App() {
             </ul>
           </div>
 
-          <div
-            style={{
-              ...styles.inlineInfo,
-              gap: isMobile ? "24px" : "32px",
-            }}
-          >
+          <div style={styles.inlineInfo}>
             <div style={styles.inlineBlock}>
               <h3 style={styles.sectionTitle}>HOW TO USE</h3>
               <p style={styles.text}>
@@ -251,16 +242,22 @@ export default function App() {
 /* ---------------- STYLES ---------------- */
 const styles = {
   header: {
+    position: "sticky",
+    top: 0,
+    zIndex: 50,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "24px",
+    padding: "20px 24px",
     maxWidth: "1200px",
     margin: "0 auto",
+    background: "rgba(255,255,255,0.85)",
+    backdropFilter: "blur(10px)",
   },
   logo: {
     letterSpacing: "3px",
     fontWeight: "500",
+    cursor: "pointer",
   },
   headerRight: {
     display: "flex",
@@ -379,6 +376,7 @@ const styles = {
   inlineInfo: {
     display: "flex",
     flexWrap: "wrap",
+    gap: "32px",
   },
   inlineBlock: {
     flex: 1,
