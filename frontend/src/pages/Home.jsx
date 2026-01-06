@@ -24,12 +24,15 @@ export default function Home() {
       >
         {/* HERO */}
         <section style={styles.hero}>
-          <p style={styles.eyebrow}>ELVIA WELLNESS</p>
+          {/* BRAND BADGE */}
+          <div style={styles.brandBadge}>ELVIA WELLNESS</div>
+
           <h1 style={styles.heroTitle}>
             Quiet luxury skincare,
             <br />
             crafted for modern skin.
           </h1>
+
           <p style={styles.heroText}>
             Thoughtfully formulated essentials designed to protect,
             nourish, and elevate your daily ritual.
@@ -41,14 +44,6 @@ export default function Home() {
           >
             Discover ÉCLATIS™
           </button>
-        </section>
-
-        {/* TRUST STRIP */}
-        <section style={styles.trustStrip}>
-          <span>SPF 50+ Broad Spectrum</span>
-          <span>Dermatologically Tested</span>
-          <span>No White Cast</span>
-          <span>Made in India</span>
         </section>
 
         {/* PHILOSOPHY */}
@@ -80,15 +75,18 @@ const styles = {
       "radial-gradient(1200px 600px at 50% -10%, #f2f2f2 0%, #ffffff 60%)",
   },
 
-  eyebrow: {
+  brandBadge: {
+    fontSize: "11px",
     letterSpacing: "3px",
-    fontSize: "12px",
-    color: "#888",
-    marginBottom: "18px",
+    padding: "8px 18px",
+    borderRadius: "999px",
+    background: "rgba(0,0,0,0.04)",
+    color: "#111",
+    marginBottom: "26px",
   },
 
   heroTitle: {
-    fontSize: "44px",
+    fontSize: "clamp(32px, 5vw, 44px)",
     fontWeight: "500",
     lineHeight: 1.25,
     marginBottom: "24px",
@@ -109,18 +107,7 @@ const styles = {
     color: "#fff",
     border: "none",
     cursor: "pointer",
-  },
-
-  trustStrip: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "28px",
-    flexWrap: "wrap",
-    padding: "48px 20px",
-    fontSize: "13px",
-    color: "#666",
-    borderTop: "1px solid #eee",
-    borderBottom: "1px solid #eee",
+    fontSize: "15px",
   },
 
   philosophy: {

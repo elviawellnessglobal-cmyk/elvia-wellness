@@ -241,24 +241,26 @@ export default function App() {
 
 /* ---------------- STYLES ---------------- */
 const styles = {
-  header: {
-    position: "sticky",
-    top: 0,
-    zIndex: 50,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px 24px",
-    maxWidth: "1200px",
-    margin: "0 auto",
-    background: "rgba(255,255,255,0.85)",
-    backdropFilter: "blur(10px)",
-  },
-  logo: {
-    letterSpacing: "3px",
-    fontWeight: "500",
-    cursor: "pointer",
-  },
+ header: {
+  position: "sticky",
+  top: 0,
+  zIndex: 50,
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "14px 20px",
+  maxWidth: "1200px",
+  margin: "0 auto",
+  background: "rgba(255,255,255,0.88)",
+  backdropFilter: "blur(10px)",
+},
+
+ logo: {
+  letterSpacing: "2.5px",
+  fontWeight: "500",
+  fontSize: "clamp(14px, 4vw, 18px)",
+  cursor: "pointer",
+},
   headerRight: {
     display: "flex",
     gap: "18px",
