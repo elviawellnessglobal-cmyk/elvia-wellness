@@ -5,16 +5,25 @@ import { useCart } from "./context/CartContext";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
 
-import img1 from "./assets/eclatis-1.png";
-import img2 from "./assets/eclatis-2.png";
-import img3 from "./assets/eclatis-3.png";
-import img4 from "./assets/eclatis-4.png";
+/* ---------------- CLOUDINARY IMAGES ---------------- */
+const img1 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685044/eclatis-1_hradob.png";
+
+const img2 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685188/eclatis-2_kceebo.png";
+
+const img3 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685039/eclatis-3_hkfghk.png";
+
+const img4 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685052/eclatis-4_qpvjrk.png";
+
+const images = [img1, img2, img3, img4];
 
 export default function App() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { addToCart } = useCart();
-
 
   /* ---------------- SCROLL ANIMATION ---------------- */
   const productRef = useRef(null);
@@ -36,8 +45,6 @@ export default function App() {
   }, []);
 
   /* ---------------- PRODUCT DATA ---------------- */
-  const images = [img1, img2, img3, img4];
-
   const product = {
     id: "eclatis-spf50",
     name: "ÉCLATIS™ SPF 50+",
@@ -48,7 +55,6 @@ export default function App() {
   const [activeImage, setActiveImage] = useState(images[0]);
   const [authType, setAuthType] = useState(null);
   const isMobile = window.innerWidth < 768;
-
 
   /* ---------------- HANDLERS ---------------- */
   function handleAddToCart() {
@@ -80,6 +86,7 @@ export default function App() {
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
 
+      {/* HEADER */}
       <header style={styles.header}>
         <h2 style={styles.logo}>ELVIA WELLNESS</h2>
 
@@ -115,6 +122,7 @@ export default function App() {
         </div>
       </header>
 
+      {/* PRODUCT SECTION */}
       <section
         ref={productRef}
         style={{
@@ -124,9 +132,14 @@ export default function App() {
           ...(productVisible ? styles.productVisible : styles.productHidden),
         }}
       >
-
+        {/* LEFT: IMAGES */}
         <div style={styles.imageColumn}>
-          <img src={activeImage} alt="ÉCLATIS™ SPF 50+" style={styles.mainImage} />
+          <img
+            src={activeImage}
+            alt="ÉCLATIS™ SPF 50+"
+            style={styles.mainImage}
+            loading="lazy"
+          />
 
           <div style={styles.thumbnailRow}>
             {images.map((img, i) => (
@@ -134,6 +147,7 @@ export default function App() {
                 key={i}
                 src={img}
                 alt="thumbnail"
+                loading="lazy"
                 onClick={() => setActiveImage(img)}
                 style={{
                   ...styles.thumbnail,
@@ -144,6 +158,7 @@ export default function App() {
           </div>
         </div>
 
+        {/* RIGHT: DETAILS */}
         <div style={styles.detailsColumn}>
           <p style={styles.category}>SUN PROTECTION</p>
           <h1 style={styles.productTitle}>ÉCLATIS™ SPF 50+</h1>
@@ -172,14 +187,12 @@ export default function App() {
               gap: isMobile ? "24px" : "32px",
             }}
           >
-
             <div
               style={{
                 ...styles.inlineBlock,
                 minWidth: isMobile ? "100%" : "220px",
               }}
             >
-
               <h3 style={styles.sectionTitle}>HOW TO USE</h3>
               <p style={styles.text}>
                 Apply two finger-lengths evenly on face and neck as the final AM
@@ -193,7 +206,6 @@ export default function App() {
                 minWidth: isMobile ? "100%" : "220px",
               }}
             >
-
               <h3 style={styles.sectionTitle}>WHEN TO USE</h3>
               <p style={styles.text}>
                 Daily. Reapply every 2–3 hours when exposed to sunlight.
@@ -230,15 +242,13 @@ const styles = {
     fontSize: "13px",
   },
   cart: { fontSize: "18px", cursor: "pointer" },
+
   productSection: {
     display: "flex",
-    gap: "80px",
     flexWrap: "wrap",
     maxWidth: "1200px",
-    margin: "48px auto",
     padding: "0 24px",
   },
-
   productHidden: { opacity: 0, transform: "translateY(40px)" },
   productVisible: {
     opacity: 1,
@@ -282,7 +292,7 @@ const styles = {
     marginBottom: "8px",
   },
   list: { paddingLeft: "18px", lineHeight: 1.7, color: "#444" },
-  inlineInfo: { display: "flex", gap: "32px", flexWrap: "wrap" },
-  inlineBlock: { flex: 1, minWidth: "220px" },
+  inlineInfo: { display: "flex", flexWrap: "wrap" },
+  inlineBlock: { flex: 1 },
   text: { lineHeight: 1.7, color: "#444" },
 };
