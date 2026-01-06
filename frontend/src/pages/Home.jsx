@@ -10,7 +10,15 @@ export default function Home() {
   }, []);
 
   return (
-    <main style={styles.page}>
+   <main
+  style={{
+    ...styles.page,
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(12px)",
+    transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
+  }}
+>
+
       {/* HERO */}
       <section style={styles.hero}>
         <p style={styles.eyebrow}>ELVIA WELLNESS</p>
@@ -79,18 +87,18 @@ const styles = {
   },
 
   /* HERO with soft luxury texture */
-  hero: {
-    minHeight: "92vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-    padding: "0 24px",
+ hero: {
+  minHeight: "92vh",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  textAlign: "center",
+  padding: "0 24px",
+  background:
+    "radial-gradient(1200px 600px at 50% -10%, #f3f3f3 0%, #ffffff 60%)",
+},
 
-    background:
-      "radial-gradient(1200px 600px at 50% -10%, rgba(0,0,0,0.04), transparent 60%), linear-gradient(180deg, #fafafa 0%, #ffffff 60%)",
-  },
 
   eyebrow: {
     letterSpacing: "3px",
