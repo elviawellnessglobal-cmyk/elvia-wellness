@@ -4,17 +4,15 @@ import { useAuth } from "./context/AuthContext";
 import { useCart } from "./context/CartContext";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
+import { Instagram, Youtube } from "lucide-react";
 
 /* ---------------- CLOUDINARY IMAGES ---------------- */
 const img1 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685044/eclatis-1_hradob.png";
-
 const img2 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685188/eclatis-2_kceebo.png";
-
 const img3 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685039/eclatis-3_hkfghk.png";
-
 const img4 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685052/eclatis-4_qpvjrk.png";
 
@@ -24,6 +22,8 @@ export default function App() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { addToCart } = useCart();
+
+  const isMobile = window.innerWidth < 768;
 
   /* ---------------- SCROLL ANIMATION ---------------- */
   const productRef = useRef(null);
@@ -54,7 +54,6 @@ export default function App() {
   /* ---------------- STATE ---------------- */
   const [activeImage, setActiveImage] = useState(images[0]);
   const [authType, setAuthType] = useState(null);
-  const isMobile = window.innerWidth < 768;
 
   /* ---------------- HANDLERS ---------------- */
   function handleAddToCart() {
@@ -91,12 +90,49 @@ export default function App() {
         <h2 style={styles.logo}>ELVIA WELLNESS</h2>
 
         <div style={styles.headerRight}>
-          <a href="https://instagram.com" target="_blank" style={styles.link}>
-            Instagram
-          </a>
-          <a href="https://youtube.com" target="_blank" style={styles.link}>
-            YouTube
-          </a>
+          {/* DESKTOP LINKS */}
+          {!isMobile && (
+            <>
+              <a
+                href="https://www.instagram.com/elviawellness/"
+                target="_blank"
+                rel="noreferrer"
+                style={styles.link}
+              >
+                Instagram
+              </a>
+              <a
+                href="https://www.youtube.com/@ElviaWellness"
+                target="_blank"
+                rel="noreferrer"
+                style={styles.link}
+              >
+                YouTube
+              </a>
+            </>
+          )}
+
+          {/* MOBILE ICONS */}
+          {isMobile && (
+            <>
+              <a
+                href="https://www.instagram.com/elviawellness/"
+                target="_blank"
+                rel="noreferrer"
+                style={styles.iconLink}
+              >
+                <Instagram size={20} />
+              </a>
+              <a
+                href="https://www.youtube.com/@ElviaWellness"
+                target="_blank"
+                rel="noreferrer"
+                style={styles.iconLink}
+              >
+                <Youtube size={20} />
+              </a>
+            </>
+          )}
 
           {!user ? (
             <>
@@ -187,12 +223,7 @@ export default function App() {
               gap: isMobile ? "24px" : "32px",
             }}
           >
-            <div
-              style={{
-                ...styles.inlineBlock,
-                minWidth: isMobile ? "100%" : "220px",
-              }}
-            >
+            <div style={styles.inlineBlock}>
               <h3 style={styles.sectionTitle}>HOW TO USE</h3>
               <p style={styles.text}>
                 Apply two finger-lengths evenly on face and neck as the final AM
@@ -200,12 +231,7 @@ export default function App() {
               </p>
             </div>
 
-            <div
-              style={{
-                ...styles.inlineBlock,
-                minWidth: isMobile ? "100%" : "220px",
-              }}
-            >
+            <div style={styles.inlineBlock}>
               <h3 style={styles.sectionTitle}>WHEN TO USE</h3>
               <p style={styles.text}>
                 Daily. Reapply every 2–3 hours when exposed to sunlight.
@@ -233,6 +259,7 @@ const styles = {
   logo: { letterSpacing: "3px", fontWeight: "500" },
   headerRight: { display: "flex", gap: "18px", alignItems: "center" },
   link: { textDecoration: "none", color: "#111", fontSize: "14px" },
+  iconLink: { color: "#111", display: "flex", alignItems: "center" },
   authBtn: {
     border: "1px solid #111",
     background: "transparent",
@@ -273,26 +300,4 @@ const styles = {
     marginBottom: "8px",
   },
   productTitle: { fontSize: "34px", marginBottom: "8px" },
-  subtitle: { color: "#666", lineHeight: 1.6, marginBottom: "16px" },
-  price: { fontSize: "22px", fontWeight: "500", marginBottom: "24px" },
-  buyButton: {
-    padding: "14px 28px",
-    borderRadius: "40px",
-    border: "none",
-    background: "#111",
-    color: "#fff",
-    fontSize: "15px",
-    cursor: "pointer",
-    marginBottom: "32px",
-  },
-  section: { marginBottom: "24px" },
-  sectionTitle: {
-    fontSize: "13px",
-    letterSpacing: "1.5px",
-    marginBottom: "8px",
-  },
-  list: { paddingLeft: "18px", lineHeight: 1.7, color: "#444" },
-  inlineInfo: { display: "flex", flexWrap: "wrap" },
-  inlineBlock: { flex: 1 },
-  text: { lineHeight: 1.7, color: "#444" },
-};
+  subtitle: { color: "#666", l
