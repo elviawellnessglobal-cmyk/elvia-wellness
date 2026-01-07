@@ -54,7 +54,7 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ padding: 40, maxWidth: 1000, margin: "auto" }}>
-      <h1>ELVIA Admin Panel</h1>
+      <h1>NÆORA Admin Panel</h1>
 
       {/* -------- LAUNCH CONTROLS -------- */}
       <Section title="Launch Controls">

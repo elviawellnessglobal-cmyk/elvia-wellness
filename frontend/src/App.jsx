@@ -8,13 +8,13 @@ import { Instagram, Youtube } from "lucide-react";
 
 /* ---------------- CLOUDINARY IMAGES ---------------- */
 const img1 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685044/eclatis-1_hradob.png";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767762899/eclatis-1_hradob.png";
 const img2 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685188/eclatis-2_kceebo.png";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767763298/eclatis-2_kceebo.png";
 const img3 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685039/eclatis-3_hkfghk.png";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767763517/eclatis-3_hkfghk.png";
 const img4 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767685052/eclatis-4_qpvjrk.png";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1767763969/eclatis-4_qpvjrk.png";
 
 const images = [img1, img2, img3, img4];
 
@@ -88,7 +88,7 @@ export default function App() {
       {/* STICKY HEADER */}
       <header style={styles.header}>
         <h2 style={styles.logo} onClick={() => navigate("/")}>
-          ELVIA WELLNESS
+          NÆORA
         </h2>
 
         <div style={styles.headerRight}>

@@ -21,7 +21,7 @@ export default function AdminLogin() {
 
   return (
     <div style={styles.container}>
-      <h1>ELVIA Admin</h1>
+      <h1>NÆORA Admin</h1>
 
       <input
         placeholder="Email"

@@ -22,7 +22,7 @@ export default function OrderSuccess() {
         <h1 style={styles.heading}>Order Confirmed</h1>
 
         <p style={styles.subtext}>
-          Thank you for choosing ELVIA Wellness.
+          Thank you for choosing NÆORA Wellness.
           <br />
           Your order has been placed successfully.
         </p>

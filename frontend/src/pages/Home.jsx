@@ -25,7 +25,7 @@ export default function Home() {
         {/* HERO */}
         <section style={styles.hero}>
           {/* BRAND BADGE */}
-          <div style={styles.brandBadge}>ELVIA WELLNESS</div>
+          <div style={styles.brandBadge}>NÆORA</div>
 
           <h1 style={styles.heroTitle}>
             Quiet luxury skincare,

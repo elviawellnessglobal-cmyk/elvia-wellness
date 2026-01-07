@@ -44,7 +44,7 @@ export default function Admin() {
   if (!token) {
     return (
       <div style={{ padding: "60px" }}>
-        <h1>ELVIA Admin</h1>
+        <h1>NÆORA Admin</h1>
         <p>Please login again.</p>
       </div>
     );
@@ -52,7 +52,7 @@ export default function Admin() {
 
   return (
     <div style={{ padding: "60px", maxWidth: "600px" }}>
-      <h1>ELVIA Admin Dashboard</h1>
+      <h1>NÆORA Admin Dashboard</h1>
       <button onClick={logout}>Logout</button>
 
       <h2 style={{ marginTop: "40px" }}>Add Product</h2>

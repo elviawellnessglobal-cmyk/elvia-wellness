@@ -4,7 +4,7 @@ export default function Terms() {
       <h1>Terms & Conditions</h1>
 
       <p>
-        By using the ELVIA WELLNESS website, you agree to comply with all terms.
+        By using the NÆORA WELLNESS website, you agree to comply with all terms.
       </p>
 
       <p>

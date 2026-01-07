@@ -42,7 +42,7 @@ export default function Signup() {
         <input name="password" placeholder="Create Password" type="password" onChange={handleChange} required />
         <input name="confirmPassword" placeholder="Confirm Password" type="password" onChange={handleChange} required />
 
-        <button type="submit">Create your ELVIA account</button>
+        <button type="submit">Create your NÆORA account</button>
       </form>
 
       <p>

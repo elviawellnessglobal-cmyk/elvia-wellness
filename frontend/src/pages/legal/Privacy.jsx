@@ -4,7 +4,7 @@ export default function Privacy() {
       <h1>Privacy Policy</h1>
 
       <p>
-        ELVIA WELLNESS collects personal information only for order processing
+        NÆORA WELLNESS collects personal information only for order processing
         and customer support.
       </p>
 

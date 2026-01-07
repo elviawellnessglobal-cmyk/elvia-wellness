@@ -53,7 +53,7 @@ export default function Login() {
       </div>
 
       <p>
-        New to ELVIA? <Link to="/signup">Create your account</Link>
+        New to NÆORA? <Link to="/signup">Create your account</Link>
       </p>
     </div>
   );

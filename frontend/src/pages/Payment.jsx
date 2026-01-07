@@ -59,7 +59,7 @@ export default function Payment() {
       <p style={styles.note}>
         Your payment is processed securely via Razorpay.
         <br />
-        ELVIA Wellness does not store card details.
+        NÆORA Wellness does not store card details.
       </p>
     </div>
   );
