@@ -46,6 +46,21 @@ export default function Home() {
           </button>
         </section>
 
+        {/* TRUST STRIP */}
+        <section style={styles.trust}>
+          {[
+            "SPF 50+ Broad Spectrum",
+            "No White Cast",
+            "Dermatologically Tested",
+            "Made in India",
+            "Daily Use Formula",
+          ].map((item) => (
+            <span key={item} style={styles.trustItem}>
+              {item}
+            </span>
+          ))}
+        </section>
+
         {/* PHILOSOPHY */}
         <section style={styles.philosophy}>
           <h2 style={styles.sectionTitle}>OUR PHILOSOPHY</h2>
@@ -61,7 +76,9 @@ export default function Home() {
 
 /* ---------------- STYLES ---------------- */
 const styles = {
-  page: { fontFamily: "Inter, sans-serif" },
+  page: {
+    fontFamily: "Inter, sans-serif",
+  },
 
   hero: {
     minHeight: "92vh",
@@ -108,6 +125,23 @@ const styles = {
     border: "none",
     cursor: "pointer",
     fontSize: "15px",
+  },
+
+  trust: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "28px",
+    flexWrap: "wrap",
+    padding: "64px 20px",
+    background: "#fafafa",
+  },
+
+  trustItem: {
+    fontSize: "12px",
+    letterSpacing: "1px",
+    color: "#555",
+    borderBottom: "1px solid #ddd",
+    paddingBottom: "6px",
   },
 
   philosophy: {

@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import App from "./App"; // Product page
-import Home from "./pages/Home"; // Homepage
+import App from "./App";
+import Home from "./pages/Home";
 
 import Cart from "./pages/Cart";
 import Address from "./pages/Address";
@@ -27,6 +27,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <CartProvider>
         <BrowserRouter>
           <Routes>
+
             {/* HOME */}
             <Route path="/" element={<Home />} />
 
@@ -36,10 +37,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* LEGAL PAGES */}
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy-policy" element={<Privacy />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
-            <Route path="/refund-policy" element={<Refund />} />
-            <Route path="/shipping-policy" element={<Shipping />} />
+            <Route path="/refund" element={<Refund />} />
+            <Route path="/shipping" element={<Shipping />} />
 
             {/* CART (PROTECTED) */}
             <Route
@@ -73,6 +74,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
             {/* ORDER SUCCESS */}
             <Route path="/order-success" element={<OrderSuccess />} />
+
           </Routes>
         </BrowserRouter>
       </CartProvider>

@@ -1,63 +1,23 @@
-import { Link, Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
-export default function AdminLayout() {
+export default function AdminLayout({ children }) {
   return (
-    <div style={styles.wrapper}>
-      <aside style={styles.sidebar}>
-        <h2 style={styles.logo}>ELVIA</h2>
-
-        <nav style={styles.nav}>
-          <Link to="/admin/products" style={styles.link}>
-            Products
-          </Link>
-          <Link to="/admin/launch" style={styles.link}>
-            Launch
-          </Link>
-          <Link to="/admin/orders" style={styles.link}>
-            Orders
-          </Link>
-        </nav>
-      </aside>
-
-      <main style={styles.main}>
-        <Outlet />
-      </main>
+    <div style={styles.layout}>
+      <Sidebar />
+      <main style={styles.content}>{children}</main>
     </div>
   );
 }
 
 const styles = {
-  wrapper: {
+  layout: {
     display: "flex",
+    background: "#fafafa",
     minHeight: "100vh",
-    backgroundColor: "#fafafa",
-    fontFamily: "Inter, sans-serif",
   },
-  sidebar: {
-    width: "240px",
-    backgroundColor: "#ffffff",
-    borderRight: "1px solid #eee",
-    padding: "40px 20px",
-  },
-  logo: {
-    fontSize: "22px",
-    letterSpacing: "2px",
-    marginBottom: "40px",
-    fontWeight: 500,
-  },
-  nav: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  link: {
-    textDecoration: "none",
-    color: "#111",
-    fontSize: "15px",
-    opacity: 0.7,
-  },
-  main: {
+
+  content: {
     flex: 1,
-    padding: "50px",
+    padding: "40px",
   },
 };

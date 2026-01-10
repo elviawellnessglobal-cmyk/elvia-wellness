@@ -3,63 +3,93 @@ import { useCart } from "../context/CartContext";
 
 export default function Payment() {
   const navigate = useNavigate();
-  const { getCartTotal } = useCart();
+  const { cartItems, getCartTotal } = useCart();
 
   const address =
     JSON.parse(localStorage.getItem("deliveryAddress")) || {};
 
-  function handlePay() {
-    // Razorpay integration will come later
-    navigate("/order-success");
+  async function handlePay() {
+    try {
+      // SAVE ORDER TO BACKEND
+      await fetch("http://localhost:3000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerName: address.name,
+          phone: address.phone,
+          email: address.email,
+          address: address.address,
+          landmark: address.landmark,
+          city: address.city,
+          state: address.state,
+          pincode: address.pincode,
+          items: cartItems,
+          totalAmount: getCartTotal(),
+          paymentStatus: "PENDING",
+        }),
+      });
+
+      // CLEAR CART (OPTIONAL BUT CLEAN)
+      localStorage.removeItem("deliveryAddress");
+
+      // REDIRECT
+      navigate("/order-success");
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+      console.error(error);
+    }
   }
 
   return (
     <div style={styles.page}>
       <h1 style={styles.heading}>Confirm & Pay</h1>
       <p style={styles.subtext}>
-        Please review your order and delivery details before completing
-        the payment.
+        Please review your details below before completing your purchase.
       </p>
 
-      {/* ADDRESS CARD */}
+      {/* TRUST STRIP */}
+      <div style={styles.trustStrip}>
+        <span>🔒 Secure Checkout</span>
+        <span>🚚 Free Shipping</span>
+        <span>↩ Easy Returns</span>
+      </div>
+
+      {/* ADDRESS */}
       <div style={styles.card}>
         <h3 style={styles.subheading}>DELIVERY ADDRESS</h3>
         <p style={styles.text}>
-          {address.name}<br />
+          {address.name}
+          <br />
           {address.address}
-          {address.landmark && `, ${address.landmark}`}<br />
-          {address.city}, {address.state} – {address.pincode}<br />
-          Phone: {address.phone}<br />
-          Email: {address.email}
+          {address.landmark && `, ${address.landmark}`}
+          <br />
+          {address.city}, {address.state} – {address.pincode}
+          <br />
+          Phone: {address.phone}
         </p>
       </div>
 
-      {/* TOTAL CARD */}
+      {/* TOTAL */}
       <div style={styles.card}>
         <h3 style={styles.subheading}>ORDER TOTAL</h3>
         <p style={styles.total}>₹{getCartTotal()}</p>
         <p style={styles.taxNote}>
-          Inclusive of all taxes · Free delivery
+          Inclusive of all taxes. No hidden charges.
         </p>
       </div>
 
-      {/* TRUST STRIP */}
-      <div style={styles.trust}>
-        <span>🔒 Secure Payment</span>
-        <span>📦 Fast Dispatch</span>
-        <span>↩ Easy Returns</span>
-      </div>
-
-      {/* PAY BUTTON */}
+      {/* PAY */}
       <button style={styles.payBtn} onClick={handlePay}>
         Pay ₹{getCartTotal()}
       </button>
 
-      {/* MICRO COPY */}
+      {/* FOOT NOTE */}
       <p style={styles.note}>
-        Your payment is processed securely via Razorpay.
+        Payments are encrypted and processed securely.
         <br />
-        NÆORA Wellness does not store card details.
+        Powered by Razorpay.
       </p>
     </div>
   );
@@ -85,15 +115,25 @@ const styles = {
   subtext: {
     fontSize: "14px",
     color: "#666",
-    marginBottom: "36px",
+    marginBottom: "28px",
     lineHeight: 1.7,
+  },
+
+  trustStrip: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "12px",
+    fontSize: "12px",
+    color: "#555",
+    marginBottom: "28px",
+    flexWrap: "wrap",
   },
 
   card: {
     border: "1px solid #eee",
     borderRadius: "16px",
     padding: "22px",
-    marginBottom: "28px",
+    marginBottom: "24px",
     background: "#fff",
   },
 
@@ -122,16 +162,6 @@ const styles = {
     color: "#777",
   },
 
-  trust: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "13px",
-    color: "#666",
-    marginBottom: "28px",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
-
   payBtn: {
     width: "100%",
     padding: "20px",
@@ -142,6 +172,7 @@ const styles = {
     fontSize: "16px",
     cursor: "pointer",
     letterSpacing: "0.4px",
+    marginTop: "12px",
     transition: "transform 0.25s ease, opacity 0.25s ease",
   },
 
