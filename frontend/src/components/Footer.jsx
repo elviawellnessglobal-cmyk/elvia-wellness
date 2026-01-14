@@ -31,7 +31,7 @@ export default function Footer() {
       <div style={styles.inner}>
         {/* BRAND */}
         <div style={styles.brand}>
-          <h3 style={styles.logo}>NÆORA WELLNESS</h3>
+          <h3 style={styles.logo}>KAEORN WELLNESS</h3>
           <p style={styles.tagline}>
             Premium skincare designed with intention.
           </p>
@@ -95,7 +95,7 @@ export default function Footer() {
       </div>
 
       <div style={styles.bottom}>
-        © {new Date().getFullYear()} NÆORA WELLNESS. All rights reserved.
+        © {new Date().getFullYear()} KAEORN WELLNESS. All rights reserved.
       </div>
     </footer>
   );

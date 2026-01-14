@@ -5,39 +5,55 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+/* ---------------- ROUTES ---------------- */
 const orderRoutes = require("./routes/orderRoutes");
 const productRoutes = require("./routes/productRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-const adminStatsRoutes = require("./routes/adminStats");
-const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
+
+/* ---------------- APP ---------------- */
 const app = express();
 
-// Middleware
-app.use(cors({ origin: "http://localhost:5173" }));
+/* ---------------- MIDDLEWARE ---------------- */
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-app.use("/api/admin/dashboard", adminDashboardRoutes);
 
-
-// Routes
+/* ---------------- HEALTH CHECK ---------------- */
 app.get("/", (req, res) => {
-  res.send("NÆORA backend is running.");
+  res.send("Backend is running successfully");
 });
 
-app.use("/api/orders", orderRoutes);
-app.use("/api/products", productRoutes);
+/* ---------------- API ROUTES ---------------- */
+// ADMIN AUTH
 app.use("/api/admin", adminRoutes);
 
-// MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB error:", err));
+// ORDERS (create, list, detail, status update, delete)
+app.use("/api/orders", orderRoutes);
 
-// Server
+// PRODUCTS (if used)
+app.use("/api/products", productRoutes);
+
+/* ---------------- DATABASE ---------------- */
+mongoose
+  .connect(process.env.MONGO_URI, {
+    autoIndex: true,
+  })
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1);
+  });
+
+/* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-
-  //adminstats
-  app.use("/api/admin", adminStatsRoutes);
 });

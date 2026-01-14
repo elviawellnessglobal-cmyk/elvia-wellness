@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,13 +12,14 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3000/api/admin/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        "http://localhost:3000/api/admin/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await res.json();
 
@@ -28,27 +28,26 @@ export default function AdminLogin() {
         return;
       }
 
-      // ✅ SAVE TOKEN HERE
+      // 🔐 SAVE TOKEN
       localStorage.setItem("adminToken", data.token);
 
-      // ✅ Redirect to admin orders
+      // ✅ REDIRECT TO ADMIN ORDERS
       navigate("/admin/orders");
-    } catch (err) {
-      setError("Server error. Try again.");
+    } catch {
+      setError("Server error");
     }
   }
 
   return (
     <div style={styles.page}>
-      <form style={styles.card} onSubmit={handleLogin}>
-        <h1 style={styles.heading}>Admin Login</h1>
-        <p style={styles.subtext}>NÆORA Admin Panel</p>
+      <form onSubmit={handleLogin} style={styles.card}>
+        <h2 style={styles.title}>Admin Login</h2>
 
         {error && <p style={styles.error}>{error}</p>}
 
         <input
           type="email"
-          placeholder="Admin email"
+          placeholder="Admin Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -64,67 +63,54 @@ export default function AdminLogin() {
           style={styles.input}
         />
 
-        <button style={styles.button}>Login</button>
+        <button type="submit" style={styles.button}>
+          Login
+        </button>
       </form>
     </div>
   );
 }
 
-/* ---------------- STYLES ---------------- */
-
 const styles = {
   page: {
     minHeight: "100vh",
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
-    background: "#fafafa",
-    fontFamily: "Inter, sans-serif",
+    justifyContent: "center",
+    background: "#f7f7f7",
   },
-
   card: {
-    width: "360px",
     background: "#fff",
-    padding: "36px",
-    borderRadius: "18px",
-    border: "1px solid #eee",
+    padding: "40px",
+    borderRadius: "16px",
+    width: "360px",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
   },
-
-  heading: {
-    fontSize: "26px",
-    fontWeight: "500",
-    marginBottom: "6px",
+  title: {
+    marginBottom: "24px",
+    fontSize: "22px",
   },
-
-  subtext: {
-    fontSize: "13px",
-    color: "#777",
-    marginBottom: "28px",
-  },
-
-  error: {
-    color: "#c0392b",
-    fontSize: "13px",
-    marginBottom: "12px",
-  },
-
   input: {
     width: "100%",
     padding: "14px",
     marginBottom: "14px",
-    borderRadius: "12px",
+    borderRadius: "10px",
     border: "1px solid #ddd",
     fontSize: "14px",
   },
-
   button: {
     width: "100%",
-    padding: "16px",
-    borderRadius: "40px",
+    padding: "14px",
+    borderRadius: "30px",
     border: "none",
     background: "#111",
     color: "#fff",
-    fontSize: "15px",
     cursor: "pointer",
+    fontSize: "15px",
+  },
+  error: {
+    color: "red",
+    fontSize: "13px",
+    marginBottom: "12px",
   },
 };

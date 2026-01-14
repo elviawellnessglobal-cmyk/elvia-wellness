@@ -3,8 +3,8 @@ export default function Contact() {
     <div style={styles.page}>
       <h1>Contact Us</h1>
 
-      <p><strong>Company:</strong> NÆORA WELLNESS</p>
-      <p><strong>Email:</strong> support@NÆORAwellness.com</p>
+      <p><strong>Company:</strong> KAEORN WELLNESS</p>
+      <p><strong>Email:</strong> support@KAEORNwellness.com</p>
       <p><strong>Phone:</strong> +91-XXXXXXXXXX</p>
       <p><strong>Address:</strong> India</p>
     </div>

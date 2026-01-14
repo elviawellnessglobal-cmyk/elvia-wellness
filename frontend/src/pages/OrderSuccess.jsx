@@ -22,14 +22,14 @@ export default function OrderSuccess() {
       <div style={styles.iconWrap}>✓</div>
 
       {/* BRAND */}
-      <p style={styles.brand}>NÆORA</p>
+      <p style={styles.brand}>KAEORN</p>
 
       {/* TITLE */}
       <h1 style={styles.title}>Order Confirmed</h1>
 
       {/* MESSAGE */}
       <p style={styles.text}>
-        Thank you for choosing NÆORA.
+        Thank you for choosing KAEORN.
         <br />
         Your order has been placed successfully and is now being prepared
         with care.

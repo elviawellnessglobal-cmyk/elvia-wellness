@@ -88,7 +88,7 @@ export default function App() {
       {/* STICKY HEADER */}
       <header style={styles.header}>
         <h2 style={styles.logo} onClick={() => navigate("/")}>
-          NÆORA
+          KAEORN
         </h2>
 
         <div style={styles.headerRight}>

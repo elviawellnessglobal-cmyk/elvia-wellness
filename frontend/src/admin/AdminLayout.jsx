@@ -4,7 +4,7 @@ export default function AdminLayout({ children }) {
   return (
     <div style={styles.layout}>
       <Sidebar />
-      <main style={styles.content}>{children}</main>
+      <main style={styles.main}>{children}</main>
     </div>
   );
 }
@@ -12,12 +12,10 @@ export default function AdminLayout({ children }) {
 const styles = {
   layout: {
     display: "flex",
-    background: "#fafafa",
     minHeight: "100vh",
+    background: "#fafafa",
   },
-
-  content: {
+  main: {
     flex: 1,
-    padding: "40px",
   },
 };

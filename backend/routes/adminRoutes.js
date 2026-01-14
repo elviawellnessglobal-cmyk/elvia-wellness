@@ -3,24 +3,17 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-/**
- * ADMIN LOGIN
- * POST /api/admin/login
- */
-router.post("/login", (req, res) => {
+/* ---------------- ADMIN LOGIN ---------------- */
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  // Check credentials from .env
   if (
     email !== process.env.ADMIN_EMAIL ||
     password !== process.env.ADMIN_PASSWORD
   ) {
-    return res.status(401).json({
-      message: "Invalid admin credentials",
-    });
+    return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  // Create token
   const token = jwt.sign(
     { role: "admin", email },
     process.env.JWT_SECRET,

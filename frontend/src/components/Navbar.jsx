@@ -12,7 +12,7 @@ export default function Navbar({ onLogin }) {
     <header style={styles.header}>
       {/* BRAND */}
       <h2 style={styles.logo} onClick={() => navigate("/")}>
-       NÆORA
+       KAEORN
       </h2>
 
       {/* RIGHT */}

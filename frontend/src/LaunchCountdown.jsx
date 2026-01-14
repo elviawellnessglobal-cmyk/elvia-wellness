@@ -34,7 +34,7 @@ export default function LaunchCountdown() {
       fontFamily: "serif"
     }}>
       <p style={{ letterSpacing: "2px", fontSize: 12 }}>
-        NÆORA WELLNESS
+        KAEORN WELLNESS
       </p>
       <h2 style={{ margin: "10px 0" }}>Launching In</h2>
       <p style={{ fontSize: 20 }}>{timeLeft}</p>
