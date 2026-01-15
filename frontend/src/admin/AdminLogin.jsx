@@ -6,14 +6,16 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin(e) {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/admin/login",
+        `${import.meta.env.VITE_API_BASE}/api/admin/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -28,13 +30,16 @@ export default function AdminLogin() {
         return;
       }
 
-      // 🔐 SAVE TOKEN
+      // 🔐 SAVE ADMIN TOKEN
       localStorage.setItem("adminToken", data.token);
 
-      // ✅ REDIRECT TO ADMIN ORDERS
-      navigate("/admin/orders");
-    } catch {
-      setError("Server error");
+      // ✅ REDIRECT TO DASHBOARD (more premium than orders first)
+      navigate("/admin/dashboard");
+    } catch (err) {
+      console.error("Admin login error:", err);
+      setError("Unable to connect to server");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -63,13 +68,22 @@ export default function AdminLogin() {
           style={styles.input}
         />
 
-        <button type="submit" style={styles.button}>
-          Login
+        <button
+          type="submit"
+          style={{
+            ...styles.button,
+            opacity: loading ? 0.7 : 1,
+          }}
+          disabled={loading}
+        >
+          {loading ? "Signing in…" : "Login"}
         </button>
       </form>
     </div>
   );
 }
+
+/* ---------------- STYLES ---------------- */
 
 const styles = {
   page: {
@@ -78,18 +92,24 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     background: "#f7f7f7",
+    fontFamily: "Inter, sans-serif",
   },
+
   card: {
     background: "#fff",
-    padding: "40px",
-    borderRadius: "16px",
+    padding: "42px",
+    borderRadius: "18px",
     width: "360px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
+    boxShadow: "0 24px 70px rgba(0,0,0,0.08)",
   },
+
   title: {
-    marginBottom: "24px",
+    marginBottom: "26px",
     fontSize: "22px",
+    fontWeight: "500",
+    textAlign: "center",
   },
+
   input: {
     width: "100%",
     padding: "14px",
@@ -98,6 +118,7 @@ const styles = {
     border: "1px solid #ddd",
     fontSize: "14px",
   },
+
   button: {
     width: "100%",
     padding: "14px",
@@ -107,10 +128,13 @@ const styles = {
     color: "#fff",
     cursor: "pointer",
     fontSize: "15px",
+    marginTop: "10px",
   },
+
   error: {
-    color: "red",
+    color: "#c62828",
     fontSize: "13px",
-    marginBottom: "12px",
+    marginBottom: "14px",
+    textAlign: "center",
   },
 };

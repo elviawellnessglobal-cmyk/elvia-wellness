@@ -20,11 +20,24 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("adminToken");
 
-      const res = await fetch("http://localhost:3000/api/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      if (!token) {
+        alert("Admin session expired. Please login again.");
+        return;
+      }
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/orders`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to load stats");
+      }
 
       const orders = await res.json();
 
@@ -54,6 +67,7 @@ export default function Dashboard() {
         inTransit,
       });
     } catch (err) {
+      console.error("Dashboard error:", err);
       alert("Failed to load dashboard data");
     } finally {
       setLoading(false);

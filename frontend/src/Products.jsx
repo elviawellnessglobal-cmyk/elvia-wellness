@@ -1,22 +1,35 @@
 import { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [activeImage, setActiveImage] = useState("");
+  const { addToCart } = useCart();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/api/products")
-      .then((res) => res.json())
-      .then((data) => {
+    async function loadProducts() {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE}/api/products`
+        );
+        const data = await res.json();
+
         setProducts(data);
-        if (data[0]?.images?.length) {
+
+        if (data?.[0]?.images?.length) {
           setActiveImage(data[0].images[0]);
         }
-      });
+      } catch (err) {
+        console.error("Failed to load products", err);
+      }
+    }
+
+    loadProducts();
   }, []);
 
-  if (products.length === 0) return null;
-  const p = products[0];
+  if (!products.length) return null;
+
+  const product = products[0];
 
   return (
     <div style={{ padding: "0 20px" }}>
@@ -35,7 +48,7 @@ export default function Products() {
         <div>
           <img
             src={activeImage}
-            alt={p.name}
+            alt={product.name}
             style={{
               width: "100%",
               height: "460px",
@@ -46,11 +59,12 @@ export default function Products() {
           />
 
           <div style={{ display: "flex", gap: "12px", overflowX: "auto" }}>
-            {p.images.map((img, i) => (
+            {product.images.map((img, i) => (
               <img
                 key={i}
                 src={img}
                 onClick={() => setActiveImage(img)}
+                alt=""
                 style={{
                   width: "90px",
                   height: "110px",
@@ -78,11 +92,11 @@ export default function Products() {
               marginBottom: "20px",
             }}
           >
-            ELVIA WELLNESS
+            KAEORN WELLNESS
           </div>
 
           <h1 style={{ fontSize: "38px", marginBottom: "24px" }}>
-            {p.name}
+            {product.name}
           </h1>
 
           <p
@@ -93,14 +107,23 @@ export default function Products() {
               marginBottom: "32px",
             }}
           >
-            {p.description}
+            {product.description}
           </p>
 
           <div style={{ fontSize: "20px", marginBottom: "28px" }}>
-            ₹{p.price}
+            ₹{product.price}
           </div>
 
           <button
+            onClick={() =>
+              addToCart({
+                _id: product._id,
+                name: product.name,
+                price: product.price,
+                image: product.images[0],
+                quantity: 1,
+              })
+            }
             style={{
               padding: "14px 36px",
               borderRadius: "40px",
@@ -123,10 +146,20 @@ export default function Products() {
               fontSize: "14px",
             }}
           >
-            <a href="https://www.instagram.com/" target="_blank" style={{ color: "#000", textDecoration: "none" }}>
+            <a
+              href="https://www.instagram.com/"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#000", textDecoration: "none" }}
+            >
               Instagram →
             </a>
-            <a href="https://www.youtube.com/" target="_blank" style={{ color: "#000", textDecoration: "none" }}>
+            <a
+              href="https://www.youtube.com/"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#000", textDecoration: "none" }}
+            >
               YouTube →
             </a>
           </div>
@@ -157,58 +190,12 @@ export default function Products() {
             lineHeight: "1.7",
           }}
         >
-          <li>Broad-spectrum SPF 50+ PA+++ protection against UVA & UVB rays</li>
-          <li>Ultra-light, non-greasy texture suitable for daily wear</li>
-          <li>No white cast — blends invisibly across all skin tones</li>
-          <li>Helps prevent premature aging and sun-induced pigmentation</li>
-          <li>Comfortable under makeup and suitable for sensitive skin</li>
+          <li>Broad-spectrum SPF 50+ PA+++ protection</li>
+          <li>Ultra-light, non-greasy texture</li>
+          <li>No white cast — blends invisibly</li>
+          <li>Prevents sun-induced pigmentation</li>
+          <li>Suitable for sensitive skin</li>
         </ul>
-      </section>
-
-      {/* HOW TO USE */}
-      <section
-        style={{
-          maxWidth: "900px",
-          margin: "60px auto 100px",
-          borderTop: "1px solid #eee",
-          paddingTop: "60px",
-        }}
-      >
-        <h2 style={{ fontSize: "28px", marginBottom: "40px" }}>
-          How to use
-        </h2>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "40px",
-          }}
-        >
-          <div>
-            <h4>When to use</h4>
-            <p>
-              Apply every morning as the final step of your skincare routine.
-              Reapply every 2–3 hours when exposed to sunlight.
-            </p>
-          </div>
-
-          <div>
-            <h4>How much to apply</h4>
-            <p>
-              Use two finger lengths for face and neck to ensure optimal SPF
-              coverage.
-            </p>
-          </div>
-
-          <div>
-            <h4>How to apply</h4>
-            <p>
-              Spread evenly and gently. Allow 15 minutes before sun exposure.
-              Suitable for daily use and under makeup.
-            </p>
-          </div>
-        </div>
       </section>
 
       {/* RESPONSIVE */}

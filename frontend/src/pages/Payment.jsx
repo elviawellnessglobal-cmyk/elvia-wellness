@@ -32,13 +32,17 @@ export default function Payment() {
         totalAmount: getCartTotal(),
       };
 
-      const res = await fetch("http://localhost:3000/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderPayload),
-      });
+      // ✅ FIXED FETCH (THIS WAS THE BUG)
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/orders`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderPayload),
+        }
+      );
 
       if (!res.ok) {
         const err = await res.json();

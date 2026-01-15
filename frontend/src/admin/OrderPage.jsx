@@ -25,8 +25,13 @@ export default function OrderPage() {
     try {
       const token = localStorage.getItem("adminToken");
 
+      if (!token) {
+        alert("Admin session expired. Please login again.");
+        return;
+      }
+
       const res = await fetch(
-        `http://localhost:3000/api/orders/${id}`,
+        `${import.meta.env.VITE_API_BASE}/api/orders/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,9 +39,15 @@ export default function OrderPage() {
         }
       );
 
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to load order");
+      }
+
       const data = await res.json();
       setOrder(data);
     } catch (err) {
+      console.error("Order load error:", err);
       alert("Failed to load order");
     } finally {
       setLoading(false);
@@ -51,7 +62,7 @@ export default function OrderPage() {
       const token = localStorage.getItem("adminToken");
 
       const res = await fetch(
-        `http://localhost:3000/api/orders/${id}/status`,
+        `${import.meta.env.VITE_API_BASE}/api/orders/${id}/status`,
         {
           method: "PUT",
           headers: {
@@ -62,9 +73,15 @@ export default function OrderPage() {
         }
       );
 
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Status update failed");
+      }
+
       const data = await res.json();
       setOrder(data);
-    } catch {
+    } catch (err) {
+      console.error("Status update error:", err);
       alert("Failed to update status");
     } finally {
       setUpdating(false);
@@ -74,16 +91,29 @@ export default function OrderPage() {
   async function deleteOrder() {
     if (!window.confirm("Delete this order permanently?")) return;
 
-    const token = localStorage.getItem("adminToken");
+    try {
+      const token = localStorage.getItem("adminToken");
 
-    await fetch(`http://localhost:3000/api/orders/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/orders/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    navigate("/admin/orders");
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Delete failed");
+      }
+
+      navigate("/admin/orders");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete order");
+    }
   }
 
   if (loading) {
