@@ -13,7 +13,7 @@ const adminRoutes = require("./routes/adminRoutes");
 /* ---------------- APP ---------------- */
 const app = express();
 
-/* ---------------- CORS (FINAL FIX) ---------------- */
+/* ---------------- CORS (RENDER + VERCEL FIX) ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://elvia-wellness.vercel.app",
@@ -22,23 +22,22 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow requests without origin (Postman, server-to-server)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS blocked: " + origin));
+        return callback(null, true);
       }
+
+      return callback(new Error("CORS blocked: " + origin));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-// 🔴 THIS LINE IS THE MOST IMPORTANT
-app.options("*", cors());
+// ✅ FIXED — DO NOT USE "*"
+app.options("/*", cors());
 
 /* ---------------- MIDDLEWARE ---------------- */
 app.use(express.json());
