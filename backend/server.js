@@ -13,14 +13,34 @@ const adminRoutes = require("./routes/adminRoutes");
 /* ---------------- APP ---------------- */
 const app = express();
 
-/* ---------------- MIDDLEWARE ---------------- */
+/* ---------------- CORS (FINAL FIX) ---------------- */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://elvia-wellness.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      // allow requests without origin (Postman, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS blocked: " + origin));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
+// 🔴 THIS LINE IS THE MOST IMPORTANT
+app.options("*", cors());
+
+/* ---------------- MIDDLEWARE ---------------- */
 app.use(express.json());
 
 /* ---------------- HEALTH CHECK ---------------- */
@@ -29,23 +49,14 @@ app.get("/", (req, res) => {
 });
 
 /* ---------------- API ROUTES ---------------- */
-// ADMIN AUTH
 app.use("/api/admin", adminRoutes);
-
-// ORDERS (create, list, detail, status update, delete)
 app.use("/api/orders", orderRoutes);
-
-// PRODUCTS (if used)
 app.use("/api/products", productRoutes);
 
 /* ---------------- DATABASE ---------------- */
 mongoose
-  .connect(process.env.MONGO_URI, {
-    autoIndex: true,
-  })
-  .then(() => {
-    console.log("MongoDB connected");
-  })
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
   .catch((err) => {
     console.error("MongoDB connection error:", err.message);
     process.exit(1);
