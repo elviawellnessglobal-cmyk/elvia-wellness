@@ -1,74 +1,58 @@
 const nodemailer = require("nodemailer");
 
-/* -------------------------------------------------
-   CREATE TRANSPORT (GMAIL APP PASSWORD)
--------------------------------------------------- */
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // IMPORTANT
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // ✅ Gmail App Password
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // REQUIRED FOR RENDER
   },
 });
 
-/* -------------------------------------------------
-   VERIFY EMAIL CONNECTION ON SERVER START
--------------------------------------------------- */
+/* ✅ VERIFY CONNECTION ON SERVER START */
 transporter.verify((error, success) => {
   if (error) {
     console.error("❌ Email transporter error:", error.message);
   } else {
-    console.log("✅ Email transporter ready");
+    console.log("✅ Email server ready");
   }
 });
 
-/* -------------------------------------------------
-   SEND ORDER STATUS EMAIL
--------------------------------------------------- */
 async function sendOrderStatusEmail(order) {
+  if (!order.email) return;
+
+  const items = order.items
+    .map((i) => `${i.name} × ${i.quantity}`)
+    .join(", ");
+
+  const mailOptions = {
+    from: `"KAEORN" <${process.env.EMAIL_USER}>`,
+    to: order.email,
+    subject: `Your order is ${order.status}`,
+    html: `
+      <div style="font-family:Arial;line-height:1.6">
+        <h2>Order Update</h2>
+        <p>Hello <b>${order.customerName}</b>,</p>
+        <p>Your order <b>#${order._id
+          .toString()
+          .slice(-6)
+          .toUpperCase()}</b> is now:</p>
+        <h3>${order.status}</h3>
+        <p><b>Items:</b> ${items}</p>
+        <p><b>Total:</b> ₹${order.totalAmount}</p>
+        <hr/>
+        <p style="font-size:12px;color:#777">
+          Thank you for shopping with KAEORN
+        </p>
+      </div>
+    `,
+  };
+
   try {
-    // ❗ SAFETY CHECK
-    if (!order.email) {
-      console.warn("⚠️ Order has no email, skipping email send");
-      return;
-    }
-
-    const itemNames = order.items
-      .map((item) => `${item.name} × ${item.quantity}`)
-      .join("<br/>");
-
-    const mailOptions = {
-      from: `"KAEORN Wellness" <${process.env.EMAIL_USER}>`,
-      to: order.email,
-      subject: `Your order is now ${order.status}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height:1.6; color:#111">
-          <h2>Order Status Update</h2>
-
-          <p>Hello <b>${order.customerName || "Customer"}</b>,</p>
-
-          <p>
-            Your order <b>#${order._id
-              .toString()
-              .slice(-6)
-              .toUpperCase()}</b> has been updated.
-          </p>
-
-          <p><b>Current Status:</b> ${order.status}</p>
-
-          <p><b>Items:</b><br/>${itemNames}</p>
-
-          <p><b>Total:</b> ₹${order.totalAmount}</p>
-
-          <hr/>
-
-          <p style="font-size:12px;color:#777">
-            Thank you for shopping with <b>KAEORN</b> 🤍
-          </p>
-        </div>
-      `,
-    };
-
     await transporter.sendMail(mailOptions);
     console.log(`📧 Email sent to ${order.email} (${order.status})`);
   } catch (err) {
