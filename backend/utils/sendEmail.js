@@ -1,62 +1,54 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // IMPORTANT
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false, // REQUIRED FOR RENDER
-  },
-});
-
-/* ✅ VERIFY CONNECTION ON SERVER START */
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Email transporter error:", error.message);
-  } else {
-    console.log("✅ Email server ready");
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendOrderStatusEmail(order) {
   if (!order.email) return;
 
-  const items = order.items
-    .map((i) => `${i.name} × ${i.quantity}`)
-    .join(", ");
-
-  const mailOptions = {
-    from: `"KAEORN" <${process.env.EMAIL_USER}>`,
-    to: order.email,
-    subject: `Your order is ${order.status}`,
-    html: `
-      <div style="font-family:Arial;line-height:1.6">
-        <h2>Order Update</h2>
-        <p>Hello <b>${order.customerName}</b>,</p>
-        <p>Your order <b>#${order._id
-          .toString()
-          .slice(-6)
-          .toUpperCase()}</b> is now:</p>
-        <h3>${order.status}</h3>
-        <p><b>Items:</b> ${items}</p>
-        <p><b>Total:</b> ₹${order.totalAmount}</p>
-        <hr/>
-        <p style="font-size:12px;color:#777">
-          Thank you for shopping with KAEORN
-        </p>
-      </div>
-    `,
-  };
+  const itemsHtml = order.items
+    .map(
+      (item) =>
+        `<li>${item.name} × ${item.quantity}</li>`
+    )
+    .join("");
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`📧 Email sent to ${order.email} (${order.status})`);
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM,
+      to: order.email,
+      subject: `Your order is now ${order.status}`,
+      html: `
+        <div style="font-family:Arial;line-height:1.6">
+          <h2>Order Update</h2>
+
+          <p>Hi <b>${order.customerName}</b>,</p>
+
+          <p>
+            Your order <b>#${order._id
+              .toString()
+              .slice(-6)
+              .toUpperCase()}</b>
+            status has been updated.
+          </p>
+
+          <p><b>Status:</b> ${order.status}</p>
+
+          <h4>Items</h4>
+          <ul>${itemsHtml}</ul>
+
+          <p><b>Total:</b> ₹${order.totalAmount}</p>
+
+          <hr/>
+          <p style="font-size:12px;color:#777">
+            Thank you for shopping with <b>KAEORN</b>
+          </p>
+        </div>
+      `,
+    });
+
+    console.log("✅ Status email sent to", order.email);
   } catch (err) {
-    console.error("❌ Email send failed:", err.message);
+    console.error("❌ Email error:", err.message);
   }
 }
 
