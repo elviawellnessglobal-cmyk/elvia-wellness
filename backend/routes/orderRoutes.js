@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
 const adminAuth = require("../middleware/adminAuth");
-const sendEmail = require("../utils/sendEmail");
+const sendOrderStatusEmail = require("../utils/sendEmail");
 
 /* =====================================================
    CREATE ORDER (PUBLIC) – PAYMENT PAGE
-   ===================================================== */
+===================================================== */
 router.post("/", async (req, res) => {
   try {
     const {
@@ -40,22 +40,9 @@ router.post("/", async (req, res) => {
 
     await order.save();
 
-    // 📧 ORDER CONFIRMATION EMAIL
-    if (email) {
-      await sendEmail(
-        email,
-        "Order Confirmed – ELVIA WELLNESS",
-        `
-          <h2>Thank you for your order 🤍</h2>
-          <p>Your order <b>#${order._id
-            .toString()
-            .slice(-6)
-            .toUpperCase()}</b> has been placed successfully.</p>
-          <p>We will notify you once it is shipped.</p>
-          <br/>
-          <p>— ELVIA WELLNESS</p>
-        `
-      );
+    // 📧 OPTIONAL: confirmation email (safe)
+    if (order.email) {
+      await sendOrderStatusEmail(order);
     }
 
     res.status(201).json(order);
@@ -67,7 +54,7 @@ router.post("/", async (req, res) => {
 
 /* =====================================================
    GET ALL ORDERS (ADMIN)
-   ===================================================== */
+===================================================== */
 router.get("/", adminAuth, async (req, res) => {
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
@@ -80,7 +67,7 @@ router.get("/", adminAuth, async (req, res) => {
 
 /* =====================================================
    GET SINGLE ORDER (ADMIN)
-   ===================================================== */
+===================================================== */
 router.get("/:id", adminAuth, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -97,8 +84,8 @@ router.get("/:id", adminAuth, async (req, res) => {
 });
 
 /* =====================================================
-   UPDATE ORDER STATUS (ADMIN) + EMAIL ON SHIPPED
-   ===================================================== */
+   UPDATE ORDER STATUS (ADMIN) + EMAIL
+===================================================== */
 router.put("/:id/status", adminAuth, async (req, res) => {
   try {
     const { status } = req.body;
@@ -113,26 +100,17 @@ router.put("/:id/status", adminAuth, async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    // 🚫 prevent duplicate email if same status
+    if (order.status === status) {
+      return res.json(order);
+    }
+
     order.status = status;
     await order.save();
 
-    // 📧 EMAIL WHEN SHIPPED
-    if (status === "Shipped" && order.email) {
-      await sendEmail(
-        order.email,
-        "Your Order Has Been Shipped 🚚",
-        `
-          <h2>Your order is on the way!</h2>
-          <p>Hi ${order.customerName || "Customer"},</p>
-          <p>Your order <b>#${order._id
-            .toString()
-            .slice(-6)
-            .toUpperCase()}</b> has been <b>SHIPPED</b>.</p>
-          <p>We’ll notify you once it’s delivered.</p>
-          <br/>
-          <p>— ELVIA WELLNESS</p>
-        `
-      );
+    // 📧 SEND EMAIL ON STATUS CHANGE
+    if (order.email) {
+      await sendOrderStatusEmail(order);
     }
 
     res.json(order);
@@ -144,7 +122,7 @@ router.put("/:id/status", adminAuth, async (req, res) => {
 
 /* =====================================================
    DELETE ORDER (ADMIN)
-   ===================================================== */
+===================================================== */
 router.delete("/:id", adminAuth, async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
