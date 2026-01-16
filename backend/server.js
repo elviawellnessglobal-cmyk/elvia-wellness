@@ -13,7 +13,7 @@ const adminRoutes = require("./routes/adminRoutes");
 /* ---------------- APP ---------------- */
 const app = express();
 
-/* ---------------- CORS (RENDER + VERCEL FIX) ---------------- */
+/* ---------------- CORS ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://elvia-wellness.vercel.app",
@@ -23,31 +23,24 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("CORS blocked: " + origin));
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("CORS blocked"));
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-// ✅ FIXED — DO NOT USE "*"
-app.options("/*", cors());
+/* ❌ REMOVE app.options ENTIRELY — CORS HANDLES IT AUTOMATICALLY */
 
 /* ---------------- MIDDLEWARE ---------------- */
 app.use(express.json());
 
-/* ---------------- HEALTH CHECK ---------------- */
+/* ---------------- HEALTH ---------------- */
 app.get("/", (req, res) => {
   res.send("Backend is running successfully");
 });
 
-/* ---------------- API ROUTES ---------------- */
+/* ---------------- ROUTES ---------------- */
 app.use("/api/admin", adminRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
@@ -57,13 +50,12 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => {
-    console.error("MongoDB connection error:", err.message);
+    console.error("MongoDB error:", err.message);
     process.exit(1);
   });
 
 /* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
