@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
 const adminAuth = require("../middleware/adminAuth");
-const sendOrderStatusEmail = require("../utils/sendEmail");
+const sendEmail = require("../utils/sendEmail");
 
 /* =====================================================
-   CREATE ORDER (PUBLIC) – USED BY PAYMENT PAGE
+   CREATE ORDER (PUBLIC) – PAYMENT PAGE
    ===================================================== */
 router.post("/", async (req, res) => {
   try {
@@ -39,6 +39,24 @@ router.post("/", async (req, res) => {
     });
 
     await order.save();
+
+    // 📧 ORDER CONFIRMATION EMAIL
+    if (email) {
+      await sendEmail(
+        email,
+        "Order Confirmed – ELVIA WELLNESS",
+        `
+          <h2>Thank you for your order 🤍</h2>
+          <p>Your order <b>#${order._id
+            .toString()
+            .slice(-6)
+            .toUpperCase()}</b> has been placed successfully.</p>
+          <p>We will notify you once it is shipped.</p>
+          <br/>
+          <p>— ELVIA WELLNESS</p>
+        `
+      );
+    }
 
     res.status(201).json(order);
   } catch (err) {
@@ -79,7 +97,7 @@ router.get("/:id", adminAuth, async (req, res) => {
 });
 
 /* =====================================================
-   UPDATE ORDER STATUS (ADMIN + EMAIL)
+   UPDATE ORDER STATUS (ADMIN) + EMAIL ON SHIPPED
    ===================================================== */
 router.put("/:id/status", adminAuth, async (req, res) => {
   try {
@@ -89,22 +107,32 @@ router.put("/:id/status", adminAuth, async (req, res) => {
       return res.status(400).json({ message: "Status is required" });
     }
 
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
+    const order = await Order.findById(req.params.id);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // 📧 EMAIL CUSTOMER ON STATUS CHANGE
-    try {
-      await sendOrderStatusEmail(order);
-    } catch (emailErr) {
-      console.error("Email send failed:", emailErr);
-      // Do NOT fail the request if email fails
+    order.status = status;
+    await order.save();
+
+    // 📧 EMAIL WHEN SHIPPED
+    if (status === "Shipped" && order.email) {
+      await sendEmail(
+        order.email,
+        "Your Order Has Been Shipped 🚚",
+        `
+          <h2>Your order is on the way!</h2>
+          <p>Hi ${order.customerName || "Customer"},</p>
+          <p>Your order <b>#${order._id
+            .toString()
+            .slice(-6)
+            .toUpperCase()}</b> has been <b>SHIPPED</b>.</p>
+          <p>We’ll notify you once it’s delivered.</p>
+          <br/>
+          <p>— ELVIA WELLNESS</p>
+        `
+      );
     }
 
     res.json(order);
