@@ -11,14 +11,14 @@ const productRoutes = require("./routes/productRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 
-
 /* ---------------- APP ---------------- */
 const app = express();
 
-/* ---------------- CORS (FIXED) ---------------- */
+/* ---------------- CORS (FIXED + FINAL) ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://elvia-wellness.vercel.app",
+  "https://kaeorn-wellness.vercel.app",
 ];
 
 app.use(
@@ -28,7 +28,7 @@ app.use(
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(null, false);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
@@ -47,7 +47,6 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 
-
 /* ---------------- DATABASE ---------------- */
 mongoose
   .connect(process.env.MONGO_URI)
@@ -61,5 +60,4 @@ mongoose
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log("✅ Email server ready");
 });

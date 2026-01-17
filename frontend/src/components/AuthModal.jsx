@@ -7,6 +7,7 @@ export default function AuthModal({ type = "login", onClose }) {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,31 +18,36 @@ export default function AuthModal({ type = "login", onClose }) {
     setLoading(true);
 
     try {
-      // SIGNUP (API)
+      /* ---------------- SIGNUP ---------------- */
       if (mode === "signup") {
         const res = await fetch(
           `${import.meta.env.VITE_API_BASE}/api/auth/signup`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password }),
+            body: JSON.stringify({
+              name,
+              email,
+              phone,
+              password,
+            }),
           }
         );
 
         const data = await res.json();
+
         if (!res.ok) {
-          setError(data.message);
+          setError(data.message || "Signup failed");
           setLoading(false);
           return;
         }
 
-        // After signup → move to login
         setMode("login");
         setLoading(false);
         return;
       }
 
-      // LOGIN (AuthContext)
+      /* ---------------- LOGIN ---------------- */
       const result = await login({ email, password });
       setLoading(false);
 
@@ -71,13 +77,23 @@ export default function AuthModal({ type = "login", onClose }) {
 
         <form onSubmit={handleSubmit} style={styles.form}>
           {mode === "signup" && (
-            <input
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              style={styles.input}
-            />
+            <>
+              <input
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                style={styles.input}
+              />
+
+              <input
+                placeholder="Mobile Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </>
           )}
 
           <input
