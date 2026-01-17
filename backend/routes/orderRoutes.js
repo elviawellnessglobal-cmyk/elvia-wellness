@@ -1,67 +1,59 @@
 const express = require("express");
-const router = express.Router();
 const Order = require("../models/Order");
 const adminAuth = require("../middleware/adminAuth");
-const sendOrderStatusEmail = require("../utils/sendEmail");
+const userAuth = require("../middleware/userAuth");
 
-/* CREATE ORDER (PUBLIC) */
-router.post("/", async (req, res) => {
+const router = express.Router();
+
+/* ---------------- CREATE ORDER ---------------- */
+router.post("/", userAuth, async (req, res) => {
   try {
-    const order = new Order({
+    const order = await Order.create({
       ...req.body,
-      status: "Pending",
+      user: req.user || null,
     });
 
-    await order.save();
     res.status(201).json(order);
-  } catch (err) {
-    console.error("Create order error:", err);
-    res.status(500).json({ message: "Order failed" });
+  } catch (error) {
+    console.error("Create order error:", error);
+    res.status(500).json({ message: "Failed to create order" });
   }
 });
 
-/* GET ALL ORDERS (ADMIN) */
+/* ---------------- USER ORDERS ---------------- */
+router.get("/my-orders", userAuth, async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const orders = await Order.find({ user: req.user }).sort({
+    createdAt: -1,
+  });
+
+  res.json(orders);
+});
+
+/* ---------------- ADMIN ---------------- */
 router.get("/", adminAuth, async (req, res) => {
   const orders = await Order.find().sort({ createdAt: -1 });
   res.json(orders);
 });
 
-/* GET SINGLE ORDER */
 router.get("/:id", adminAuth, async (req, res) => {
   const order = await Order.findById(req.params.id);
-  if (!order) return res.status(404).json({ message: "Not found" });
   res.json(order);
 });
 
-/* UPDATE STATUS + SEND EMAIL */
 router.put("/:id/status", adminAuth, async (req, res) => {
-  try {
-    const { status } = req.body;
-
-    const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ message: "Not found" });
-
-    const previousStatus = order.status;
-    order.status = status;
-    await order.save();
-
-    // Respond immediately
-    res.json(order);
-
-    // Send email ONLY if status changed
-    if (order.email && previousStatus !== status) {
-      sendOrderStatusEmail(order);
-    }
-  } catch (err) {
-    console.error("Status update error:", err);
-    res.status(500).json({ message: "Update failed" });
-  }
+  const order = await Order.findById(req.params.id);
+  order.status = req.body.status;
+  await order.save();
+  res.json(order);
 });
 
-/* DELETE ORDER */
 router.delete("/:id", adminAuth, async (req, res) => {
   await Order.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
+  res.json({ success: true });
 });
 
 module.exports = router;

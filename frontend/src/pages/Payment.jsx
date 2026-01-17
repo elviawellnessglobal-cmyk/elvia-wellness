@@ -15,20 +15,40 @@ export default function Payment() {
         return;
       }
 
-      if (!address.name || !address.phone || !address.address) {
+      if (
+        !address.name ||
+        !address.phone ||
+        !address.address ||
+        !address.city ||
+        !address.state ||
+        !address.pincode
+      ) {
         alert("Delivery address missing");
         return;
       }
 
+      // 🔐 Get JWT if user is logged in
+      const token = localStorage.getItem("kaeorn_token");
+
       const orderPayload = {
-        customerName: address.name,
-        phone: address.phone,
-        email: address.email || "",
-        address: address.address,
-        city: address.city,
-        state: address.state,
-        pincode: address.pincode,
-        items: cartItems,
+        items: cartItems.map((item) => ({
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+        })),
+
+        address: {
+          fullName: address.name,
+          phone: address.phone,
+          street: address.address,
+          city: address.city,
+          state: address.state,
+          postalCode: address.pincode,
+          country: "India",
+        },
+
         totalAmount: getCartTotal(),
       };
 
@@ -38,6 +58,7 @@ export default function Payment() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
           },
           body: JSON.stringify(orderPayload),
         }
@@ -64,9 +85,12 @@ export default function Payment() {
       <div style={styles.card}>
         <h3>Delivery Address</h3>
         <p>
-          {address.name}<br />
-          {address.address}<br />
-          {address.city}, {address.state} – {address.pincode}<br />
+          {address.name}
+          <br />
+          {address.address}
+          <br />
+          {address.city}, {address.state} – {address.pincode}
+          <br />
           Phone: {address.phone}
         </p>
       </div>
@@ -85,6 +109,7 @@ export default function Payment() {
 
 const styles = {
   page: { maxWidth: 520, margin: "auto", padding: 40 },
+  heading: { marginBottom: 24 },
   card: {
     background: "#fff",
     border: "1px solid #eee",
