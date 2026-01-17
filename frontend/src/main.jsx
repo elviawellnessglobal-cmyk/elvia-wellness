@@ -26,6 +26,8 @@ import Dashboard from "./admin/Dashboard"; // ✅ ADD THIS
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import MyOrders from "./pages/MyOrders";
+import OrderDetail from "./pages/OrderDetail";
 
 /* -------- ADMIN PROTECTION -------- */
 function AdminProtected({ children }) {
@@ -42,6 +44,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* ---------- PUBLIC ---------- */}
             <Route path="/" element={<Home />} />
             <Route path="/product" element={<App />} />
+            <Route path="/my-orders" element={<MyOrders />} />
+<Route path="/previous-orders" element={<MyOrders type="previous" />} />
+<Route path="/order/:id" element={<OrderDetail />} />
+
 
             {/* ---------- LEGAL ---------- */}
             <Route path="/about" element={<About />} />

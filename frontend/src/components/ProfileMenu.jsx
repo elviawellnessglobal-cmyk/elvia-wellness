@@ -8,7 +8,6 @@ export default function ProfileMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  // Close on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -16,7 +15,8 @@ export default function ProfileMenu() {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -45,7 +45,7 @@ export default function ProfileMenu() {
           <button
             style={styles.item}
             onClick={() => {
-              navigate("/my-orders");
+              navigate("/previous-orders");
               setOpen(false);
             }}
           >
