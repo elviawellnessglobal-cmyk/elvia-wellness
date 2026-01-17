@@ -1,42 +1,69 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
-export default function AuthModal({ defaultMode = "login", onClose }) {
-  const { login, signup } = useAuth();
-  const [mode, setMode] = useState(defaultMode);
+export default function AuthModal({ type = "login", onClose }) {
+  const { login } = useAuth();
+  const [mode, setMode] = useState(type);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    if (mode === "signup") {
-      const res = signup({ name, email, password });
-      if (res.error) {
-        setError(res.error);
-      } else {
-        setMode("login"); // IMPORTANT: go to login
-      }
-    }
+    try {
+      // SIGNUP (API)
+      if (mode === "signup") {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE}/api/auth/signup`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+          }
+        );
 
-    if (mode === "login") {
-      const res = login({ email, password });
-      if (res.error) {
-        setError(res.error);
-      } else {
-        onClose();
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.message);
+          setLoading(false);
+          return;
+        }
+
+        // After signup → move to login
+        setMode("login");
+        setLoading(false);
+        return;
       }
+
+      // LOGIN (AuthContext)
+      const result = await login({ email, password });
+      setLoading(false);
+
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+
+      onClose();
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong");
+      setLoading(false);
     }
   }
 
   return (
     <div style={styles.overlay}>
       <div style={styles.box}>
-        <button style={styles.close} onClick={onClose}>×</button>
+        <button style={styles.close} onClick={onClose}>
+          ×
+        </button>
 
         <h2 style={styles.title}>
           {mode === "login" ? "Welcome Back" : "Create Account"}
@@ -73,8 +100,12 @@ export default function AuthModal({ defaultMode = "login", onClose }) {
 
           {error && <p style={styles.error}>{error}</p>}
 
-          <button style={styles.submit}>
-            {mode === "login" ? "Login" : "Create Account"}
+          <button style={styles.submit} disabled={loading}>
+            {loading
+              ? "Please wait..."
+              : mode === "login"
+              ? "Login"
+              : "Create Account"}
           </button>
         </form>
 

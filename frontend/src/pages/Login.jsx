@@ -1,30 +1,29 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const { login } = useAuth();
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    const result = await login({ email, password });
 
-    if (!user) {
-      alert("No account found. Please sign up.");
+    setLoading(false);
+
+    if (result?.error) {
+      alert(result.error);
       return;
     }
 
-    if (
-      (emailOrPhone === user.email || emailOrPhone === user.phone) &&
-      password === user.password
-    ) {
-      localStorage.setItem("isLoggedIn", "true");
-      navigate("/");
-    } else {
-      alert("Invalid credentials");
-    }
+    navigate("/");
   };
 
   return (
@@ -33,19 +32,24 @@ export default function Login() {
 
       <form onSubmit={handleLogin}>
         <input
-          placeholder="Email or mobile number"
-          onChange={(e) => setEmailOrPhone(e.target.value)}
+          type="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
 
         <input
-          placeholder="Password"
           type="password"
+          placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
 
-        <button type="submit">Sign In</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
       </form>
 
       <div className="auth-links">
@@ -58,3 +62,4 @@ export default function Login() {
     </div>
   );
 }
+
