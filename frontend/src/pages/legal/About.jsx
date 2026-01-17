@@ -1,10 +1,10 @@
 export default function About() {
   return (
     <div style={styles.page}>
-      <h1>About NÆORA WELLNESS</h1>
+      <h1>About KAEORN WELLNESS</h1>
 
       <p>
-        NÆORA WELLNESS is a premium skincare and wellness brand committed to
+        KAEORN WELLNESS is a premium skincare and wellness brand committed to
         delivering high-quality, thoughtfully formulated products.
       </p>
 

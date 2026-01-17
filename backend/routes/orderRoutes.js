@@ -4,9 +4,7 @@ const Order = require("../models/Order");
 const adminAuth = require("../middleware/adminAuth");
 const sendOrderStatusEmail = require("../utils/sendEmail");
 
-/* ===============================
-   CREATE ORDER (PUBLIC)
-   =============================== */
+/* CREATE ORDER (PUBLIC) */
 router.post("/", async (req, res) => {
   try {
     const order = new Order({
@@ -15,51 +13,43 @@ router.post("/", async (req, res) => {
     });
 
     await order.save();
-
     res.status(201).json(order);
   } catch (err) {
-    console.error("Order create error:", err);
+    console.error("Create order error:", err);
     res.status(500).json({ message: "Order failed" });
   }
 });
 
-/* ===============================
-   GET ALL ORDERS (ADMIN)
-   =============================== */
+/* GET ALL ORDERS (ADMIN) */
 router.get("/", adminAuth, async (req, res) => {
   const orders = await Order.find().sort({ createdAt: -1 });
   res.json(orders);
 });
 
-/* ===============================
-   GET SINGLE ORDER (ADMIN)
-   =============================== */
+/* GET SINGLE ORDER */
 router.get("/:id", adminAuth, async (req, res) => {
   const order = await Order.findById(req.params.id);
-  if (!order) {
-    return res.status(404).json({ message: "Not found" });
-  }
+  if (!order) return res.status(404).json({ message: "Not found" });
   res.json(order);
 });
 
-/* ===============================
-   UPDATE STATUS + EMAIL
-   =============================== */
+/* UPDATE STATUS + SEND EMAIL */
 router.put("/:id/status", adminAuth, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: "Not found" });
-    }
+    const { status } = req.body;
 
-    order.status = req.body.status;
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Not found" });
+
+    const previousStatus = order.status;
+    order.status = status;
     await order.save();
 
-    // ✅ Respond immediately (important for UI)
+    // Respond immediately
     res.json(order);
 
-    // 📧 Send email AFTER response
-    if (order.email) {
+    // Send email ONLY if status changed
+    if (order.email && previousStatus !== status) {
       sendOrderStatusEmail(order);
     }
   } catch (err) {
@@ -68,9 +58,7 @@ router.put("/:id/status", adminAuth, async (req, res) => {
   }
 });
 
-/* ===============================
-   DELETE ORDER
-   =============================== */
+/* DELETE ORDER */
 router.delete("/:id", adminAuth, async (req, res) => {
   await Order.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });

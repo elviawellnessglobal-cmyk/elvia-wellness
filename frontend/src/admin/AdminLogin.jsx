@@ -23,17 +23,18 @@ export default function AdminLogin() {
         }
       );
 
-      const data = await res.json();
+      const data = await res.json(); // ✅ FIXED
 
       if (!res.ok) {
         setError(data.message || "Login failed");
+        setLoading(false);
         return;
       }
 
       // 🔐 SAVE ADMIN TOKEN
       localStorage.setItem("adminToken", data.token);
 
-      // ✅ REDIRECT TO DASHBOARD (more premium than orders first)
+      // ✅ REDIRECT
       navigate("/admin/dashboard");
     } catch (err) {
       console.error("Admin login error:", err);
@@ -94,7 +95,6 @@ const styles = {
     background: "#f7f7f7",
     fontFamily: "Inter, sans-serif",
   },
-
   card: {
     background: "#fff",
     padding: "42px",
@@ -102,14 +102,12 @@ const styles = {
     width: "360px",
     boxShadow: "0 24px 70px rgba(0,0,0,0.08)",
   },
-
   title: {
     marginBottom: "26px",
     fontSize: "22px",
     fontWeight: "500",
     textAlign: "center",
   },
-
   input: {
     width: "100%",
     padding: "14px",
@@ -118,7 +116,6 @@ const styles = {
     border: "1px solid #ddd",
     fontSize: "14px",
   },
-
   button: {
     width: "100%",
     padding: "14px",
@@ -130,7 +127,6 @@ const styles = {
     fontSize: "15px",
     marginTop: "10px",
   },
-
   error: {
     color: "#c62828",
     fontSize: "13px",
