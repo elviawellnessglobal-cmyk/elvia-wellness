@@ -4,6 +4,7 @@ import { useAuth } from "./context/AuthContext";
 import { useCart } from "./context/CartContext";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
+import ProfileMenu from "./components/ProfileMenu";
 import { Instagram, Youtube } from "lucide-react";
 
 /* ---------------- CLOUDINARY IMAGES ---------------- */
@@ -20,10 +21,17 @@ const images = [img1, img2, img3, img4];
 
 export default function App() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { addToCart } = useCart();
 
-  const isMobile = window.innerWidth < 768;
+  /* ---------------- RESPONSIVE ---------------- */
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   /* ---------------- SCROLL ANIMATION ---------------- */
   const productRef = useRef(null);
@@ -85,14 +93,14 @@ export default function App() {
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
 
-      {/* STICKY HEADER */}
+      {/* ---------------- HEADER ---------------- */}
       <header style={styles.header}>
         <h2 style={styles.logo} onClick={() => navigate("/")}>
           KAEORN
         </h2>
 
         <div style={styles.headerRight}>
-          {!isMobile && (
+          {!isMobile ? (
             <>
               <a
                 href="https://www.instagram.com/elviawellness/"
@@ -111,9 +119,7 @@ export default function App() {
                 YouTube
               </a>
             </>
-          )}
-
-          {isMobile && (
+          ) : (
             <>
               <a
                 href="https://www.instagram.com/elviawellness/"
@@ -136,7 +142,10 @@ export default function App() {
 
           {!user ? (
             <>
-              <button style={styles.authBtn} onClick={() => setAuthType("login")}>
+              <button
+                style={styles.authBtn}
+                onClick={() => setAuthType("login")}
+              >
                 Login
               </button>
               <button
@@ -147,9 +156,7 @@ export default function App() {
               </button>
             </>
           ) : (
-            <button style={styles.authBtn} onClick={logout}>
-              Logout
-            </button>
+            <ProfileMenu />
           )}
 
           <span style={styles.cart} onClick={handleCartClick}>
@@ -158,14 +165,16 @@ export default function App() {
         </div>
       </header>
 
-      {/* PRODUCT SECTION */}
+      {/* ---------------- PRODUCT SECTION ---------------- */}
       <section
         ref={productRef}
         style={{
           ...styles.productSection,
           gap: isMobile ? "48px" : "80px",
           margin: isMobile ? "32px auto" : "48px auto",
-          ...(productVisible ? styles.productVisible : styles.productHidden),
+          ...(productVisible
+            ? styles.productVisible
+            : styles.productHidden),
         }}
       >
         <div style={styles.imageColumn}>
@@ -204,33 +213,6 @@ export default function App() {
           <button style={styles.buyButton} onClick={handleAddToCart}>
             Add to Cart
           </button>
-
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>BENEFITS</h3>
-            <ul style={styles.list}>
-              <li>No white cast — suitable for all skin tones</li>
-              <li>Broad-spectrum UVA & UVB protection</li>
-              <li>Lightweight, non-greasy texture</li>
-              <li>Helps prevent premature aging</li>
-            </ul>
-          </div>
-
-          <div style={styles.inlineInfo}>
-            <div style={styles.inlineBlock}>
-              <h3 style={styles.sectionTitle}>HOW TO USE</h3>
-              <p style={styles.text}>
-                Apply two finger-lengths evenly on face and neck as the final AM
-                skincare step.
-              </p>
-            </div>
-
-            <div style={styles.inlineBlock}>
-              <h3 style={styles.sectionTitle}>WHEN TO USE</h3>
-              <p style={styles.text}>
-                Daily. Reapply every 2–3 hours when exposed to sunlight.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -241,26 +223,25 @@ export default function App() {
 
 /* ---------------- STYLES ---------------- */
 const styles = {
- header: {
-  position: "sticky",
-  top: 0,
-  zIndex: 50,
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "14px 20px",
-  maxWidth: "1200px",
-  margin: "0 auto",
-  background: "rgba(255,255,255,0.88)",
-  backdropFilter: "blur(10px)",
-},
-
- logo: {
-  letterSpacing: "2.5px",
-  fontWeight: "500",
-  fontSize: "clamp(14px, 4vw, 18px)",
-  cursor: "pointer",
-},
+  header: {
+    position: "sticky",
+    top: 0,
+    zIndex: 50,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "14px 20px",
+    maxWidth: "1200px",
+    margin: "0 auto",
+    background: "rgba(255,255,255,0.88)",
+    backdropFilter: "blur(10px)",
+  },
+  logo: {
+    letterSpacing: "2.5px",
+    fontWeight: "500",
+    fontSize: "clamp(14px, 4vw, 18px)",
+    cursor: "pointer",
+  },
   headerRight: {
     display: "flex",
     gap: "18px",
@@ -288,7 +269,6 @@ const styles = {
     fontSize: "18px",
     cursor: "pointer",
   },
-
   productSection: {
     display: "flex",
     flexWrap: "wrap",
@@ -304,7 +284,6 @@ const styles = {
     transform: "translateY(0)",
     transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
   },
-
   imageColumn: {
     flex: 1,
     minWidth: "300px",
@@ -325,7 +304,6 @@ const styles = {
     objectFit: "cover",
     cursor: "pointer",
   },
-
   detailsColumn: {
     flex: 1,
     minWidth: "300px",
@@ -359,32 +337,5 @@ const styles = {
     fontSize: "15px",
     cursor: "pointer",
     marginBottom: "32px",
-  },
-
-  section: {
-    marginBottom: "24px",
-  },
-  sectionTitle: {
-    fontSize: "13px",
-    letterSpacing: "1.5px",
-    marginBottom: "8px",
-  },
-  list: {
-    paddingLeft: "18px",
-    lineHeight: 1.7,
-    color: "#444",
-  },
-
-  inlineInfo: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "32px",
-  },
-  inlineBlock: {
-    flex: 1,
-  },
-  text: {
-    lineHeight: 1.7,
-    color: "#444",
   },
 };
