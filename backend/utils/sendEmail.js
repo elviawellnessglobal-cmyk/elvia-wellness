@@ -2,51 +2,67 @@ const { Resend } = require("resend");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+/**
+ * Send order status update email
+ * @param {Object} order - Order document
+ */
 async function sendOrderStatusEmail(order) {
-  if (!order.email) return;
-
-  const itemsHtml = order.items
-    .map(
-      (item) =>
-        `<li>${item.name} × ${item.quantity} — ₹${item.price}</li>`
-    )
-    .join("");
+  if (!order?.email) {
+    console.log("⚠️ No customer email, skipping email send");
+    return;
+  }
 
   try {
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM,
-      to: order.email,
-      subject: `Your order is now ${order.status}`,
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:600px">
-          <h2>Order Update</h2>
+    const itemsHtml = order.items
+      .map(
+        (item) =>
+          `<li>${item.name} × ${item.quantity}</li>`
+      )
+      .join("");
 
-          <p>Hello <b>${order.customerName}</b>,</p>
+    const response = await resend.emails.send({
+      from: "ELVIA WELLNESS <onboarding@resend.dev>", // ✅ REQUIRED (no domain)
+      to: order.email,
+      subject: "Update regarding your ELVIA order",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height:1.6; color:#111">
+          <h2 style="margin-bottom:10px;">Order Update</h2>
+
+          <p>Hello <b>${order.customerName || "Customer"}</b>,</p>
 
           <p>
-            Your order <b>#${order._id
-              .toString()
-              .slice(-6)
-              .toUpperCase()}</b>
-            is now <b>${order.status}</b>.
+            This is a quick update regarding your order
+            <b>#${order._id.toString().slice(-6).toUpperCase()}</b>.
           </p>
 
-          <h4>Items</h4>
+          <p>
+            <b>Current Status:</b><br/>
+            ${order.status}
+          </p>
+
+          <p><b>Items:</b></p>
           <ul>${itemsHtml}</ul>
 
           <p><b>Total:</b> ₹${order.totalAmount}</p>
 
-          <hr />
-          <p style="font-size:12px;color:#777">
-            Thank you for shopping with KAEORN 🤍
+          <hr style="margin:24px 0;" />
+
+          <p style="font-size:13px; color:#666">
+            Thank you for choosing <b>ELVIA WELLNESS</b>.
           </p>
         </div>
       `,
     });
 
-    console.log("✅ Status email sent to", order.email);
+    console.log(
+      `✅ Status email sent to ${order.email}`,
+      response.id
+    );
   } catch (err) {
-    console.error("❌ Resend email failed:", err.message);
+    console.error(
+      "❌ Email send failed:",
+      err?.message || err
+    );
   }
 }
 
