@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AddressBook() {
   const [addresses, setAddresses] = useState([]);
-  const [form, setForm] = useState({});
+  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("kaeorn_token");
 
   useEffect(() => {
@@ -10,74 +10,153 @@ export default function AddressBook() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
-      .then(setAddresses);
+      .then((data) => {
+        setAddresses(data || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
-
-  async function addAddress() {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_BASE}/api/addresses`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ ...form, isDefault: true }),
-      }
-    );
-
-    const data = await res.json();
-    setAddresses(data);
-    setForm({});
+  if (loading) {
+    return <p style={styles.loading}>Loading addresses…</p>;
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: "40px auto", padding: 20 }}>
-      <h2>Saved Addresses</h2>
+    <div style={styles.page}>
+      <h2 style={styles.heading}>Your Addresses</h2>
+
+      {addresses.length === 0 && (
+        <p style={styles.empty}>No saved addresses yet.</p>
+      )}
 
       {addresses.map((a, i) => (
-        <div key={i} style={styles.card}>
-          <p><b>{a.fullName}</b></p>
-          <p>{a.street}</p>
-          <p>{a.city}, {a.state} – {a.postalCode}</p>
-          <p>{a.phone}</p>
+        <div
+          key={i}
+          style={{
+            ...styles.card,
+            border: a.isDefault
+              ? "2px solid #111"
+              : "1px solid #EAEAEA",
+          }}
+        >
+          <div style={styles.cardTop}>
+            {a.isDefault && (
+              <span style={styles.defaultBadge}>DEFAULT</span>
+            )}
+            <div style={styles.actions}>
+              <span
+                style={styles.actionBtn}
+                onClick={() => alert("Edit not implemented")}
+              >
+                Edit
+              </span>
+              <span
+                style={styles.deleteBtn}
+                onClick={() => alert("Delete not implemented")}
+              >
+                Delete
+              </span>
+            </div>
+          </div>
+
+          <p style={styles.name}>{a.fullName}</p>
+
+          <p style={styles.text}>
+            {a.street}, {a.city}, {a.state} – {a.postalCode}
+          </p>
+          <p style={styles.text}>{a.phone}</p>
         </div>
       ))}
 
-      <h3 style={{ marginTop: 30 }}>Add New Address</h3>
-
-      <input name="fullName" placeholder="Full Name" onChange={handleChange} />
-      <input name="phone" placeholder="Phone" onChange={handleChange} />
-      <input name="street" placeholder="Street" onChange={handleChange} />
-      <input name="city" placeholder="City" onChange={handleChange} />
-      <input name="state" placeholder="State" onChange={handleChange} />
-      <input name="postalCode" placeholder="Postal Code" onChange={handleChange} />
-
-      <button onClick={addAddress} style={styles.btn}>
-        Save Address
+      <button
+        style={styles.addBtn}
+        onClick={() => alert("Navigate to Add Address")}
+      >
+        + Add New Address
       </button>
     </div>
   );
 }
 
 const styles = {
-  card: {
-    border: "1px solid #eee",
-    borderRadius: 14,
-    padding: 16,
-    marginTop: 16,
+  page: {
+    maxWidth: "640px",
+    margin: "60px auto",
+    padding: "0 20px",
+    fontFamily: "Inter, sans-serif",
   },
-  btn: {
-    marginTop: 16,
-    padding: 14,
-    borderRadius: 30,
+  heading: {
+    fontSize: "28px",
+    fontWeight: 500,
+    marginBottom: "24px",
+    color: "#111",
+  },
+  loading: {
+    textAlign: "center",
+    marginTop: "48px",
+    color: "#666",
+  },
+  empty: {
+    textAlign: "center",
+    marginTop: "40px",
+    fontSize: "16px",
+    color: "#555",
+  },
+  card: {
+    background: "#fff",
+    borderRadius: "12px",
+    padding: "20px",
+    marginBottom: "20px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+  },
+  cardTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "10px",
+  },
+  defaultBadge: {
+    background: "#111",
+    color: "#fff",
+    padding: "4px 10px",
+    fontSize: "11px",
+    borderRadius: "8px",
+    letterSpacing: "1px",
+  },
+  actions: {
+    display: "flex",
+    gap: "12px",
+  },
+  actionBtn: {
+    fontSize: "12px",
+    color: "#111",
+    cursor: "pointer",
+  },
+  deleteBtn: {
+    fontSize: "12px",
+    color: "#B00020",
+    cursor: "pointer",
+  },
+  name: {
+    fontSize: "16px",
+    fontWeight: 500,
+    marginBottom: "4px",
+  },
+  text: {
+    fontSize: "14px",
+    color: "#444",
+    margin: 0,
+  },
+  addBtn: {
+    marginTop: "32px",
+    width: "100%",
+    padding: "16px",
+    borderRadius: "40px",
     border: "none",
     background: "#111",
     color: "#fff",
+    fontSize: "15px",
+    fontWeight: 500,
     cursor: "pointer",
   },
 };

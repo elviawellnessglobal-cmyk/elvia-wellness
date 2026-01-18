@@ -15,7 +15,7 @@ const addressRoutes = require("./routes/addressRoutes");
 /* ---------------- APP ---------------- */
 const app = express();
 
-/* ---------------- CORS (FIXED + FINAL) ---------------- */
+/* ---------------- CORS (EXPRESS 5 SAFE) ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://elvia-wellness.vercel.app",
@@ -26,12 +26,16 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
+
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error("Not allowed by CORS"));
+
+      return callback(null, false);
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -43,11 +47,12 @@ app.get("/", (req, res) => {
 });
 
 /* ---------------- API ROUTES ---------------- */
-app.use("/api/admin", adminRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/addresses", addressRoutes);
+
 /* ---------------- DATABASE ---------------- */
 mongoose
   .connect(process.env.MONGO_URI)

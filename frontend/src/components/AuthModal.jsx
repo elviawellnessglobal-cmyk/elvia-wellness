@@ -14,11 +14,13 @@ export default function AuthModal({ type = "login", onClose }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
     setLoading(true);
 
     try {
-      /* ---------------- SIGNUP ---------------- */
+      /* -------- SIGNUP -------- */
       if (mode === "signup") {
         const res = await fetch(
           `${import.meta.env.VITE_API_BASE}/api/auth/signup`,
@@ -47,7 +49,7 @@ export default function AuthModal({ type = "login", onClose }) {
         return;
       }
 
-      /* ---------------- LOGIN ---------------- */
+      /* -------- LOGIN -------- */
       const result = await login({ email, password });
       setLoading(false);
 
@@ -56,10 +58,10 @@ export default function AuthModal({ type = "login", onClose }) {
         return;
       }
 
-      onClose();
+      onClose(); // ✅ CLOSE MODAL
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong");
+      console.error("Auth error:", err);
+      setError("Something went wrong. Please try again.");
       setLoading(false);
     }
   }
@@ -118,7 +120,7 @@ export default function AuthModal({ type = "login", onClose }) {
 
           <button style={styles.submit} disabled={loading}>
             {loading
-              ? "Please wait..."
+              ? "Please wait…"
               : mode === "login"
               ? "Login"
               : "Create Account"}
@@ -146,6 +148,8 @@ export default function AuthModal({ type = "login", onClose }) {
     </div>
   );
 }
+
+/* -------- STYLES (UNCHANGED) -------- */
 
 const styles = {
   overlay: {
