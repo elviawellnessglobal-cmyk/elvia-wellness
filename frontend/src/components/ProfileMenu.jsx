@@ -19,11 +19,12 @@ export default function ProfileMenu() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Luxury initial (safe fallback)
   const initial = user?.name?.charAt(0)?.toUpperCase() || "K";
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      {/* PROFILE CIRCLE */}
+      {/* LUXURY PROFILE CIRCLE */}
       <div
         onClick={() => setOpen(!open)}
         style={{
@@ -45,6 +46,16 @@ export default function ProfileMenu() {
             }}
           >
             Account
+          </button>
+
+          <button
+            style={styles.item}
+            onClick={() => {
+              navigate("/addresses");
+              setOpen(false);
+            }}
+          >
+            Addresses
           </button>
 
           <div style={styles.divider} />
@@ -93,16 +104,17 @@ const styles = {
     width: 34,
     height: 34,
     borderRadius: "50%",
-    background: "#f6f6f6",
+    background: "#f5f5f5",
     color: "#111",
-    fontSize: 14,
-    fontWeight: 500,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    border: "1px solid #e5e5e5",
+    fontSize: 14,
+    fontWeight: 500,
+    border: "1px solid #e6e6e6",
     transition: "all 0.25s ease",
+    letterSpacing: "0.4px",
   },
 
   avatarActive: {
@@ -113,3 +125,30 @@ const styles = {
 
   menu: {
     position: "absolute",
+    right: 0,
+    top: "120%",
+    background: "#fff",
+    borderRadius: 16,
+    boxShadow: "0 14px 36px rgba(0,0,0,0.12)",
+    minWidth: 190,
+    padding: "10px 0",
+    zIndex: 100,
+  },
+
+  item: {
+    width: "100%",
+    padding: "12px 18px",
+    background: "none",
+    border: "none",
+    textAlign: "left",
+    fontSize: 13,
+    cursor: "pointer",
+    color: "#111",
+  },
+
+  divider: {
+    height: 1,
+    background: "#eee",
+    margin: "8px 0",
+  },
+};
