@@ -22,6 +22,11 @@ export function CartProvider({ children }) {
     });
   }
 
+  /* ---------------- SET CART (RE-ORDER) ---------------- */
+  function setCart(items) {
+    setCartItems(items);
+  }
+
   /* ---------------- INCREASE QTY ---------------- */
   function increaseQty(id) {
     setCartItems((prev) =>
@@ -69,6 +74,7 @@ export function CartProvider({ children }) {
       value={{
         cartItems,
         addToCart,
+        setCart,          // ✅ NEW
         increaseQty,
         decreaseQty,
         removeFromCart,

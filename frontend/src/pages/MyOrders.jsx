@@ -24,32 +24,79 @@ export default function MyOrders({ type = "active" }) {
   }, [type]);
 
   if (orders.length === 0) {
-    return <p style={{ textAlign: "center" }}>No orders found.</p>;
+    return (
+      <p style={{ textAlign: "center", marginTop: 60 }}>
+        No orders found.
+      </p>
+    );
   }
 
   return (
-    <div style={{ maxWidth: 720, margin: "40px auto", padding: 20 }}>
-      <h2>{type === "previous" ? "Previous Orders" : "My Orders"}</h2>
+    <div style={styles.page}>
+      <h2 style={styles.heading}>
+        {type === "previous" ? "Previous Orders" : "My Orders"}
+      </h2>
 
       {orders.map((order) => (
         <div
           key={order._id}
+          style={styles.orderCard}
           onClick={() => navigate(`/order/${order._id}`)}
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 14,
-            padding: 20,
-            marginTop: 20,
-            cursor: "pointer",
-          }}
         >
-          <p>Status: {order.status}</p>
-          <p>Total: ₹{order.totalAmount}</p>
-          <p>
-            Date: {new Date(order.createdAt).toLocaleDateString()}
-          </p>
+          <div>
+            <p style={styles.status}>{order.status}</p>
+            <p style={styles.date}>
+              {new Date(order.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+
+          <div style={styles.right}>
+            <p style={styles.amount}>₹{order.totalAmount}</p>
+            <span style={styles.view}>View →</span>
+          </div>
         </div>
       ))}
     </div>
   );
 }
+
+const styles = {
+  page: {
+    maxWidth: 720,
+    margin: "40px auto",
+    padding: 20,
+  },
+  heading: {
+    marginBottom: 30,
+  },
+  orderCard: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "18px 20px",
+    borderRadius: 16,
+    border: "1px solid #eee",
+    marginBottom: 16,
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+  },
+  status: {
+    fontSize: 14,
+    fontWeight: 500,
+  },
+  date: {
+    fontSize: 12,
+    color: "#777",
+  },
+  right: {
+    textAlign: "right",
+  },
+  amount: {
+    fontSize: 16,
+    fontWeight: 500,
+  },
+  view: {
+    fontSize: 12,
+    color: "#555",
+  },
+};
