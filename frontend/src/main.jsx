@@ -20,6 +20,8 @@ import Shipping from "./pages/legal/Shipping";
 /* -------- USER -------- */
 import MyOrders from "./pages/MyOrders";
 import OrderDetail from "./pages/OrderDetail";
+import Account from "./pages/Account";
+
 
 /* -------- ADMIN -------- */
 import AdminLogin from "./admin/AdminLogin";
@@ -34,7 +36,7 @@ import { CartProvider } from "./context/CartContext";
 /* -------- PROTECTION -------- */
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtected from "./components/AdminProtected";
-
+import AddressBook from "./pages/AddressBook";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
@@ -44,6 +46,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* ---------- PUBLIC ---------- */}
             <Route path="/" element={<Home />} />
             <Route path="/product" element={<App />} />
+            <Route path="/account" element={<Account />} />
+<Route path="/addresses" element={<AddressBook />} />
             <Route path="/my-orders" element={<MyOrders />} />
             <Route
               path="/previous-orders"

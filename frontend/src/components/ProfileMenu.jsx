@@ -32,6 +32,30 @@ export default function ProfileMenu() {
 
       {open && (
         <div style={styles.menu}>
+          {/* ACCOUNT */}
+          <button
+            style={styles.item}
+            onClick={() => {
+              navigate("/account");
+              setOpen(false);
+            }}
+          >
+            Account
+          </button>
+
+          <button
+            style={styles.item}
+            onClick={() => {
+              navigate("/addresses");
+              setOpen(false);
+            }}
+          >
+            Addresses
+          </button>
+
+          <div style={styles.divider} />
+
+          {/* ORDERS */}
           <button
             style={styles.item}
             onClick={() => {
@@ -54,6 +78,7 @@ export default function ProfileMenu() {
 
           <div style={styles.divider} />
 
+          {/* LOGOUT */}
           <button
             style={{ ...styles.item, color: "#b00020" }}
             onClick={() => {

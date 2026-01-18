@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+/* -------- ADDRESS SCHEMA -------- */
+const addressSchema = new mongoose.Schema(
+  {
+    fullName: { type: String, required: true },
+    phone: { type: String, required: true },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    country: { type: String, default: "India" },
+    isDefault: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
+/* -------- USER SCHEMA -------- */
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -22,6 +38,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+
+    /* ✅ NEW */
+    addresses: [addressSchema],
   },
   { timestamps: true }
 );
