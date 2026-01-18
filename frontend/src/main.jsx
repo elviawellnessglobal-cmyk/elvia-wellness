@@ -17,23 +17,23 @@ import Terms from "./pages/legal/Terms";
 import Refund from "./pages/legal/Refund";
 import Shipping from "./pages/legal/Shipping";
 
+/* -------- USER -------- */
+import MyOrders from "./pages/MyOrders";
+import OrderDetail from "./pages/OrderDetail";
+
 /* -------- ADMIN -------- */
 import AdminLogin from "./admin/AdminLogin";
 import Orders from "./admin/Orders";
 import OrderPage from "./admin/OrderPage";
-import Dashboard from "./admin/Dashboard"; // ✅ ADD THIS
+import Dashboard from "./admin/Dashboard";
 
+/* -------- CONTEXT -------- */
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import MyOrders from "./pages/MyOrders";
-import OrderDetail from "./pages/OrderDetail";
 
-/* -------- ADMIN PROTECTION -------- */
-function AdminProtected({ children }) {
-  const token = localStorage.getItem("adminToken");
-  return token ? children : <AdminLogin />;
-}
+/* -------- PROTECTION -------- */
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtected from "./components/AdminProtected";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -45,9 +45,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/" element={<Home />} />
             <Route path="/product" element={<App />} />
             <Route path="/my-orders" element={<MyOrders />} />
-<Route path="/previous-orders" element={<MyOrders type="previous" />} />
-<Route path="/order/:id" element={<OrderDetail />} />
-
+            <Route
+              path="/previous-orders"
+              element={<MyOrders type="previous" />}
+            />
+            <Route path="/order/:id" element={<OrderDetail />} />
 
             {/* ---------- LEGAL ---------- */}
             <Route path="/about" element={<About />} />
@@ -86,7 +88,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
             {/* ---------- ADMIN ---------- */}
             <Route path="/admin/login" element={<AdminLogin />} />
-
             <Route
               path="/admin/dashboard"
               element={
@@ -95,7 +96,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 </AdminProtected>
               }
             />
-
             <Route
               path="/admin/orders"
               element={
@@ -104,7 +104,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 </AdminProtected>
               }
             />
-
             <Route
               path="/admin/orders/:id"
               element={
