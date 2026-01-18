@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function ProfileMenu() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -19,20 +19,24 @@ export default function ProfileMenu() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const initial = user?.name?.charAt(0)?.toUpperCase() || "K";
+
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      {/* Profile Icon */}
+      {/* PROFILE CIRCLE */}
       <div
         onClick={() => setOpen(!open)}
-        style={styles.avatar}
+        style={{
+          ...styles.avatar,
+          ...(open ? styles.avatarActive : {}),
+        }}
         title="Account"
       >
-        👤
+        {initial}
       </div>
 
       {open && (
         <div style={styles.menu}>
-          {/* ACCOUNT */}
           <button
             style={styles.item}
             onClick={() => {
@@ -43,19 +47,8 @@ export default function ProfileMenu() {
             Account
           </button>
 
-          <button
-            style={styles.item}
-            onClick={() => {
-              navigate("/addresses");
-              setOpen(false);
-            }}
-          >
-            Addresses
-          </button>
-
           <div style={styles.divider} />
 
-          {/* ORDERS */}
           <button
             style={styles.item}
             onClick={() => {
@@ -78,9 +71,8 @@ export default function ProfileMenu() {
 
           <div style={styles.divider} />
 
-          {/* LOGOUT */}
           <button
-            style={{ ...styles.item, color: "#b00020" }}
+            style={{ ...styles.item, color: "#8b1e1e" }}
             onClick={() => {
               logout();
               setOpen(false);
@@ -94,41 +86,30 @@ export default function ProfileMenu() {
   );
 }
 
+/* ---------- LUXURY STYLES ---------- */
+
 const styles = {
   avatar: {
     width: 34,
     height: 34,
     borderRadius: "50%",
-    border: "1px solid #111",
+    background: "#f6f6f6",
+    color: "#111",
+    fontSize: 14,
+    fontWeight: 500,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    fontSize: 16,
+    border: "1px solid #e5e5e5",
+    transition: "all 0.25s ease",
   },
+
+  avatarActive: {
+    background: "#111",
+    color: "#fff",
+    borderColor: "#111",
+  },
+
   menu: {
     position: "absolute",
-    right: 0,
-    top: "120%",
-    background: "#fff",
-    borderRadius: 14,
-    boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
-    minWidth: 180,
-    padding: "8px 0",
-    zIndex: 100,
-  },
-  item: {
-    width: "100%",
-    padding: "10px 16px",
-    background: "none",
-    border: "none",
-    textAlign: "left",
-    fontSize: 13,
-    cursor: "pointer",
-  },
-  divider: {
-    height: 1,
-    background: "#eee",
-    margin: "6px 0",
-  },
-};
