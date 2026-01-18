@@ -132,6 +132,8 @@ export default function OrderPage() {
     );
   }
 
+  const address = order.address || {};
+
   return (
     <AdminLayout>
       <div style={styles.container}>
@@ -153,9 +155,7 @@ export default function OrderPage() {
                 onClick={() => updateStatus(s)}
                 style={{
                   ...styles.statusBtn,
-                  ...(order.status === s
-                    ? styles.statusActive
-                    : {}),
+                  ...(order.status === s ? styles.statusActive : {}),
                 }}
               >
                 {s}
@@ -167,8 +167,8 @@ export default function OrderPage() {
         {/* CUSTOMER */}
         <div style={styles.card}>
           <h3 style={styles.subheading}>Customer</h3>
-          <p><b>Name:</b> {order.customerName || "-"}</p>
-          <p><b>Phone:</b> {order.phone || "-"}</p>
+          <p><b>Name:</b> {address.fullName || "-"}</p>
+          <p><b>Phone:</b> {address.phone || "-"}</p>
           <p><b>Email:</b> {order.email || "-"}</p>
         </div>
 
@@ -176,9 +176,10 @@ export default function OrderPage() {
         <div style={styles.card}>
           <h3 style={styles.subheading}>Delivery Address</h3>
           <p>
-            {order.address || "-"}<br />
-            {order.city || "-"}, {order.state || "-"} –{" "}
-            {order.pincode || "-"}
+            {address.street || "-"}<br />
+            {address.city || "-"}, {address.state || "-"} –{" "}
+            {address.postalCode || "-"}<br />
+            {address.country || ""}
           </p>
         </div>
 
@@ -201,10 +202,7 @@ export default function OrderPage() {
         </div>
 
         {/* DELETE */}
-        <button
-          onClick={deleteOrder}
-          style={styles.deleteBtn}
-        >
+        <button onClick={deleteOrder} style={styles.deleteBtn}>
           Delete Order
         </button>
       </div>
@@ -219,12 +217,10 @@ const styles = {
     maxWidth: "900px",
     padding: "40px",
   },
-
   heading: {
     fontSize: "30px",
     marginBottom: "28px",
   },
-
   card: {
     background: "#fff",
     borderRadius: "16px",
@@ -232,14 +228,12 @@ const styles = {
     marginBottom: "24px",
     border: "1px solid #eee",
   },
-
   subheading: {
     fontSize: "12px",
     letterSpacing: "2px",
     color: "#777",
     marginBottom: "12px",
   },
-
   statusCard: {
     background: "#111",
     color: "#fff",
@@ -247,18 +241,15 @@ const styles = {
     padding: "28px",
     marginBottom: "32px",
   },
-
   statusText: {
     fontSize: "16px",
     marginBottom: "16px",
   },
-
   statusButtons: {
     display: "flex",
     gap: "12px",
     flexWrap: "wrap",
   },
-
   statusBtn: {
     padding: "12px 20px",
     borderRadius: "30px",
@@ -267,25 +258,21 @@ const styles = {
     color: "#fff",
     cursor: "pointer",
   },
-
   statusActive: {
     background: "#fff",
     color: "#111",
     fontWeight: "500",
   },
-
   itemRow: {
     display: "flex",
     justifyContent: "space-between",
     padding: "10px 0",
     borderBottom: "1px solid #f0f0f0",
   },
-
   total: {
     marginTop: "16px",
     fontSize: "22px",
   },
-
   deleteBtn: {
     marginTop: "32px",
     background: "#e53935",
