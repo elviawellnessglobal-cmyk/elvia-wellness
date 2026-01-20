@@ -3,26 +3,57 @@ import { useNavigate } from "react-router-dom";
 
 export default function MyOrders({ type = "active" }) {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("kaeorn_token");
+
+    // 🔐 No token → redirect
+    if (!token) {
+      navigate("/");
+      return;
+    }
 
     fetch(`${import.meta.env.VITE_API_BASE}/api/orders/my-orders`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error("Unauthorized");
+        }
+        return res.json();
+      })
       .then((data) => {
+        if (!Array.isArray(data)) {
+          setOrders([]);
+          return;
+        }
+
         if (type === "previous") {
           setOrders(data.filter((o) => o.status === "Delivered"));
         } else {
           setOrders(data);
         }
-      });
-  }, [type]);
+      })
+      .catch(() => {
+        setOrders([]);
+      })
+      .finally(() => setLoading(false));
+  }, [type, navigate]);
 
+  /* -------- LOADING -------- */
+  if (loading) {
+    return (
+      <p style={{ textAlign: "center", marginTop: 60 }}>
+        Loading your orders…
+      </p>
+    );
+  }
+
+  /* -------- EMPTY -------- */
   if (orders.length === 0) {
     return (
       <p style={{ textAlign: "center", marginTop: 60 }}>

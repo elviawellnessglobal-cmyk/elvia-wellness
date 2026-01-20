@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
       );
 
       if (!res.ok) {
-        const text = await res.text(); // ⚠️ IMPORTANT
+        const text = await res.text();
         return { error: text || "Login failed" };
       }
 
@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("kaeorn_token", data.token);
       localStorage.setItem("kaeorn_user", JSON.stringify(data.user));
 
-      setUser(data.user); // ✅ REQUIRED
+      setUser(data.user);
 
       return { success: true };
     } catch (err) {
