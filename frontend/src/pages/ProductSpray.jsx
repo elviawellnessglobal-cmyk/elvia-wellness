@@ -1,33 +1,29 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
-import { useCart } from "./context/CartContext";
-import AuthModal from "./components/AuthModal";
-import Footer from "./components/Footer";
-import ProfileMenu from "./components/ProfileMenu";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import AuthModal from "../components/AuthModal";
+import Footer from "../components/Footer";
+import ProfileMenu from "../components/ProfileMenu";
 import { Instagram, Youtube } from "lucide-react";
 
-/* ---------------- CLOUDINARY IMAGES ---------------- */
+/* ---------------- CLOUDINARY IMAGES (TEMP) ---------------- */
 const img1 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768900018/ChatGPT_Image_Jan_20_2026_02_35_31_PM_bv4j8j.png";
-const img2 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768897906/ChatGPT_Image_Jan_20_2026_01_53_50_PM_ekdg0l.png";
-const img3 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768897413/ChatGPT_Image_Jan_20_2026_01_53_06_PM_p5fr81.png";
-const img4 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768897641/ChatGPT_Image_Jan_20_2026_01_54_12_PM_nkfbak.png";
-const img5 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768899353/ChatGPT_Image_Jan_20_2026_02_25_23_PM_no7tvv.png";
-const img6 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768900206/ChatGPT_Image_Jan_20_2026_02_39_22_PM_y2argn.png";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768909795/ChatGPT_Image_Jan_20_2026_05_18_57_PM_vezq3m.png";
+const img2 ="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910313/ChatGPT_Image_Jan_19_2026_10_47_40_PM_lrcqbq.png";
+const img3 = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910953/ChatGPT_Image_Jan_20_2026_05_37_32_PM_krakt8.png";
+const img4 = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910513/ChatGPT_Image_Jan_20_2026_05_30_21_PM_caczgp.png";
+const img5 = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768911211/ChatGPT_Image_Jan_20_2026_05_40_17_PM_pnnszr.png";
 
-const images = [img1, img2, img3, img4, img5, img6];
 
-export default function App() {
+const images = [img1, img2, img3, img4, img5];
+
+export default function ProductSpray() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart } = useCart();
 
+  /* ---------------- RESPONSIVE ---------------- */
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   useEffect(() => {
     const resize = () => setIsMobile(window.innerWidth < 768);
@@ -35,8 +31,10 @@ export default function App() {
     return () => window.removeEventListener("resize", resize);
   }, []);
 
+  /* ---------------- SCROLL ANIMATION ---------------- */
   const productRef = useRef(null);
   const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => e.isIntersecting && setVisible(true),
@@ -46,15 +44,18 @@ export default function App() {
     return () => obs.disconnect();
   }, []);
 
+  /* ---------------- PRODUCT DATA ---------------- */
   const product = {
-    id: "haetsal-veil-spf50",
-    name: "Haetsal Veil™ SPF 50+ PA++++",
-    price: 2499,
+    id: "haetsal-veil-spray-spf50", // UNIQUE ID (important)
+    name: "Haetsal Veil™ Spray SPF 50+ PA++++",
+    price: 2699,
   };
 
+  /* ---------------- STATE ---------------- */
   const [activeImage, setActiveImage] = useState(images[0]);
   const [authType, setAuthType] = useState(null);
 
+  /* ---------------- HANDLERS ---------------- */
   function handleAddToCart() {
     if (!user) {
       setAuthType("login");
@@ -142,7 +143,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* ---------------- PRODUCT HERO ---------------- */}
+      {/* ---------------- PRODUCT SECTION ---------------- */}
       <section
         ref={productRef}
         style={{
@@ -150,8 +151,9 @@ export default function App() {
           ...(visible ? styles.show : styles.hide),
         }}
       >
+        {/* IMAGES */}
         <div style={styles.imageColumn}>
-          <img src={activeImage} style={styles.mainImage} />
+          <img src={activeImage} alt={product.name} style={styles.mainImage} />
 
           <div style={styles.thumbnailRow}>
             {images.map((img, i) => (
@@ -168,29 +170,31 @@ export default function App() {
           </div>
         </div>
 
+        {/* DETAILS */}
         <div style={styles.detailsColumn}>
           <p style={styles.category}>SUN PROTECTION</p>
 
           <h1 style={styles.productTitle}>
-            Haetsal Veil™ SPF 50+ PA++++
+            Haetsal Veil™ Spray SPF 50+ PA++++
           </h1>
 
-          <p style={styles.koreanName}>햇살베일™ 선스크린</p>
+          <p style={styles.koreanName}>햇살베일™ 선스프레이</p>
 
           <p style={styles.subtitle}>
-            An invisible, breathable sunscreen designed for everyday comfort —
-            even in humid and tropical climates.
+            A fine, ultra-light sunscreen mist designed for effortless
+            reapplication — anytime, anywhere.
           </p>
 
-          <p style={styles.price}>₹2,499</p>
+          <p style={styles.price}>₹2,699</p>
 
           <button style={styles.buyButton} onClick={handleAddToCart}>
             Add to Cart
           </button>
 
+          {/* BADGES */}
           <div style={styles.badges}>
             <span>No White Cast</span>
-            <span>Dermatologist Tested</span>
+            <span>On-the-Go Friendly</span>
             <span>Daily Wear</span>
           </div>
 
@@ -198,24 +202,25 @@ export default function App() {
           <div style={styles.quickUse}>
             <h4 style={styles.quickUseTitle}>How to Use</h4>
             <p>
-              Apply two finger-lengths evenly to face and neck as the final step
-              of your morning skincare routine.
+              Hold the spray 10–15 cm away and mist evenly over face and neck
+              as the final step of your morning routine.
             </p>
             <p>
-              Reapply every 2–3 hours during sun exposure or outdoor activity.
+              Reapply every 2–3 hours, especially after sweating or outdoor
+              exposure.
             </p>
           </div>
 
           {/* BENEFITS */}
           <div style={styles.benefits}>
-            <h4 style={styles.benefitsTitle}>Benefits</h4>
+            <h4 style={styles.benefitsTitle}>Why You’ll Love It</h4>
             <ul style={styles.benefitsList}>
               <li>SPF 50+ PA++++ broad-spectrum protection</li>
-              <li>No white cast on medium to deeper skin tones</li>
-              <li>Lightweight, breathable, non-greasy texture</li>
-              <li>Comfortable for humid and tropical climates</li>
-              <li>Makeup-friendly, skin-like finish</li>
-              <li>Non-comedogenic and suitable for daily use</li>
+              <li>Ultra-fine mist — no heavy or greasy feel</li>
+              <li>Perfect for reapplication over makeup</li>
+              <li>Zero white cast on all skin tones</li>
+              <li>Ideal for humid and tropical climates</li>
+              <li>Non-comedogenic and breathable</li>
             </ul>
           </div>
         </div>
@@ -227,6 +232,7 @@ export default function App() {
 }
 
 /* ---------------- STYLES ---------------- */
+
 const styles = {
   header: {
     position: "sticky",
@@ -248,6 +254,7 @@ const styles = {
     background: "transparent",
     padding: "6px 16px",
     borderRadius: 22,
+    cursor: "pointer",
   },
   cart: { cursor: "pointer" },
 
@@ -265,11 +272,17 @@ const styles = {
   imageColumn: { flex: 1, minWidth: 320 },
   mainImage: { width: "100%", borderRadius: 24 },
   thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
-  thumbnail: { width: 74, height: 74, borderRadius: 14, cursor: "pointer" },
+  thumbnail: {
+    width: 74,
+    height: 74,
+    borderRadius: 14,
+    cursor: "pointer",
+    objectFit: "cover",
+  },
 
   detailsColumn: { flex: 1, minWidth: 320 },
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
-  productTitle: { fontSize: 42, fontWeight: 500, marginTop: 6 },
+  productTitle: { fontSize: 40, fontWeight: 500, marginTop: 6 },
   koreanName: { fontSize: 16, color: "#777", marginBottom: 18 },
   subtitle: { fontSize: 16, color: "#555", lineHeight: 1.8 },
   price: { fontSize: 24, margin: "26px 0" },
@@ -281,6 +294,7 @@ const styles = {
     color: "#fff",
     border: "none",
     fontSize: 15,
+    cursor: "pointer",
   },
 
   badges: {
@@ -289,6 +303,7 @@ const styles = {
     fontSize: 13,
     marginTop: 26,
     color: "#555",
+    flexWrap: "wrap",
   },
 
   quickUse: {

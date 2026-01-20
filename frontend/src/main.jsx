@@ -32,6 +32,7 @@ import Dashboard from "./admin/Dashboard";
 /* -------- CONTEXT -------- */
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import ProductSpray from "./pages/ProductSpray";
 
 /* -------- PROTECTION -------- */
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -62,6 +63,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/terms" element={<Terms />} />
             <Route path="/refund" element={<Refund />} />
             <Route path="/shipping" element={<Shipping />} />
+            <Route path="/product/spray" element={<ProductSpray />} />
 
             {/* ---------- CART ---------- */}
             <Route

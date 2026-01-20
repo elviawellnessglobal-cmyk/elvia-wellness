@@ -7,7 +7,8 @@ export default function Home() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setVisible(true), 120);
+    const t = setTimeout(() => setVisible(true), 120);
+    return () => clearTimeout(t);
   }, []);
 
   return (
@@ -22,10 +23,13 @@ export default function Home() {
           transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
         }}
       >
-        {/* HERO */}
+        {/* ---------------- HERO ---------------- */}
         <section style={styles.hero}>
           {/* BRAND BADGE */}
           <div style={styles.brandBadge}>KAEORN</div>
+          <div style={styles.brandTageline}>
+            Because care should feel kind
+          </div>
 
           <h1 style={styles.heroTitle}>
             Quiet luxury skincare,
@@ -38,20 +42,30 @@ export default function Home() {
             nourish, and elevate your daily ritual.
           </p>
 
-          <button
-            style={styles.primaryBtn}
-            onClick={() => navigate("/product")}
-          >
-            Discover ÉCLATIS™
-          </button>
+          {/* PRODUCT CTA */}
+          <div style={styles.productButton}>
+            <button
+              style={styles.primaryBtn}
+              onClick={() => navigate("/product")}
+            >
+              Discover Haetsal Veil™ Cream
+            </button>
+
+            <button
+              style={styles.primaryBtnOutline}
+              onClick={() => navigate("/product/spray")}
+            >
+              Discover Haetsal Veil™ Spray
+            </button>
+          </div>
         </section>
 
-        {/* TRUST STRIP */}
+        {/* ---------------- TRUST STRIP ---------------- */}
         <section style={styles.trust}>
           {[
             "SPF 50+ Broad Spectrum",
             "No White Cast",
-            "Dermatologically Tested",
+            "Smooth Texture",
             "Made in India",
             "Daily Use Formula",
           ].map((item) => (
@@ -61,7 +75,7 @@ export default function Home() {
           ))}
         </section>
 
-        {/* PHILOSOPHY */}
+        {/* ---------------- PHILOSOPHY ---------------- */}
         <section style={styles.philosophy}>
           <h2 style={styles.sectionTitle}>OUR PHILOSOPHY</h2>
           <p style={styles.sectionText}>
@@ -75,6 +89,7 @@ export default function Home() {
 }
 
 /* ---------------- STYLES ---------------- */
+
 const styles = {
   page: {
     fontFamily: "Inter, sans-serif",
@@ -99,7 +114,14 @@ const styles = {
     borderRadius: "999px",
     background: "rgba(0,0,0,0.04)",
     color: "#111",
-    marginBottom: "26px",
+    marginBottom: "18px",
+  },
+
+  brandTageline: {
+    fontFamily: "Poppins, Inter, sans-serif",
+    fontSize: "14px",
+    color: "#666",
+    marginBottom: "22px",
   },
 
   heroTitle: {
@@ -114,7 +136,14 @@ const styles = {
     fontSize: "16px",
     lineHeight: 1.8,
     color: "#666",
-    marginBottom: "40px",
+    marginBottom: "44px",
+  },
+
+  productButton: {
+    display: "flex",
+    gap: "18px",
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
 
   primaryBtn: {
@@ -123,6 +152,16 @@ const styles = {
     background: "#111",
     color: "#fff",
     border: "none",
+    cursor: "pointer",
+    fontSize: "15px",
+  },
+
+  primaryBtnOutline: {
+    padding: "16px 34px",
+    borderRadius: "40px",
+    background: "transparent",
+    color: "#111",
+    border: "1px solid #111",
     cursor: "pointer",
     fontSize: "15px",
   },
