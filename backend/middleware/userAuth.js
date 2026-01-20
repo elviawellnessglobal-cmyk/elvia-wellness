@@ -4,17 +4,19 @@ module.exports = function userAuth(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    req.user = null;
-    return next(); // allow guest orders
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
   try {
     const token = authHeader.split(" ")[1];
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.userId;
+
+    // ✅ FIX: token contains `id`, not `userId`
+    req.user = decoded.id;
+
     next();
   } catch (error) {
-    req.user = null;
-    next();
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
