@@ -7,20 +7,34 @@ export default function Support() {
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState("open");
 
-  /* LOAD EXISTING CHAT */
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE}/api/chat/my`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("kaeorn_token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((chat) => {
+    let interval;
+
+    async function loadChat() {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE}/api/chat/my`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("kaeorn_token")}`,
+            },
+          }
+        );
+
+        if (!res.ok) return;
+        const chat = await res.json();
+
         if (chat) {
           setMessages(chat.messages || []);
           setStatus(chat.status || "open");
         }
-      });
+      } catch {}
+    }
+
+    loadChat();
+    interval = setInterval(loadChat, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   async function sendMessage() {
@@ -111,17 +125,8 @@ export default function Support() {
 /* -------- STYLES -------- */
 
 const styles = {
-  page: {
-    maxWidth: 520,
-    margin: "40px auto",
-    padding: "0 16px",
-  },
-
-  sub: {
-    color: "#666",
-    marginBottom: 10,
-  },
-
+  page: { maxWidth: 520, margin: "40px auto", padding: "0 16px" },
+  sub: { color: "#666", marginBottom: 10 },
   statusBadge: {
     display: "inline-block",
     marginBottom: 18,
@@ -130,13 +135,11 @@ const styles = {
     fontSize: 12,
     fontWeight: 500,
   },
-
   chatBox: {
     border: "1px solid #eee",
     borderRadius: 22,
     padding: 20,
   },
-
   messages: {
     display: "flex",
     flexDirection: "column",
@@ -144,7 +147,6 @@ const styles = {
     minHeight: 280,
     marginBottom: 16,
   },
-
   msg: {
     padding: "12px 16px",
     borderRadius: 16,
@@ -152,7 +154,6 @@ const styles = {
     fontSize: 14.5,
     lineHeight: 1.6,
   },
-
   inputRow: {
     display: "flex",
     gap: 10,
@@ -161,14 +162,12 @@ const styles = {
     background: "#fff",
     paddingTop: 10,
   },
-
   input: {
     flex: 1,
     padding: 12,
     borderRadius: 14,
     border: "1px solid #ddd",
   },
-
   sendBtn: {
     padding: "12px 18px",
     borderRadius: 14,

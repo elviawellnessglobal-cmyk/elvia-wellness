@@ -1,23 +1,36 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function ChatDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [chat, setChat] = useState(null);
   const [reply, setReply] = useState("");
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE}/api/chat/admin/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
-      })
-      .then(setChat)
-      .catch(() => setChat(null));
+    let interval;
+
+    async function loadChat() {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE}/api/chat/admin/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+          }
+        );
+
+        if (!res.ok) return;
+        const data = await res.json();
+        setChat(data);
+      } catch {}
+    }
+
+    loadChat(); // initial
+    interval = setInterval(loadChat, 5000); // 🔁 auto refresh
+
+    return () => clearInterval(interval);
   }, [id]);
 
   async function sendReply() {
@@ -53,6 +66,24 @@ export default function ChatDetail() {
 
     const updated = await res.json();
     setChat(updated);
+  }
+
+  async function deleteChat() {
+    if (!window.confirm("Delete this chat permanently?")) return;
+
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE}/api/chat/admin/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      }
+    );
+
+    if (res.ok) {
+      navigate("/admin/chats");
+    }
   }
 
   if (!chat) {
@@ -94,6 +125,12 @@ export default function ChatDetail() {
           {chat.status !== "resolved" && (
             <button style={styles.resolveBtn} onClick={markResolved}>
               Mark as Resolved
+            </button>
+          )}
+
+          {chat.status === "resolved" && (
+            <button style={styles.deleteBtn} onClick={deleteChat}>
+              Delete Chat
             </button>
           )}
         </div>
@@ -145,12 +182,7 @@ export default function ChatDetail() {
 /* -------- STYLES -------- */
 
 const styles = {
-  page: {
-    maxWidth: 720,
-    margin: "40px auto",
-    padding: "0 20px",
-  },
-
+  page: { maxWidth: 720, margin: "40px auto", padding: "0 20px" },
   userInfo: {
     marginBottom: 20,
     padding: 16,
@@ -158,31 +190,29 @@ const styles = {
     background: "#fafafa",
     border: "1px solid #eee",
   },
-
-  statusRow: {
-    marginTop: 12,
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
-  },
-
+  statusRow: { marginTop: 12, display: "flex", gap: 12 },
   statusBadge: {
     padding: "6px 14px",
     borderRadius: 999,
     fontSize: 12,
     fontWeight: 500,
   },
-
   resolveBtn: {
     padding: "8px 14px",
     borderRadius: 12,
-    border: "1px solid #111",
     background: "#111",
     color: "#fff",
-    fontSize: 12,
+    border: "1px solid #111",
     cursor: "pointer",
   },
-
+  deleteBtn: {
+    padding: "8px 14px",
+    borderRadius: 12,
+    background: "transparent",
+    color: "#8b1e1e",
+    border: "1px solid #8b1e1e",
+    cursor: "pointer",
+  },
   chatBox: {
     display: "flex",
     flexDirection: "column",
@@ -193,7 +223,6 @@ const styles = {
     border: "1px solid #eee",
     marginBottom: 18,
   },
-
   msg: {
     maxWidth: "70%",
     padding: "12px 16px",
@@ -201,19 +230,13 @@ const styles = {
     fontSize: 14.5,
     lineHeight: 1.6,
   },
-
-  inputRow: {
-    display: "flex",
-    gap: 12,
-  },
-
+  inputRow: { display: "flex", gap: 12 },
   input: {
     flex: 1,
     padding: 14,
     borderRadius: 14,
     border: "1px solid #ddd",
   },
-
   sendBtn: {
     padding: "14px 22px",
     borderRadius: 14,

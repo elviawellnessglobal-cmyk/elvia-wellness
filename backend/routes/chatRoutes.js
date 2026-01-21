@@ -58,12 +58,31 @@ router.post("/admin/reply/:id", adminAuth, async (req, res) => {
   await chat.save();
   res.json(chat);
 });
-/* ADMIN: MARK CHAT RESOLVED */
+
+/* ADMIN: MARK RESOLVED */
 router.post("/admin/resolve/:id", adminAuth, async (req, res) => {
   const chat = await Chat.findById(req.params.id);
   chat.status = "resolved";
   await chat.save();
   res.json(chat);
+});
+
+/* ADMIN: DELETE CHAT (ONLY IF RESOLVED) */
+router.delete("/admin/:id", adminAuth, async (req, res) => {
+  const chat = await Chat.findById(req.params.id);
+
+  if (!chat) {
+    return res.status(404).json({ message: "Chat not found" });
+  }
+
+  if (chat.status !== "resolved") {
+    return res
+      .status(400)
+      .json({ message: "Resolve chat before deleting" });
+  }
+
+  await chat.deleteOne();
+  res.json({ success: true });
 });
 
 module.exports = router;
