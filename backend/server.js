@@ -36,7 +36,14 @@ app.use(
   })
 );
 
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api/chat/send") {
+    next(); // ❗ let multer handle it
+  } else {
+    express.json()(req, res, next);
+  }
+});
+
 
 /* ---------------- HEALTH ---------------- */
 app.get("/", (req, res) => {

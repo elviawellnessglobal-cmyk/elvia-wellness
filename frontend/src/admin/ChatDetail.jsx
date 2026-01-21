@@ -6,6 +6,7 @@ export default function ChatDetail() {
   const navigate = useNavigate();
   const [chat, setChat] = useState(null);
   const [reply, setReply] = useState("");
+  const [zoomImg, setZoomImg] = useState(null);
 
   useEffect(() => {
     let interval;
@@ -20,16 +21,14 @@ export default function ChatDetail() {
             },
           }
         );
-
         if (!res.ok) return;
         const data = await res.json();
         setChat(data);
       } catch {}
     }
 
-    loadChat(); // initial
-    interval = setInterval(loadChat, 5000); // 🔁 auto refresh
-
+    loadChat();
+    interval = setInterval(loadChat, 5000);
     return () => clearInterval(interval);
   }, [id]);
 
@@ -81,20 +80,10 @@ export default function ChatDetail() {
       }
     );
 
-    if (res.ok) {
-      navigate("/admin/chats");
-    }
+    if (res.ok) navigate("/admin/chats");
   }
 
-  if (!chat) {
-    return (
-      <div style={{ padding: 40 }}>
-        <p style={{ color: "#777" }}>
-          Unable to load chat. Please check admin access.
-        </p>
-      </div>
-    );
-  }
+  if (!chat) return null;
 
   return (
     <div style={styles.page}>
@@ -103,7 +92,6 @@ export default function ChatDetail() {
       <div style={styles.userInfo}>
         <strong>{chat.user?.name}</strong>
         <p>{chat.user?.email}</p>
-        <small>User ID: {chat.user?._id}</small>
 
         <div style={styles.statusRow}>
           <span
@@ -124,7 +112,7 @@ export default function ChatDetail() {
 
           {chat.status !== "resolved" && (
             <button style={styles.resolveBtn} onClick={markResolved}>
-              Mark as Resolved
+              Mark Resolved
             </button>
           )}
 
@@ -137,81 +125,79 @@ export default function ChatDetail() {
       </div>
 
       <div style={styles.chatBox}>
-        {Array.isArray(chat.messages) &&
-          chat.messages.map((m, i) => (
-            <div
-              key={i}
-              style={{
-                ...styles.msg,
-                alignSelf:
-                  m.sender === "admin"
-                    ? "flex-end"
-                    : "flex-start",
-                background:
-                  m.sender === "admin"
-                    ? "#111"
-                    : "rgba(0,0,0,0.04)",
-                color:
-                  m.sender === "admin" ? "#fff" : "#111",
-                borderTopRightRadius:
-                  m.sender === "admin" ? 4 : 16,
-                borderTopLeftRadius:
-                  m.sender === "admin" ? 16 : 4,
-              }}
-            >
-              {m.text}
-            </div>
-          ))}
+        {chat.messages.map((m, i) => (
+          <div
+            key={i}
+            style={{
+              ...styles.msg,
+              alignSelf:
+                m.sender === "admin" ? "flex-end" : "flex-start",
+              background:
+                m.sender === "admin"
+                  ? "#111"
+                  : "rgba(0,0,0,0.04)",
+              color: m.sender === "admin" ? "#fff" : "#111",
+            }}
+          >
+            {m.text}
+            {m.image && (
+              <img
+                src={m.image}
+                alt=""
+                style={styles.image}
+                onClick={() => setZoomImg(m.image)}
+              />
+            )}
+          </div>
+        ))}
       </div>
 
       <div style={styles.inputRow}>
         <input
           value={reply}
           onChange={(e) => setReply(e.target.value)}
-          placeholder="Type your reply..."
+          placeholder="Type reply…"
           style={styles.input}
         />
         <button style={styles.sendBtn} onClick={sendReply}>
           Reply
         </button>
       </div>
+
+      {zoomImg && (
+        <div style={styles.modal} onClick={() => setZoomImg(null)}>
+          <img src={zoomImg} alt="" style={styles.modalImg} />
+        </div>
+      )}
     </div>
   );
 }
 
-/* -------- STYLES -------- */
-
+/* STYLES */
 const styles = {
   page: { maxWidth: 720, margin: "40px auto", padding: "0 20px" },
   userInfo: {
-    marginBottom: 20,
     padding: 16,
     borderRadius: 16,
     background: "#fafafa",
     border: "1px solid #eee",
+    marginBottom: 20,
   },
   statusRow: { marginTop: 12, display: "flex", gap: 12 },
-  statusBadge: {
-    padding: "6px 14px",
-    borderRadius: 999,
-    fontSize: 12,
-    fontWeight: 500,
-  },
+  statusBadge: { padding: "6px 14px", borderRadius: 999, fontSize: 12 },
   resolveBtn: {
     padding: "8px 14px",
     borderRadius: 12,
     background: "#111",
     color: "#fff",
-    border: "1px solid #111",
-    cursor: "pointer",
+    border: "none",
   },
   deleteBtn: {
     padding: "8px 14px",
     borderRadius: 12,
-    background: "transparent",
-    color: "#8b1e1e",
     border: "1px solid #8b1e1e",
-    cursor: "pointer",
+    color: "#8b1e1e",
+    background: "transparent",
   },
   chatBox: {
     display: "flex",
@@ -227,8 +213,12 @@ const styles = {
     maxWidth: "70%",
     padding: "12px 16px",
     borderRadius: 16,
-    fontSize: 14.5,
-    lineHeight: 1.6,
+  },
+  image: {
+    marginTop: 8,
+    maxWidth: 160,
+    borderRadius: 12,
+    cursor: "zoom-in",
   },
   inputRow: { display: "flex", gap: 12 },
   input: {
@@ -243,6 +233,19 @@ const styles = {
     background: "#111",
     color: "#fff",
     border: "none",
-    cursor: "pointer",
+  },
+  modal: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.85)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 999,
+  },
+  modalImg: {
+    maxWidth: "90%",
+    maxHeight: "90%",
+    borderRadius: 18,
   },
 };

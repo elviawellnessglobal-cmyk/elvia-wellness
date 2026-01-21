@@ -8,6 +8,7 @@ export default function Support() {
   const [status, setStatus] = useState("open");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   /* LOAD CHAT (AUTO REFRESH) */
   useEffect(() => {
@@ -36,11 +37,9 @@ export default function Support() {
 
     loadChat();
     interval = setInterval(loadChat, 5000);
-
     return () => clearInterval(interval);
   }, []);
 
-  /* IMAGE PICK */
   function handleImage(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -49,47 +48,51 @@ export default function Support() {
     setPreview(URL.createObjectURL(file));
   }
 
-  /* SEND MESSAGE */
   async function sendMessage() {
+    if (status === "resolved") return;
     if (!text.trim() && !image) return;
+
+    setUploading(true);
 
     const formData = new FormData();
     formData.append("message", text);
     if (image) formData.append("image", image);
 
-    const res = await fetch(
-      `${import.meta.env.VITE_API_BASE}/api/chat/send`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("kaeorn_token")}`,
-        },
-        body: formData,
-      }
-    );
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/chat/send`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("kaeorn_token")}`,
+          },
+          body: formData,
+        }
+      );
 
-    const chat = await res.json();
-    setMessages(chat.messages);
-    setStatus(chat.status);
-    setText("");
-    setImage(null);
-    setPreview(null);
+      const chat = await res.json();
+      setMessages(chat.messages);
+      setStatus(chat.status);
+      setText("");
+      setImage(null);
+      setPreview(null);
+    } finally {
+      setUploading(false);
+    }
   }
 
   if (!user) return null;
 
+  const disabled = status === "resolved" || uploading;
+
   return (
     <div style={styles.page}>
-      {/* ---------- INFO ---------- */}
+      {/* INFO */}
       <div style={styles.infoCard}>
-        <h2 style={styles.title}>KAEORN Support</h2>
-        <p style={styles.subtitle}>
-          This space is for genuine support requests only.
-        </p>
-
+        <h2>KAEORN Support</h2>
         <p style={styles.note}>
-          You may upload images if your product arrived damaged or incorrect.
-          Please allow some time for our team to carefully review your request.
+          Use this space only for order issues, damaged products, or incorrect
+          deliveries. Please be patient — our team carefully reviews every case.
         </p>
 
         <span
@@ -102,12 +105,12 @@ export default function Support() {
           }}
         >
           {status === "resolved"
-            ? "Resolved"
+            ? "Resolved — chat closed"
             : "Support in progress"}
         </span>
       </div>
 
-      {/* ---------- CHAT ---------- */}
+      {/* CHAT */}
       <div style={styles.chatBox}>
         <div style={styles.messages}>
           {messages.map((m, i) => (
@@ -122,25 +125,16 @@ export default function Support() {
                     ? "#111"
                     : "rgba(0,0,0,0.04)",
                 color: m.sender === "user" ? "#fff" : "#111",
-                borderTopRightRadius:
-                  m.sender === "user" ? 4 : 16,
-                borderTopLeftRadius:
-                  m.sender === "user" ? 16 : 4,
               }}
             >
               {m.text}
               {m.image && (
-                <img
-                  src={m.image}
-                  alt="Proof"
-                  style={styles.image}
-                />
+                <img src={m.image} alt="Proof" style={styles.image} />
               )}
             </div>
           ))}
         </div>
 
-        {/* ---------- PREVIEW ---------- */}
         {preview && (
           <div style={styles.previewWrap}>
             <img src={preview} alt="Preview" style={styles.preview} />
@@ -156,14 +150,14 @@ export default function Support() {
           </div>
         )}
 
-        {/* ---------- INPUT ---------- */}
         <div style={styles.inputRow}>
-          <label style={styles.attachBtn}>
+          <label style={{ ...styles.attachBtn, opacity: disabled ? 0.4 : 1 }}>
             📎
             <input
               type="file"
               accept="image/*"
               hidden
+              disabled={disabled}
               onChange={handleImage}
             />
           </label>
@@ -171,12 +165,21 @@ export default function Support() {
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Type your message..."
+            disabled={disabled}
+            placeholder={
+              status === "resolved"
+                ? "Chat closed"
+                : "Type your message..."
+            }
             style={styles.input}
           />
 
-          <button style={styles.sendBtn} onClick={sendMessage}>
-            Send
+          <button
+            style={{ ...styles.sendBtn, opacity: disabled ? 0.6 : 1 }}
+            disabled={disabled}
+            onClick={sendMessage}
+          >
+            {uploading ? "Uploading…" : "Send"}
           </button>
         </div>
       </div>
@@ -184,16 +187,9 @@ export default function Support() {
   );
 }
 
-/* -------- STYLES -------- */
-
+/* STYLES */
 const styles = {
-  page: {
-    maxWidth: 640,
-    margin: "40px auto",
-    padding: "0 16px",
-    fontFamily: "Inter, sans-serif",
-  },
-
+  page: { maxWidth: 640, margin: "40px auto", padding: "0 16px" },
   infoCard: {
     border: "1px solid #eee",
     borderRadius: 22,
@@ -201,11 +197,7 @@ const styles = {
     marginBottom: 28,
     background: "#fafafa",
   },
-
-  title: { fontSize: 20, fontWeight: 500 },
-  subtitle: { color: "#666", marginBottom: 10 },
   note: { fontSize: 13.5, color: "#555", lineHeight: 1.6 },
-
   statusBadge: {
     display: "inline-block",
     marginTop: 14,
@@ -214,13 +206,7 @@ const styles = {
     fontSize: 12,
     fontWeight: 500,
   },
-
-  chatBox: {
-    border: "1px solid #eee",
-    borderRadius: 22,
-    padding: 20,
-  },
-
+  chatBox: { border: "1px solid #eee", borderRadius: 22, padding: 20 },
   messages: {
     display: "flex",
     flexDirection: "column",
@@ -228,69 +214,35 @@ const styles = {
     minHeight: 260,
     marginBottom: 16,
   },
-
   msg: {
     padding: "12px 16px",
     borderRadius: 16,
     maxWidth: "78%",
     fontSize: 14.5,
-    lineHeight: 1.6,
   },
-
-  image: {
-    marginTop: 8,
-    maxWidth: 180,
-    borderRadius: 12,
-    display: "block",
-  },
-
-  previewWrap: {
-    position: "relative",
-    width: 120,
-    marginBottom: 10,
-  },
-
-  preview: {
-    width: "100%",
-    borderRadius: 12,
-  },
-
+  image: { marginTop: 8, maxWidth: 180, borderRadius: 12 },
+  previewWrap: { position: "relative", width: 120, marginBottom: 10 },
+  preview: { width: "100%", borderRadius: 12 },
   removeImg: {
     position: "absolute",
     top: -8,
     right: -8,
     background: "#111",
     color: "#fff",
-    border: "none",
     borderRadius: "50%",
     width: 22,
     height: 22,
+    border: "none",
     cursor: "pointer",
   },
-
-  inputRow: {
-    display: "flex",
-    gap: 10,
-    alignItems: "center",
-    position: "sticky",
-    bottom: 0,
-    background: "#fff",
-    paddingTop: 10,
-  },
-
-  attachBtn: {
-    fontSize: 20,
-    cursor: "pointer",
-    padding: "6px 10px",
-  },
-
+  inputRow: { display: "flex", gap: 10, alignItems: "center" },
+  attachBtn: { fontSize: 20, cursor: "pointer" },
   input: {
     flex: 1,
     padding: 12,
     borderRadius: 14,
     border: "1px solid #ddd",
   },
-
   sendBtn: {
     padding: "12px 18px",
     borderRadius: 14,
