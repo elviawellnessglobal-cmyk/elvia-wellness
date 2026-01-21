@@ -16,8 +16,14 @@ export default function Sidebar() {
         <button onClick={() => navigate("/admin/dashboard")}>
           Dashboard
         </button>
+
         <button onClick={() => navigate("/admin/orders")}>
           Orders
+        </button>
+
+        {/* ✅ NEW: SUPPORT CHATS */}
+        <button onClick={() => navigate("/admin/chats")}>
+          Support Chats
         </button>
       </nav>
 
@@ -44,6 +50,7 @@ const styles = {
   brand: {
     letterSpacing: "3px",
     fontWeight: "500",
+    marginBottom: 40,
   },
 
   nav: {
@@ -57,5 +64,6 @@ const styles = {
     background: "none",
     color: "#999",
     cursor: "pointer",
+    marginTop: 40,
   },
 };

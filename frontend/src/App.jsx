@@ -4,8 +4,6 @@ import { useAuth } from "./context/AuthContext";
 import { useCart } from "./context/CartContext";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
-import ProfileMenu from "./components/ProfileMenu";
-import { Instagram, Youtube } from "lucide-react";
 
 /* ---------------- CLOUDINARY IMAGES ---------------- */
 const img1 =
@@ -28,15 +26,14 @@ export default function App() {
   const { user } = useAuth();
   const { addToCart } = useCart();
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  useEffect(() => {
-    const resize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, []);
-
   const productRef = useRef(null);
   const [visible, setVisible] = useState(false);
+  const [activeImage, setActiveImage] = useState(images[0]);
+  const [authType, setAuthType] = useState(null);
+
+  // NEW: add-to-cart feedback
+  const [added, setAdded] = useState(false);
+
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => e.isIntersecting && setVisible(true),
@@ -47,15 +44,12 @@ export default function App() {
   }, []);
 
   const product = {
-    id: "haetsal-veil-spf50",
+    id: "haetsal-veil-spf50", // ❗ DO NOT CHANGE
     name: "Haetsal Veil™ SPF 50+ PA++++",
     price: 2499,
   };
 
-  const [activeImage, setActiveImage] = useState(images[0]);
-  const [authType, setAuthType] = useState(null);
-
-  function handleAddToCart() {
+  function handleOrderNow() {
     if (!user) {
       setAuthType("login");
       return;
@@ -70,12 +64,20 @@ export default function App() {
     navigate("/cart");
   }
 
-  function handleCartClick() {
+  function handleAddToCartOnly() {
     if (!user) {
       setAuthType("login");
       return;
     }
-    navigate("/cart");
+
+    addToCart({
+      ...product,
+      image: activeImage,
+      quantity: 1,
+    });
+
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2200);
   }
 
   return (
@@ -84,65 +86,7 @@ export default function App() {
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
 
-      {/* ---------------- HEADER ---------------- */}
-      <header style={styles.header}>
-        <h2 style={styles.logo} onClick={() => navigate("/")}>
-          KAEORN
-        </h2>
-
-        <div style={styles.headerRight}>
-          {!isMobile ? (
-            <>
-              <a
-                href="https://www.instagram.com/elviawellness/"
-                target="_blank"
-                rel="noreferrer"
-                style={styles.link}
-              >
-                Instagram
-              </a>
-              <a
-                href="https://www.youtube.com/@ElviaWellness"
-                target="_blank"
-                rel="noreferrer"
-                style={styles.link}
-              >
-                YouTube
-              </a>
-            </>
-          ) : (
-            <>
-              <Instagram size={18} />
-              <Youtube size={18} />
-            </>
-          )}
-
-          {!user ? (
-            <>
-              <button
-                style={styles.authBtn}
-                onClick={() => setAuthType("login")}
-              >
-                Login
-              </button>
-              <button
-                style={styles.authBtn}
-                onClick={() => setAuthType("signup")}
-              >
-                Sign up
-              </button>
-            </>
-          ) : (
-            <ProfileMenu />
-          )}
-
-          <span style={styles.cart} onClick={handleCartClick}>
-            🛒
-          </span>
-        </div>
-      </header>
-
-      {/* ---------------- PRODUCT HERO ---------------- */}
+      {/* ---------------- PRODUCT SECTION ---------------- */}
       <section
         ref={productRef}
         style={{
@@ -150,14 +94,20 @@ export default function App() {
           ...(visible ? styles.show : styles.hide),
         }}
       >
+        {/* IMAGES */}
         <div style={styles.imageColumn}>
-          <img src={activeImage} style={styles.mainImage} />
+          <img
+            src={activeImage}
+            alt={product.name}
+            style={styles.mainImage}
+          />
 
           <div style={styles.thumbnailRow}>
             {images.map((img, i) => (
               <img
                 key={i}
                 src={img}
+                alt=""
                 onClick={() => setActiveImage(img)}
                 style={{
                   ...styles.thumbnail,
@@ -168,6 +118,7 @@ export default function App() {
           </div>
         </div>
 
+        {/* DETAILS */}
         <div style={styles.detailsColumn}>
           <p style={styles.category}>SUN PROTECTION</p>
 
@@ -175,48 +126,87 @@ export default function App() {
             Haetsal Veil™ SPF 50+ PA++++
           </h1>
 
-          <p style={styles.koreanName}>햇살베일™ 선스크린</p>
+          <p style={styles.koreanName}>햇살베일™ 선크림</p>
 
           <p style={styles.subtitle}>
-            An invisible, breathable sunscreen designed for everyday comfort —
-            even in humid and tropical climates.
+            A weightless, skin-perfecting sunscreen designed for daily wear
+            with invisible protection and lasting comfort.
           </p>
 
           <p style={styles.price}>₹2,499</p>
 
-          <button style={styles.buyButton} onClick={handleAddToCart}>
-            Add to Cart
-          </button>
+          {/* CTA */}
+          <div style={styles.ctaRow}>
+            <button style={styles.buyButton} onClick={handleOrderNow}>
+              Order Now
+            </button>
 
+            <div style={{ position: "relative" }}>
+              <button
+                style={{
+                  ...styles.addToCartBtn,
+                  ...(added ? styles.addedBtn : {}),
+                }}
+                onClick={handleAddToCartOnly}
+              >
+                {added ? "Added ✓" : "Add to Cart"}
+              </button>
+
+              {added && (
+                <div style={styles.toast}>
+                  Added to cart · Open <strong>Profile → Cart</strong>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* BADGES */}
           <div style={styles.badges}>
             <span>No White Cast</span>
-            <span>Dermatologist Tested</span>
             <span>Daily Wear</span>
+            <span>Lightweight</span>
           </div>
 
           {/* HOW TO USE */}
           <div style={styles.quickUse}>
             <h4 style={styles.quickUseTitle}>How to Use</h4>
             <p>
-              Apply two finger-lengths evenly to face and neck as the final step
-              of your morning skincare routine.
+              Apply evenly as the final step of your morning skincare routine.
             </p>
             <p>
-              Reapply every 2–3 hours during sun exposure or outdoor activity.
+              Reapply every 2–3 hours when exposed to sunlight.
             </p>
           </div>
 
           {/* BENEFITS */}
           <div style={styles.benefits}>
-            <h4 style={styles.benefitsTitle}>Benefits</h4>
+            <h4 style={styles.benefitsTitle}>Why You’ll Love It</h4>
             <ul style={styles.benefitsList}>
               <li>SPF 50+ PA++++ broad-spectrum protection</li>
-              <li>No white cast on medium to deeper skin tones</li>
-              <li>Lightweight, breathable, non-greasy texture</li>
-              <li>Comfortable for humid and tropical climates</li>
-              <li>Makeup-friendly, skin-like finish</li>
-              <li>Non-comedogenic and suitable for daily use</li>
+              <li>Invisible finish on all skin tones</li>
+              <li>Comfortable, non-greasy texture</li>
+              <li>Perfect under makeup</li>
+              <li>Ideal for Indian climate</li>
             </ul>
+          </div>
+
+          {/* RECOMMENDED SPRAY */}
+          <div style={styles.recommendBox}>
+            <p style={styles.recommendText}>
+              Need effortless reapplication when you’re outdoors?
+              <br />
+              <strong>
+                Haetsal Veil™ Spray is designed for quick, mess-free
+                touch-ups — anytime, anywhere.
+              </strong>
+            </p>
+
+            <button
+              style={styles.recommendBtn}
+              onClick={() => navigate("/product/spray")}
+            >
+              View Reapplication Spray
+            </button>
           </div>
         </div>
       </section>
@@ -227,30 +217,8 @@ export default function App() {
 }
 
 /* ---------------- STYLES ---------------- */
-const styles = {
-  header: {
-    position: "sticky",
-    top: 0,
-    background: "rgba(255,255,255,0.92)",
-    backdropFilter: "blur(12px)",
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "16px 22px",
-    maxWidth: 1200,
-    margin: "0 auto",
-    zIndex: 10,
-  },
-  logo: { letterSpacing: 3, cursor: "pointer", fontWeight: 500 },
-  headerRight: { display: "flex", gap: 18, alignItems: "center" },
-  link: { color: "#111", textDecoration: "none", fontSize: 14 },
-  authBtn: {
-    border: "1px solid #111",
-    background: "transparent",
-    padding: "6px 16px",
-    borderRadius: 22,
-  },
-  cart: { cursor: "pointer" },
 
+const styles = {
   productSection: {
     display: "flex",
     flexWrap: "wrap",
@@ -259,20 +227,30 @@ const styles = {
     margin: "56px auto",
     padding: "0 24px",
   },
+
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
 
   imageColumn: { flex: 1, minWidth: 320 },
   mainImage: { width: "100%", borderRadius: 24 },
   thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
-  thumbnail: { width: 74, height: 74, borderRadius: 14, cursor: "pointer" },
+
+  thumbnail: {
+    width: 74,
+    height: 74,
+    borderRadius: 14,
+    cursor: "pointer",
+    objectFit: "cover",
+  },
 
   detailsColumn: { flex: 1, minWidth: 320 },
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
-  productTitle: { fontSize: 42, fontWeight: 500, marginTop: 6 },
+  productTitle: { fontSize: 40, fontWeight: 500, marginTop: 6 },
   koreanName: { fontSize: 16, color: "#777", marginBottom: 18 },
   subtitle: { fontSize: 16, color: "#555", lineHeight: 1.8 },
   price: { fontSize: 24, margin: "26px 0" },
+
+  ctaRow: { display: "flex", gap: 16, flexWrap: "wrap" },
 
   buyButton: {
     padding: "16px 34px",
@@ -281,6 +259,37 @@ const styles = {
     color: "#fff",
     border: "none",
     fontSize: 15,
+    cursor: "pointer",
+  },
+
+  addToCartBtn: {
+    padding: "16px 34px",
+    borderRadius: 50,
+    background: "transparent",
+    color: "#111",
+    border: "1px solid #111",
+    fontSize: 15,
+    cursor: "pointer",
+    transition: "all 0.25s ease",
+  },
+
+  addedBtn: {
+    background: "#111",
+    color: "#fff",
+    transform: "scale(0.96)",
+  },
+
+  toast: {
+    position: "absolute",
+    top: "110%",
+    left: 0,
+    background: "#111",
+    color: "#fff",
+    padding: "10px 14px",
+    borderRadius: 14,
+    fontSize: 12.5,
+    marginTop: 8,
+    whiteSpace: "nowrap",
   },
 
   badges: {
@@ -289,6 +298,7 @@ const styles = {
     fontSize: 13,
     marginTop: 26,
     color: "#555",
+    flexWrap: "wrap",
   },
 
   quickUse: {
@@ -298,6 +308,7 @@ const styles = {
     color: "#333",
     maxWidth: 460,
   },
+
   quickUseTitle: {
     fontSize: 16.5,
     fontWeight: 500,
@@ -308,15 +319,42 @@ const styles = {
     marginTop: 34,
     maxWidth: 460,
   },
+
   benefitsTitle: {
     fontSize: 16.5,
     fontWeight: 500,
     marginBottom: 14,
   },
+
   benefitsList: {
     fontSize: 14.5,
     lineHeight: 1.9,
     color: "#444",
     paddingLeft: 18,
+  },
+
+  recommendBox: {
+    marginTop: 44,
+    padding: "26px 28px",
+    borderRadius: 22,
+    background: "rgba(0,0,0,0.03)",
+    maxWidth: 480,
+  },
+
+  recommendText: {
+    fontSize: 15,
+    lineHeight: 1.8,
+    color: "#333",
+    marginBottom: 18,
+  },
+
+  recommendBtn: {
+    padding: "14px 30px",
+    borderRadius: 40,
+    background: "#111",
+    color: "#fff",
+    border: "none",
+    fontSize: 14,
+    cursor: "pointer",
   },
 };

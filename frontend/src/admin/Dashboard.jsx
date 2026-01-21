@@ -58,6 +58,21 @@ export default function Dashboard() {
           inTransit++;
         }
       });
+      <button
+        onClick={() => navigate("/admin/chats")}
+        style={{
+          padding: "18px 26px",
+          borderRadius: 18,
+          border: "1px solid #111",
+          background: "#111",
+          color: "#fff",
+          fontSize: 15,
+          cursor: "pointer",
+        }}
+      >
+        Support Chats
+      </button>
+
 
       setStats({
         totalOrders: orders.length,

@@ -24,7 +24,7 @@ export default function ProfileMenu() {
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      {/* LUXURY PROFILE CIRCLE */}
+      {/* PROFILE CIRCLE */}
       <div
         onClick={() => setOpen(!open)}
         style={{
@@ -58,6 +58,17 @@ export default function ProfileMenu() {
             Addresses
           </button>
 
+          {/* NEW: CART */}
+          <button
+            style={styles.item}
+            onClick={() => {
+              navigate("/cart");
+              setOpen(false);
+            }}
+          >
+            Cart
+          </button>
+
           <div style={styles.divider} />
 
           <button
@@ -81,6 +92,17 @@ export default function ProfileMenu() {
           </button>
 
           <div style={styles.divider} />
+
+
+          <button
+            style={styles.item}
+            onClick={() => {
+              navigate("/support");
+              setOpen(false);
+            }}
+          >
+            Support / Help
+          </button>
 
           <button
             style={{ ...styles.item, color: "#8b1e1e" }}

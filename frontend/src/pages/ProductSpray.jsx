@@ -4,17 +4,18 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
 import Footer from "../components/Footer";
-import ProfileMenu from "../components/ProfileMenu";
-import { Instagram, Youtube } from "lucide-react";
 
-/* ---------------- CLOUDINARY IMAGES (TEMP) ---------------- */
+/* ---------------- CLOUDINARY IMAGES ---------------- */
 const img1 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768909795/ChatGPT_Image_Jan_20_2026_05_18_57_PM_vezq3m.png";
-const img2 ="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910313/ChatGPT_Image_Jan_19_2026_10_47_40_PM_lrcqbq.png";
-const img3 = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910953/ChatGPT_Image_Jan_20_2026_05_37_32_PM_krakt8.png";
-const img4 = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910513/ChatGPT_Image_Jan_20_2026_05_30_21_PM_caczgp.png";
-const img5 = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768911211/ChatGPT_Image_Jan_20_2026_05_40_17_PM_pnnszr.png";
-
+const img2 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910313/ChatGPT_Image_Jan_19_2026_10_47_40_PM_lrcqbq.png";
+const img3 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910953/ChatGPT_Image_Jan_20_2026_05_37_32_PM_krakt8.png";
+const img4 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910513/ChatGPT_Image_Jan_20_2026_05_30_21_PM_caczgp.png";
+const img5 =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768911211/ChatGPT_Image_Jan_20_2026_05_40_17_PM_pnnszr.png";
 
 const images = [img1, img2, img3, img4, img5];
 
@@ -23,40 +24,33 @@ export default function ProductSpray() {
   const { user } = useAuth();
   const { addToCart } = useCart();
 
-  /* ---------------- RESPONSIVE ---------------- */
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  useEffect(() => {
-    const resize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, []);
-
-  /* ---------------- SCROLL ANIMATION ---------------- */
-  const productRef = useRef(null);
+  /* ---------------- STATE ---------------- */
+  const [activeImage, setActiveImage] = useState(images[0]);
+  const [authType, setAuthType] = useState(null);
   const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => e.isIntersecting && setVisible(true),
-      { threshold: 0.25 }
-    );
-    productRef.current && obs.observe(productRef.current);
-    return () => obs.disconnect();
-  }, []);
+  const [added, setAdded] = useState(false);
+  const productRef = useRef(null);
 
   /* ---------------- PRODUCT DATA ---------------- */
   const product = {
-    id: "haetsal-veil-spray-spf50", // UNIQUE ID (important)
+    id: "haetsal-veil-spray-spf50", // ❗ DO NOT CHANGE
     name: "Haetsal Veil™ Spray SPF 50+ PA++++",
     price: 2699,
   };
 
-  /* ---------------- STATE ---------------- */
-  const [activeImage, setActiveImage] = useState(images[0]);
-  const [authType, setAuthType] = useState(null);
+  /* ---------------- SCROLL ANIMATION ---------------- */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && setVisible(true),
+      { threshold: 0.25 }
+    );
+
+    if (productRef.current) observer.observe(productRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   /* ---------------- HANDLERS ---------------- */
-  function handleAddToCart() {
+  function handleOrderNow() {
     if (!user) {
       setAuthType("login");
       return;
@@ -71,12 +65,20 @@ export default function ProductSpray() {
     navigate("/cart");
   }
 
-  function handleCartClick() {
+  function handleAddToCartOnly() {
     if (!user) {
       setAuthType("login");
       return;
     }
-    navigate("/cart");
+
+    addToCart({
+      ...product,
+      image: activeImage,
+      quantity: 1,
+    });
+
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2200);
   }
 
   return (
@@ -84,64 +86,6 @@ export default function ProductSpray() {
       {authType && (
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
-
-      {/* ---------------- HEADER ---------------- */}
-      <header style={styles.header}>
-        <h2 style={styles.logo} onClick={() => navigate("/")}>
-          KAEORN
-        </h2>
-
-        <div style={styles.headerRight}>
-          {!isMobile ? (
-            <>
-              <a
-                href="https://www.instagram.com/elviawellness/"
-                target="_blank"
-                rel="noreferrer"
-                style={styles.link}
-              >
-                Instagram
-              </a>
-              <a
-                href="https://www.youtube.com/@ElviaWellness"
-                target="_blank"
-                rel="noreferrer"
-                style={styles.link}
-              >
-                YouTube
-              </a>
-            </>
-          ) : (
-            <>
-              <Instagram size={18} />
-              <Youtube size={18} />
-            </>
-          )}
-
-          {!user ? (
-            <>
-              <button
-                style={styles.authBtn}
-                onClick={() => setAuthType("login")}
-              >
-                Login
-              </button>
-              <button
-                style={styles.authBtn}
-                onClick={() => setAuthType("signup")}
-              >
-                Sign up
-              </button>
-            </>
-          ) : (
-            <ProfileMenu />
-          )}
-
-          <span style={styles.cart} onClick={handleCartClick}>
-            🛒
-          </span>
-        </div>
-      </header>
 
       {/* ---------------- PRODUCT SECTION ---------------- */}
       <section
@@ -151,15 +95,20 @@ export default function ProductSpray() {
           ...(visible ? styles.show : styles.hide),
         }}
       >
-        {/* IMAGES */}
+        {/* LEFT COLUMN */}
         <div style={styles.imageColumn}>
-          <img src={activeImage} alt={product.name} style={styles.mainImage} />
+          <img
+            src={activeImage}
+            alt={product.name}
+            style={styles.mainImage}
+          />
 
           <div style={styles.thumbnailRow}>
             {images.map((img, i) => (
               <img
                 key={i}
                 src={img}
+                alt=""
                 onClick={() => setActiveImage(img)}
                 style={{
                   ...styles.thumbnail,
@@ -168,9 +117,21 @@ export default function ProductSpray() {
               />
             ))}
           </div>
+
+          {/* LEFT INFO */}
+          <div style={styles.leftNote}>
+            <h4 style={styles.leftNoteTitle}>
+              Designed for Reapplication
+            </h4>
+            <p style={styles.leftNoteText}>
+              Protection fades with time, sweat, and movement. This ultra-fine
+              mist allows effortless reapplication — even over makeup —
+              without disrupting your routine.
+            </p>
+          </div>
         </div>
 
-        {/* DETAILS */}
+        {/* RIGHT COLUMN */}
         <div style={styles.detailsColumn}>
           <p style={styles.category}>SUN PROTECTION</p>
 
@@ -187,9 +148,30 @@ export default function ProductSpray() {
 
           <p style={styles.price}>₹2,699</p>
 
-          <button style={styles.buyButton} onClick={handleAddToCart}>
-            Add to Cart
-          </button>
+          {/* CTA */}
+          <div style={styles.ctaRow}>
+            <button style={styles.buyButton} onClick={handleOrderNow}>
+              Order Now
+            </button>
+
+            <div style={{ position: "relative" }}>
+              <button
+                style={{
+                  ...styles.addToCartBtn,
+                  ...(added ? styles.addedBtn : {}),
+                }}
+                onClick={handleAddToCartOnly}
+              >
+                {added ? "Added ✓" : "Add to Cart"}
+              </button>
+
+              {added && (
+                <div style={styles.toast}>
+                  Added to cart · Open <strong>Profile → Cart</strong>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* BADGES */}
           <div style={styles.badges}>
@@ -203,7 +185,7 @@ export default function ProductSpray() {
             <h4 style={styles.quickUseTitle}>How to Use</h4>
             <p>
               Hold the spray 10–15 cm away and mist evenly over face and neck
-              as the final step of your morning routine.
+              as the final step of your routine.
             </p>
             <p>
               Reapply every 2–3 hours, especially after sweating or outdoor
@@ -223,6 +205,26 @@ export default function ProductSpray() {
               <li>Non-comedogenic and breathable</li>
             </ul>
           </div>
+
+          {/* RECOMMENDED BASE */}
+          <div style={styles.recommendBox}>
+            <p style={styles.recommendText}>
+              Designed for reapplication, this mist works best when layered
+              over a strong base.
+              <br />
+              <strong>
+                Start your day with Haetsal Veil™ Cream for even, long-lasting
+                protection.
+              </strong>
+            </p>
+
+            <button
+              style={styles.recommendBtn}
+              onClick={() => navigate("/product")}
+            >
+              View Base Protection Cream
+            </button>
+          </div>
         </div>
       </section>
 
@@ -234,30 +236,6 @@ export default function ProductSpray() {
 /* ---------------- STYLES ---------------- */
 
 const styles = {
-  header: {
-    position: "sticky",
-    top: 0,
-    background: "rgba(255,255,255,0.92)",
-    backdropFilter: "blur(12px)",
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "16px 22px",
-    maxWidth: 1200,
-    margin: "0 auto",
-    zIndex: 10,
-  },
-  logo: { letterSpacing: 3, cursor: "pointer", fontWeight: 500 },
-  headerRight: { display: "flex", gap: 18, alignItems: "center" },
-  link: { color: "#111", textDecoration: "none", fontSize: 14 },
-  authBtn: {
-    border: "1px solid #111",
-    background: "transparent",
-    padding: "6px 16px",
-    borderRadius: 22,
-    cursor: "pointer",
-  },
-  cart: { cursor: "pointer" },
-
   productSection: {
     display: "flex",
     flexWrap: "wrap",
@@ -266,18 +244,40 @@ const styles = {
     margin: "56px auto",
     padding: "0 24px",
   },
+
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
 
   imageColumn: { flex: 1, minWidth: 320 },
   mainImage: { width: "100%", borderRadius: 24 },
   thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
+
   thumbnail: {
     width: 74,
     height: 74,
     borderRadius: 14,
     cursor: "pointer",
     objectFit: "cover",
+  },
+
+  leftNote: {
+    marginTop: 34,
+    padding: "22px 24px",
+    borderRadius: 20,
+    background: "rgba(0,0,0,0.035)",
+    maxWidth: 420,
+  },
+
+  leftNoteTitle: {
+    fontSize: 15,
+    fontWeight: 500,
+    marginBottom: 10,
+  },
+
+  leftNoteText: {
+    fontSize: 14.5,
+    lineHeight: 1.8,
+    color: "#444",
   },
 
   detailsColumn: { flex: 1, minWidth: 320 },
@@ -287,6 +287,8 @@ const styles = {
   subtitle: { fontSize: 16, color: "#555", lineHeight: 1.8 },
   price: { fontSize: 24, margin: "26px 0" },
 
+  ctaRow: { display: "flex", gap: 16, flexWrap: "wrap" },
+
   buyButton: {
     padding: "16px 34px",
     borderRadius: 50,
@@ -295,6 +297,36 @@ const styles = {
     border: "none",
     fontSize: 15,
     cursor: "pointer",
+  },
+
+  addToCartBtn: {
+    padding: "16px 34px",
+    borderRadius: 50,
+    background: "transparent",
+    color: "#111",
+    border: "1px solid #111",
+    fontSize: 15,
+    cursor: "pointer",
+    transition: "all 0.25s ease",
+  },
+
+  addedBtn: {
+    background: "#111",
+    color: "#fff",
+    transform: "scale(0.96)",
+  },
+
+  toast: {
+    position: "absolute",
+    top: "110%",
+    left: 0,
+    background: "#111",
+    color: "#fff",
+    padding: "10px 14px",
+    borderRadius: 14,
+    fontSize: 12.5,
+    marginTop: 8,
+    whiteSpace: "nowrap",
   },
 
   badges: {
@@ -313,6 +345,7 @@ const styles = {
     color: "#333",
     maxWidth: 460,
   },
+
   quickUseTitle: {
     fontSize: 16.5,
     fontWeight: 500,
@@ -323,15 +356,42 @@ const styles = {
     marginTop: 34,
     maxWidth: 460,
   },
+
   benefitsTitle: {
     fontSize: 16.5,
     fontWeight: 500,
     marginBottom: 14,
   },
+
   benefitsList: {
     fontSize: 14.5,
     lineHeight: 1.9,
     color: "#444",
     paddingLeft: 18,
+  },
+
+  recommendBox: {
+    marginTop: 44,
+    padding: "26px 28px",
+    borderRadius: 22,
+    background: "rgba(0,0,0,0.03)",
+    maxWidth: 480,
+  },
+
+  recommendText: {
+    fontSize: 15,
+    lineHeight: 1.8,
+    color: "#333",
+    marginBottom: 18,
+  },
+
+  recommendBtn: {
+    padding: "14px 30px",
+    borderRadius: 40,
+    background: "#111",
+    color: "#fff",
+    border: "none",
+    fontSize: 14,
+    cursor: "pointer",
   },
 };

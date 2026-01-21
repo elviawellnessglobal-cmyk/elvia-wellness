@@ -11,11 +11,12 @@ const productRoutes = require("./routes/productRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const addressRoutes = require("./routes/addressRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 /* ---------------- APP ---------------- */
 const app = express();
 
-/* ---------------- CORS (EXPRESS 5 SAFE) ---------------- */
+/* ---------------- CORS ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://elvia-wellness.vercel.app",
@@ -26,11 +27,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
+      if (allowedOrigins.includes(origin)) return callback(null, true);
       return callback(null, false);
     },
     credentials: true,
@@ -41,7 +38,7 @@ app.use(
 
 app.use(express.json());
 
-/* ---------------- HEALTH CHECK ---------------- */
+/* ---------------- HEALTH ---------------- */
 app.get("/", (req, res) => {
   res.send("Backend is running successfully");
 });
@@ -52,6 +49,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/addresses", addressRoutes);
+app.use("/api/chat", chatRoutes);
 
 /* ---------------- DATABASE ---------------- */
 mongoose

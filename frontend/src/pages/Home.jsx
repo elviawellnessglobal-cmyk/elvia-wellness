@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -12,79 +11,75 @@ export default function Home() {
   }, []);
 
   return (
-    <>
-      <Navbar onLogin={() => navigate("/product")} />
+    <main
+      style={{
+        ...styles.page,
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(12px)",
+        transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
+      }}
+    >
+      {/* ---------------- HERO ---------------- */}
+      <section style={styles.hero}>
+        {/* BRAND BADGE */}
+        <div style={styles.brandBadge}>KAEORN</div>
+        <div style={styles.brandTageline}>
+          Because care should feel kind
+        </div>
 
-      <main
-        style={{
-          ...styles.page,
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(12px)",
-          transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
-        }}
-      >
-        {/* ---------------- HERO ---------------- */}
-        <section style={styles.hero}>
-          {/* BRAND BADGE */}
-          <div style={styles.brandBadge}>KAEORN</div>
-          <div style={styles.brandTageline}>
-            Because care should feel kind
-          </div>
+        <h1 style={styles.heroTitle}>
+          Quiet luxury skincare,
+          <br />
+          crafted for modern skin.
+        </h1>
 
-          <h1 style={styles.heroTitle}>
-            Quiet luxury skincare,
-            <br />
-            crafted for modern skin.
-          </h1>
+        <p style={styles.heroText}>
+          Thoughtfully formulated essentials designed to protect,
+          nourish, and elevate your daily ritual.
+        </p>
 
-          <p style={styles.heroText}>
-            Thoughtfully formulated essentials designed to protect,
-            nourish, and elevate your daily ritual.
-          </p>
+        {/* PRODUCT CTA */}
+        <div style={styles.productButton}>
+          <button
+            style={styles.primaryBtn}
+            onClick={() => navigate("/product")}
+          >
+            Discover Haetsal Veil™ Cream
+          </button>
 
-          {/* PRODUCT CTA */}
-          <div style={styles.productButton}>
-            <button
-              style={styles.primaryBtn}
-              onClick={() => navigate("/product")}
-            >
-              Discover Haetsal Veil™ Cream
-            </button>
+          <button
+            style={styles.primaryBtnOutline}
+            onClick={() => navigate("/product/spray")}
+          >
+            Discover Haetsal Veil™ Spray
+          </button>
+        </div>
+      </section>
 
-            <button
-              style={styles.primaryBtnOutline}
-              onClick={() => navigate("/product/spray")}
-            >
-              Discover Haetsal Veil™ Spray
-            </button>
-          </div>
-        </section>
+      {/* ---------------- TRUST STRIP ---------------- */}
+      <section style={styles.trust}>
+        {[
+          "SPF 50+ Broad Spectrum",
+          "No White Cast",
+          "Smooth Texture",
+          "Made in India",
+          "Daily Use Formula",
+        ].map((item) => (
+          <span key={item} style={styles.trustItem}>
+            {item}
+          </span>
+        ))}
+      </section>
 
-        {/* ---------------- TRUST STRIP ---------------- */}
-        <section style={styles.trust}>
-          {[
-            "SPF 50+ Broad Spectrum",
-            "No White Cast",
-            "Smooth Texture",
-            "Made in India",
-            "Daily Use Formula",
-          ].map((item) => (
-            <span key={item} style={styles.trustItem}>
-              {item}
-            </span>
-          ))}
-        </section>
-
-        {/* ---------------- PHILOSOPHY ---------------- */}
-        <section style={styles.philosophy}>
-          <h2 style={styles.sectionTitle}>OUR PHILOSOPHY</h2>
-          <p style={styles.sectionText}>
-            Skincare should feel effortless, refined, and deeply effective.
-            No excess. No noise. Only what your skin truly needs.
-          </p>
-        </section>
-      </main>
-    </>
+      {/* ---------------- PHILOSOPHY ---------------- */}
+      <section style={styles.philosophy}>
+        <h2 style={styles.sectionTitle}>OUR PHILOSOPHY</h2>
+        <p style={styles.sectionText}>
+          Skincare should feel effortless, refined, and deeply effective.
+          No excess. No noise. Only what your skin truly needs.
+        </p>
+      </section>
+    </main>
   );
 }
 

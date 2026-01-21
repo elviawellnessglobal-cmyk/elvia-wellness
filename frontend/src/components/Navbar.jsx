@@ -1,63 +1,99 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Instagram, Youtube, ShoppingBag } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Instagram, Youtube, ArrowLeft } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import AuthModal from "./AuthModal";
+import ProfileMenu from "./ProfileMenu";
 
-export default function Navbar({ onLogin }) {
+export default function Navbar() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const location = useLocation();
+  const { user } = useAuth();
+
+  const [authType, setAuthType] = useState(null);
   const isMobile = window.innerWidth < 768;
 
+  /* ---------------- BACK BUTTON LOGIC ---------------- */
+  const showBack =
+    location.pathname !== "/" &&
+    !location.pathname.startsWith("/admin");
+
   return (
-    <header style={styles.header}>
-      {/* BRAND */}
-      <h2 style={styles.logo} onClick={() => navigate("/")}>
-       KAEORN
-      </h2>
+    <>
+      {/* AUTH MODAL */}
+      {authType && (
+        <AuthModal type={authType} onClose={() => setAuthType(null)} />
+      )}
 
-      {/* RIGHT */}
-      <div style={styles.right}>
-        {/* SOCIALS */}
-        <a
-          href="https://www.instagram.com/elviawellness/"
-          target="_blank"
-          style={styles.icon}
-        >
-          <Instagram size={18} />
-        </a>
+      <header style={styles.header}>
+        {/* LEFT */}
+        <div style={styles.left}>
+          {showBack && (
+            <button
+              onClick={() => navigate(-1)}
+              style={styles.backBtn}
+              aria-label="Go back"
+            >
+              <ArrowLeft size={18} />
+            </button>
+          )}
 
-        <a
-          href="https://www.youtube.com/@ElviaWellness"
-          target="_blank"
-          style={styles.icon}
-        >
-          <Youtube size={18} />
-        </a>
+          <h2 style={styles.logo} onClick={() => navigate("/")}>
+            KAEORN
+          </h2>
+        </div>
 
-        {/* CART */}
-        <span
-          style={styles.icon}
-          onClick={() => (user ? navigate("/cart") : onLogin())}
-        >
-          <ShoppingBag size={18} />
-        </span>
+        {/* RIGHT */}
+        <div style={styles.right}>
+          {/* SOCIALS */}
+          {!isMobile ? (
+            <>
+              <a
+                href="https://www.instagram.com/elviawellness/"
+                target="_blank"
+                rel="noreferrer"
+                style={styles.link}
+              >
+                Instagram
+              </a>
+              <a
+                href="https://www.youtube.com/@ElviaWellness"
+                target="_blank"
+                rel="noreferrer"
+                style={styles.link}
+              >
+                YouTube
+              </a>
+            </>
+          ) : (
+            <>
+              <Instagram size={18} />
+              <Youtube size={18} />
+            </>
+          )}
 
-        {/* AUTH (DESKTOP ONLY) */}
-        {!isMobile && (
-          <>
-            {!user ? (
-              <button style={styles.authBtn} onClick={onLogin}>
+          {/* AUTH */}
+          {!user ? (
+            <>
+              <button
+                style={styles.authBtn}
+                onClick={() => setAuthType("login")}
+              >
                 Login
               </button>
-            ) : (
-              <button style={styles.authBtn} onClick={logout}>
-                Logout
+              <button
+                style={styles.authBtn}
+                onClick={() => setAuthType("signup")}
+              >
+                Sign up
               </button>
-            )}
-          </>
-        )}
-      </div>
-    </header>
+            </>
+          ) : (
+            <ProfileMenu />
+          )}
+        </div>
+      </header>
+    </>
   );
 }
 
@@ -77,6 +113,21 @@ const styles = {
     borderBottom: "1px solid #eee",
   },
 
+  left: {
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+  },
+
+  backBtn: {
+    border: "none",
+    background: "transparent",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    padding: 0,
+  },
+
   logo: {
     fontSize: "16px",
     letterSpacing: "3px",
@@ -90,11 +141,10 @@ const styles = {
     gap: "18px",
   },
 
-  icon: {
-    cursor: "pointer",
+  link: {
     color: "#111",
-    display: "flex",
-    alignItems: "center",
+    textDecoration: "none",
+    fontSize: "14px",
   },
 
   authBtn: {
