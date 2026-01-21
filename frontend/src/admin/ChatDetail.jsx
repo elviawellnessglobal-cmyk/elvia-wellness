@@ -9,11 +9,15 @@ export default function ChatDetail() {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE}/api/chat/admin/${id}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("kaeorn_token")}`,
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
       },
     })
-      .then((res) => res.json())
-      .then(setChat);
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then(setChat)
+      .catch(() => setChat(null));
   }, [id]);
 
   async function sendReply() {
@@ -25,7 +29,7 @@ export default function ChatDetail() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("kaeorn_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
         body: JSON.stringify({ text: reply }),
       }
@@ -42,7 +46,7 @@ export default function ChatDetail() {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("kaeorn_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       }
     );
@@ -51,25 +55,37 @@ export default function ChatDetail() {
     setChat(updated);
   }
 
-  if (!chat) return null;
+  if (!chat) {
+    return (
+      <div style={{ padding: 40 }}>
+        <p style={{ color: "#777" }}>
+          Unable to load chat. Please check admin access.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.page}>
       <h2>Support Conversation</h2>
 
       <div style={styles.userInfo}>
-        <strong>{chat.user.name}</strong>
-        <p>{chat.user.email}</p>
-        <small>User ID: {chat.user._id}</small>
+        <strong>{chat.user?.name}</strong>
+        <p>{chat.user?.email}</p>
+        <small>User ID: {chat.user?._id}</small>
 
         <div style={styles.statusRow}>
           <span
             style={{
               ...styles.statusBadge,
               background:
-                chat.status === "resolved" ? "#eaf6ef" : "#fff4e5",
+                chat.status === "resolved"
+                  ? "#eaf6ef"
+                  : "#fff4e5",
               color:
-                chat.status === "resolved" ? "#1f7a4d" : "#9a6b1a",
+                chat.status === "resolved"
+                  ? "#1f7a4d"
+                  : "#9a6b1a",
             }}
           >
             {chat.status === "resolved" ? "Resolved" : "Open"}
@@ -84,27 +100,31 @@ export default function ChatDetail() {
       </div>
 
       <div style={styles.chatBox}>
-        {chat.messages.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              ...styles.msg,
-              alignSelf:
-                m.sender === "admin" ? "flex-end" : "flex-start",
-              background:
-                m.sender === "admin"
-                  ? "#111"
-                  : "rgba(0,0,0,0.04)",
-              color: m.sender === "admin" ? "#fff" : "#111",
-              borderTopRightRadius:
-                m.sender === "admin" ? 4 : 16,
-              borderTopLeftRadius:
-                m.sender === "admin" ? 16 : 4,
-            }}
-          >
-            {m.text}
-          </div>
-        ))}
+        {Array.isArray(chat.messages) &&
+          chat.messages.map((m, i) => (
+            <div
+              key={i}
+              style={{
+                ...styles.msg,
+                alignSelf:
+                  m.sender === "admin"
+                    ? "flex-end"
+                    : "flex-start",
+                background:
+                  m.sender === "admin"
+                    ? "#111"
+                    : "rgba(0,0,0,0.04)",
+                color:
+                  m.sender === "admin" ? "#fff" : "#111",
+                borderTopRightRadius:
+                  m.sender === "admin" ? 4 : 16,
+                borderTopLeftRadius:
+                  m.sender === "admin" ? 16 : 4,
+              }}
+            >
+              {m.text}
+            </div>
+          ))}
       </div>
 
       <div style={styles.inputRow}>
