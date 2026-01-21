@@ -1,5 +1,26 @@
 const mongoose = require("mongoose");
 
+const messageSchema = new mongoose.Schema(
+  {
+    sender: {
+      type: String,
+      enum: ["user", "admin"],
+      required: true,
+    },
+
+    text: {
+      type: String,
+      default: "", // ✅ no longer required
+    },
+
+    image: {
+      type: String, // ✅ Cloudinary URL
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
+
 const chatSchema = new mongoose.Schema(
   {
     user: {
@@ -7,23 +28,9 @@ const chatSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    messages: [
-      {
-        sender: {
-          type: String,
-          enum: ["user", "admin"],
-          required: true,
-        },
-        text: {
-          type: String,
-          required: true,
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+
+    messages: [messageSchema],
+
     status: {
       type: String,
       enum: ["open", "resolved"],

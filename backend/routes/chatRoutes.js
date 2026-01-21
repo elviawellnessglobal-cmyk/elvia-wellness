@@ -2,6 +2,8 @@ const express = require("express");
 const Chat = require("../models/Chat");
 const userAuth = require("../middleware/userAuth");
 const adminAuth = require("../middleware/adminAuth");
+const upload = require("../middleware/upload");
+const cloudinary = require("../utils/cloudinary");
 
 const router = express.Router();
 
@@ -11,24 +13,47 @@ router.get("/my", userAuth, async (req, res) => {
   res.json(chat || null);
 });
 
-/* USER: SEND MESSAGE */
-router.post("/send", userAuth, async (req, res) => {
-  const { message } = req.body;
+/* USER: SEND MESSAGE (TEXT + IMAGE) */
+router.post(
+  "/send",
+  userAuth,
+  upload.single("image"),
+  async (req, res) => {
+    const { message } = req.body;
 
-  let chat = await Chat.findOne({ user: req.user });
+    let imageUrl = null;
 
-  if (!chat) {
-    chat = new Chat({
-      user: req.user,
-      messages: [{ sender: "user", text: message }],
-    });
-  } else {
-    chat.messages.push({ sender: "user", text: message });
+    if (req.file) {
+      const uploadRes = await cloudinary.uploader.upload(
+        `data:${req.file.mimetype};base64,${req.file.buffer.toString(
+          "base64"
+        )}`,
+        { folder: "kaeorn-support" }
+      );
+      imageUrl = uploadRes.secure_url;
+    }
+
+    let chat = await Chat.findOne({ user: req.user });
+
+    const newMessage = {
+      sender: "user",
+      text: message || "",
+      image: imageUrl,
+    };
+
+    if (!chat) {
+      chat = new Chat({
+        user: req.user,
+        messages: [newMessage],
+      });
+    } else {
+      chat.messages.push(newMessage);
+    }
+
+    await chat.save();
+    res.json(chat);
   }
-
-  await chat.save();
-  res.json(chat);
-});
+);
 
 /* ADMIN: GET ALL CHATS */
 router.get("/admin", adminAuth, async (req, res) => {
@@ -67,19 +92,17 @@ router.post("/admin/resolve/:id", adminAuth, async (req, res) => {
   res.json(chat);
 });
 
-/* ADMIN: DELETE CHAT (ONLY IF RESOLVED) */
+/* ADMIN: DELETE CHAT */
 router.delete("/admin/:id", adminAuth, async (req, res) => {
   const chat = await Chat.findById(req.params.id);
 
-  if (!chat) {
+  if (!chat)
     return res.status(404).json({ message: "Chat not found" });
-  }
 
-  if (chat.status !== "resolved") {
+  if (chat.status !== "resolved")
     return res
       .status(400)
       .json({ message: "Resolve chat before deleting" });
-  }
 
   await chat.deleteOne();
   res.json({ success: true });
