@@ -1,14 +1,45 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+/* DEFAULT PERFUME IMAGE (FALLBACK) */
+const perfumeImg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1768897641/ChatGPT_Image_Jan_20_2026_01_54_12_PM_nkfbak.png";
+
+/* NO. 01 — THÉ NOIR MEN */
+const softSkinImg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769074475/ChatGPT_Image_Jan_22_2026_03_03_50_PM_kct4ad.png";
+
+/* NO. 02 — MORNING VEIL (UNISEX IMAGE) */
+const morningVeilImg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1769083998/ChatGPT_Image_Jan_22_2026_05_41_58_PM_ainmkh.png";
+
+/* NO. 03 — SOIE FEMME */
+const quietWoodsImg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1769081520/ChatGPT_Image_Jan_22_2026_05_01_01_PM_nzxsqv.png";
+
 export default function Home() {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    document.title =
+      "KAEORN WELLNESS | Quiet Luxury Skincare & Fragrance";
+
+    let meta = document.querySelector("meta[name='description']");
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "description";
+      document.head.appendChild(meta);
+    }
+    meta.content =
+      "Discover KAEORN — quiet luxury skincare and fragrance crafted for modern rituals.";
+
     const t = setTimeout(() => setVisible(true), 120);
     return () => clearTimeout(t);
   }, []);
+
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth < 768;
 
   return (
     <main
@@ -21,9 +52,8 @@ export default function Home() {
     >
       {/* ---------------- HERO ---------------- */}
       <section style={styles.hero}>
-        {/* BRAND BADGE */}
         <div style={styles.brandBadge}>KAEORN</div>
-        <div style={styles.brandTageline}>
+        <div style={styles.brandTagline}>
           Because care should feel kind
         </div>
 
@@ -38,7 +68,6 @@ export default function Home() {
           nourish, and elevate your daily ritual.
         </p>
 
-        {/* PRODUCT CTA */}
         <div style={styles.productButton}>
           <button
             style={styles.primaryBtn}
@@ -56,28 +85,89 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- TRUST STRIP ---------------- */}
-      <section style={styles.trust}>
-        {[
-          "SPF 50+ Broad Spectrum",
-          "No White Cast",
-          "Smooth Texture",
-          "Made in India",
-          "Daily Use Formula",
-        ].map((item) => (
-          <span key={item} style={styles.trustItem}>
-            {item}
-          </span>
-        ))}
-      </section>
+      {/* ---------------- PERFUME SECTION ---------------- */}
+      <section
+        style={{
+          ...styles.perfumeSection,
+          ...(isMobile ? {} : styles.snap),
+        }}
+      >
+        <div style={styles.perfumeIntro}>
+          <p style={styles.label}>KAEORN FRAGRANCE</p>
+          <h2 style={styles.perfumeTitle}>
+            A quiet expression of scent
+          </h2>
+          <p style={styles.perfumeSubtitle}>
+            Crafted to sit close to skin — intimate, understated,
+            and deeply personal.
+          </p>
+        </div>
 
-      {/* ---------------- PHILOSOPHY ---------------- */}
-      <section style={styles.philosophy}>
-        <h2 style={styles.sectionTitle}>OUR PHILOSOPHY</h2>
-        <p style={styles.sectionText}>
-          Skincare should feel effortless, refined, and deeply effective.
-          No excess. No noise. Only what your skin truly needs.
-        </p>
+        <div style={styles.perfumeRow}>
+          {/* NO. 01 — THÉ NOIR MEN */}
+          <div
+            style={styles.perfumeCard}
+            onClick={() => navigate("/perfume/soft-skin")}
+          >
+            <img
+              src={softSkinImg}
+              alt="KAEORN Thé Noir Men perfume"
+              style={styles.perfumeImage}
+            />
+            <span style={styles.index}>MEN</span>
+            <h4 style={styles.name}>THÉ NOIR</h4>
+            <p style={styles.mood}>
+              Eau de Parfum
+              <br />
+              Woody · Aromatic · Musky
+            </p>
+          </div>
+
+          {/* NO. 02 — MORNING VEIL (UNISEX) */}
+          <div
+            style={{ ...styles.perfumeCard, ...styles.offset }}
+            onClick={() => navigate("/perfume/morning-veil")}
+          >
+            <img
+              src={morningVeilImg}
+              alt="KAEORN Morning Veil unisex perfume"
+              style={styles.perfumeImage}
+            />
+            <span style={styles.index}>UNISEX</span>
+            <h4 style={styles.name}>MORNING VEIL</h4>
+            <p style={styles.mood}>
+              Clean · Airy · Luminous
+              <br />
+              Eau de Parfum
+            </p>
+          </div>
+
+          {/* NO. 03 — SOIE FEMME */}
+          <div
+            style={styles.perfumeCard}
+            onClick={() => navigate("/perfume/quiet-woods")}
+          >
+            <img
+              src={quietWoodsImg}
+              alt="KAEORN Soie Femme perfume"
+              style={styles.perfumeImage}
+            />
+            <span style={styles.index}>WOMEN</span>
+            <h4 style={styles.name}>SOIE FEMME</h4>
+            <p style={styles.mood}>
+              Luxury · Women’s
+              <br />
+              Eau de Parfum
+            </p>
+          </div>
+        </div>
+
+        <button
+          style={styles.viewAll}
+          onClick={() => navigate("/perfume")}
+        >
+          Explore Fragrance Collection
+        </button>
       </section>
     </main>
   );
@@ -103,98 +193,145 @@ const styles = {
   },
 
   brandBadge: {
-    fontSize: "11px",
-    letterSpacing: "3px",
+    fontSize: 11,
+    letterSpacing: 3,
     padding: "8px 18px",
-    borderRadius: "999px",
+    borderRadius: 999,
     background: "rgba(0,0,0,0.04)",
-    color: "#111",
-    marginBottom: "18px",
+    marginBottom: 18,
   },
 
-  brandTageline: {
-    fontFamily: "Poppins, Inter, sans-serif",
-    fontSize: "14px",
+  brandTagline: {
+    fontSize: 14,
     color: "#666",
-    marginBottom: "22px",
+    marginBottom: 24,
   },
 
   heroTitle: {
-    fontSize: "clamp(32px, 5vw, 44px)",
-    fontWeight: "500",
+    fontSize: "clamp(32px,5vw,44px)",
+    fontWeight: 500,
     lineHeight: 1.25,
-    marginBottom: "24px",
+    marginBottom: 24,
   },
 
   heroText: {
-    maxWidth: "560px",
-    fontSize: "16px",
+    maxWidth: 560,
+    fontSize: 16,
     lineHeight: 1.8,
     color: "#666",
-    marginBottom: "44px",
+    marginBottom: 44,
   },
 
   productButton: {
     display: "flex",
-    gap: "18px",
+    gap: 18,
     flexWrap: "wrap",
-    justifyContent: "center",
   },
 
   primaryBtn: {
     padding: "16px 34px",
-    borderRadius: "40px",
+    borderRadius: 40,
     background: "#111",
     color: "#fff",
     border: "none",
-    cursor: "pointer",
-    fontSize: "15px",
+    fontSize: 15,
   },
 
   primaryBtnOutline: {
     padding: "16px 34px",
-    borderRadius: "40px",
+    borderRadius: 40,
     background: "transparent",
-    color: "#111",
     border: "1px solid #111",
-    cursor: "pointer",
-    fontSize: "15px",
+    fontSize: 15,
   },
 
-  trust: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "28px",
-    flexWrap: "wrap",
-    padding: "64px 20px",
-    background: "#fafafa",
+  perfumeSection: {
+    padding: "160px 24px",
+    background:
+      "radial-gradient(1000px 500px at 50% -10%, #f4f1ed 0%, #ffffff 60%)",
   },
 
-  trustItem: {
-    fontSize: "12px",
-    letterSpacing: "1px",
-    color: "#555",
-    borderBottom: "1px solid #ddd",
-    paddingBottom: "6px",
+  snap: {
+    scrollSnapAlign: "start",
   },
 
-  philosophy: {
-    maxWidth: "800px",
-    margin: "120px auto",
+  perfumeIntro: {
+    maxWidth: 620,
+    margin: "0 auto 120px",
     textAlign: "center",
-    padding: "0 20px",
   },
 
-  sectionTitle: {
-    fontSize: "13px",
-    letterSpacing: "2px",
+  label: {
+    fontSize: 12,
+    letterSpacing: 3,
+    color: "#8a7f72",
+    marginBottom: 16,
+  },
+
+  perfumeTitle: {
+    fontSize: 40,
+    fontWeight: 400,
+    marginBottom: 24,
+  },
+
+  perfumeSubtitle: {
+    fontSize: 17,
+    lineHeight: 1.9,
+    color: "#666",
+  },
+
+  perfumeRow: {
+    maxWidth: 1200,
+    margin: "0 auto 80px",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+    gap: 80,
+  },
+
+  perfumeCard: {
+    textAlign: "center",
+    cursor: "pointer",
+  },
+
+  offset: {
+    transform: "translateY(32px)",
+  },
+
+  perfumeImage: {
+    width: "100%",
+    height: 420,
+    objectFit: "cover",
+    borderRadius: 28,
+    marginBottom: 22,
+  },
+
+  index: {
+    fontSize: 12,
+    letterSpacing: 2.5,
     color: "#888",
-    marginBottom: "14px",
+    display: "block",
+    marginBottom: 6,
   },
 
-  sectionText: {
-    fontSize: "17px",
-    lineHeight: 1.8,
-    color: "#444",
+  name: {
+    fontSize: 20,
+    fontWeight: 400,
+    marginBottom: 6,
+  },
+
+  mood: {
+    fontSize: 14,
+    color: "#777",
+  },
+
+  viewAll: {
+    margin: "0 auto",
+    display: "block",
+    padding: "16px 38px",
+    borderRadius: 40,
+    background: "#111",
+    color: "#fff",
+    border: "none",
+    fontSize: 14,
   },
 };

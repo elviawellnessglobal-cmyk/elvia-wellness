@@ -2,20 +2,26 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
+    productId: {
+      type: String,
+      required: true,
+      unique: true, // used by cart & orders
+    },
+
     name: {
       type: String,
       required: true,
-      trim: true,
     },
 
-    shortDescription: {
+    slug: {
       type: String,
       required: true,
-      maxlength: 200, // keeps frontend luxury & clean
+      unique: true,
     },
 
-    description: {
+    category: {
       type: String,
+      enum: ["skincare", "perfume"],
       required: true,
     },
 
@@ -24,16 +30,9 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    images: [
-      {
-        type: String, // image URLs (slider-ready)
-        required: true,
-      },
-    ],
-
-    category: {
-      type: String,
-      default: "Skincare",
+    images: {
+      type: [String],
+      default: [],
     },
 
     isActive: {

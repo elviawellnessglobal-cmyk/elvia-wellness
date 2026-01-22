@@ -31,6 +31,11 @@ import OrderDetail from "./pages/OrderDetail";
 import Account from "./pages/Account";
 import AddressBook from "./pages/AddressBook";
 
+import Perfume from "./pages/Perfume";
+import PerfumeSoftSkin from "./pages/PerfumeSoftSkin";
+import PerfumeMorningVeil from "./pages/PerfumeMorningVeil";
+import PerfumeQuietWoods from "./pages/PerfumeQuietWoods";
+
 import AdminLogin from "./admin/AdminLogin";
 import Orders from "./admin/Orders";
 import OrderPage from "./admin/OrderPage";
@@ -48,7 +53,6 @@ import ChatDetail from "./admin/ChatDetail";
 
 function Layout({ children }) {
   const location = useLocation();
-
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
@@ -70,6 +74,13 @@ function AppRoot() {
         <Route path="/product" element={<App />} />
         <Route path="/product/spray" element={<ProductSpray />} />
 
+        {/* ---------- PERFUME ---------- */}
+        <Route path="/perfume" element={<Perfume />} />
+        <Route path="/perfume/soft-skin" element={<PerfumeSoftSkin />} />
+        <Route path="/perfume/morning-veil" element={<PerfumeMorningVeil />} />
+        <Route path="/perfume/quiet-woods" element={<PerfumeQuietWoods />} />
+
+        {/* ---------- USER ---------- */}
         <Route path="/account" element={<Account />} />
         <Route path="/addresses" element={<AddressBook />} />
         <Route path="/my-orders" element={<MyOrders />} />

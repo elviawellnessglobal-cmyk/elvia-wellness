@@ -7,7 +7,9 @@ const Product = require("../models/Product");
  */
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find({ isActive: true }).sort({ createdAt: -1 });
+    const products = await Product.find({ isActive: true }).sort({
+      createdAt: -1,
+    });
     res.json(products);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch products" });
@@ -15,19 +17,28 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * GET single product by ID
+ * GET product by productId (USED BY CART & ORDERS)
+ * /api/products/by-product-id/perfume-soft-skin
  */
-router.get("/:id", async (req, res) => {
+router.get("/by-product-id/:productId", async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findOne({
+      productId: req.params.productId,
+      isActive: true,
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     res.json(product);
   } catch (err) {
-    res.status(404).json({ message: "Product not found" });
+    res.status(500).json({ message: "Failed to fetch product" });
   }
 });
 
 /**
- * ADD product (Admin)
+ * ADMIN: ADD PRODUCT
  */
 router.post("/", async (req, res) => {
   try {
@@ -40,7 +51,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * UPDATE product (Admin)
+ * ADMIN: UPDATE PRODUCT
  */
 router.put("/:id", async (req, res) => {
   try {
@@ -56,7 +67,7 @@ router.put("/:id", async (req, res) => {
 });
 
 /**
- * DELETE product (Admin)
+ * ADMIN: DELETE PRODUCT
  */
 router.delete("/:id", async (req, res) => {
   try {
@@ -68,4 +79,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = router;
-

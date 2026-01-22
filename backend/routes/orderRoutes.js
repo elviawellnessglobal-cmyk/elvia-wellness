@@ -1,16 +1,47 @@
 const express = require("express");
 const Order = require("../models/Order");
+const Product = require("../models/Product");
 const adminAuth = require("../middleware/adminAuth");
 const userAuth = require("../middleware/userAuth");
 
 const router = express.Router();
 
-/* ---------------- CREATE ORDER ---------------- */
+/* ---------------- CREATE ORDER (SECURE) ---------------- */
 router.post("/", userAuth, async (req, res) => {
   try {
+    const validatedItems = [];
+
+    for (const item of req.body.items) {
+      const product = await Product.findOne({
+        productId: item.productId,
+        isActive: true,
+      });
+
+      if (!product) {
+        return res.status(400).json({
+          message: `Invalid product: ${item.productId}`,
+        });
+      }
+
+      validatedItems.push({
+        productId: product.productId,
+        name: product.name,
+        price: product.price, // 🔒 FROM DB
+        quantity: item.quantity,
+        image: item.image,
+      });
+    }
+
+    const totalAmount = validatedItems.reduce(
+      (sum, i) => sum + i.price * i.quantity,
+      0
+    );
+
     const order = await Order.create({
-      ...req.body,
       user: req.user || null,
+      items: validatedItems,
+      address: req.body.address,
+      totalAmount,
     });
 
     res.status(201).json(order);
@@ -22,23 +53,14 @@ router.post("/", userAuth, async (req, res) => {
 
 /* ---------------- USER: ALL ORDERS ---------------- */
 router.get("/my-orders", userAuth, async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
   const orders = await Order.find({ user: req.user }).sort({
     createdAt: -1,
   });
-
   res.json(orders);
 });
 
 /* ---------------- USER: SINGLE ORDER ---------------- */
 router.get("/my-orders/:id", userAuth, async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
   const order = await Order.findOne({
     _id: req.params.id,
     user: req.user,
@@ -71,7 +93,7 @@ router.put("/:id/status", adminAuth, async (req, res) => {
   res.json(order);
 });
 
-/* ---------------- ADMIN: DELETE ---------------- */
+/* ---------------- ADMIN: DELETE ORDER ---------------- */
 router.delete("/:id", adminAuth, async (req, res) => {
   await Order.findByIdAndDelete(req.params.id);
   res.json({ success: true });
