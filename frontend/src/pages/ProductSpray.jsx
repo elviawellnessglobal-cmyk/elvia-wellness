@@ -6,8 +6,6 @@ import AuthModal from "../components/AuthModal";
 import Footer from "../components/Footer";
 
 /* ---------------- CLOUDINARY IMAGES ---------------- */
-const img1 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768909795/ChatGPT_Image_Jan_20_2026_05_18_57_PM_vezq3m.png";
 const img2 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768910313/ChatGPT_Image_Jan_19_2026_10_47_40_PM_lrcqbq.png";
 const img3 =
@@ -17,7 +15,7 @@ const img4 =
 const img5 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768911211/ChatGPT_Image_Jan_20_2026_05_40_17_PM_pnnszr.png";
 
-const images = [img1, img2, img3, img4, img5];
+const images = [img2, img3, img4, img5];
 
 export default function ProductSpray() {
   const navigate = useNavigate();

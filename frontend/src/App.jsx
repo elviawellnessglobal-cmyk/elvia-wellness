@@ -6,8 +6,6 @@ import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
 
 /* ---------------- CLOUDINARY IMAGES ---------------- */
-const img1 =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768900018/ChatGPT_Image_Jan_20_2026_02_35_31_PM_bv4j8j.png";
 const img2 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768897906/ChatGPT_Image_Jan_20_2026_01_53_50_PM_ekdg0l.png";
 const img3 =
@@ -19,7 +17,7 @@ const img5 =
 const img6 =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_800/v1768900206/ChatGPT_Image_Jan_20_2026_02_39_22_PM_y2argn.png";
 
-const images = [img1, img2, img3, img4, img5, img6];
+const images = [img2, img3, img4, img5, img6];
 
 export default function App() {
   const navigate = useNavigate();
