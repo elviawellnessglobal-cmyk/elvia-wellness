@@ -1,15 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-/* DEFAULT PERFUME IMAGE (FALLBACK) */
-const perfumeImg =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1768897641/ChatGPT_Image_Jan_20_2026_01_54_12_PM_nkfbak.png";
-
 /* NO. 01 — THÉ NOIR MEN */
 const softSkinImg =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769074475/ChatGPT_Image_Jan_22_2026_03_03_50_PM_kct4ad.png";
 
-/* NO. 02 — MORNING VEIL (UNISEX IMAGE) */
+/* NO. 02 — MORNING VEIL */
 const morningVeilImg =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1769083998/ChatGPT_Image_Jan_22_2026_05_41_58_PM_ainmkh.png";
 
@@ -20,6 +16,9 @@ const quietWoodsImg =
 export default function Home() {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
+
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth < 768;
 
   useEffect(() => {
     document.title =
@@ -38,9 +37,6 @@ export default function Home() {
     return () => clearTimeout(t);
   }, []);
 
-  const isMobile =
-    typeof window !== "undefined" && window.innerWidth < 768;
-
   return (
     <main
       style={{
@@ -51,8 +47,14 @@ export default function Home() {
       }}
     >
       {/* ---------------- HERO ---------------- */}
-      <section style={styles.hero}>
+      <section
+        style={{
+          ...styles.hero,
+          minHeight: isMobile ? "88vh" : "92vh",
+        }}
+      >
         <div style={styles.brandBadge}>KAEORN</div>
+
         <div style={styles.brandTagline}>
           Because care should feel kind
         </div>
@@ -68,16 +70,32 @@ export default function Home() {
           nourish, and elevate your daily ritual.
         </p>
 
-        <div style={styles.productButton}>
+        {/* 🔧 FIXED BUTTON ALIGNMENT */}
+        <div
+          style={{
+            ...styles.productButton,
+            flexDirection: isMobile ? "column" : "row",
+            width: isMobile ? "100%" : "auto",
+            alignItems: "center",
+          }}
+        >
           <button
-            style={styles.primaryBtn}
+            style={{
+              ...styles.primaryBtn,
+              width: isMobile ? "100%" : "auto",
+              maxWidth: 360,
+            }}
             onClick={() => navigate("/product")}
           >
             Discover Haetsal Veil™ Cream
           </button>
 
           <button
-            style={styles.primaryBtnOutline}
+            style={{
+              ...styles.primaryBtnOutline,
+              width: isMobile ? "100%" : "auto",
+              maxWidth: 360,
+            }}
             onClick={() => navigate("/product/spray")}
           >
             Discover Haetsal Veil™ Spray
@@ -86,12 +104,7 @@ export default function Home() {
       </section>
 
       {/* ---------------- PERFUME SECTION ---------------- */}
-      <section
-        style={{
-          ...styles.perfumeSection,
-          ...(isMobile ? {} : styles.snap),
-        }}
-      >
+      <section style={styles.perfumeSection}>
         <div style={styles.perfumeIntro}>
           <p style={styles.label}>KAEORN FRAGRANCE</p>
           <h2 style={styles.perfumeTitle}>
@@ -104,61 +117,37 @@ export default function Home() {
         </div>
 
         <div style={styles.perfumeRow}>
-          {/* NO. 01 — THÉ NOIR MEN */}
+          {/* NO. 01 */}
           <div
             style={styles.perfumeCard}
             onClick={() => navigate("/perfume/soft-skin")}
           >
-            <img
-              src={softSkinImg}
-              alt="KAEORN Thé Noir Men perfume"
-              style={styles.perfumeImage}
-            />
+            <img src={softSkinImg} alt="" style={styles.perfumeImage} />
             <span style={styles.index}>MEN</span>
             <h4 style={styles.name}>THÉ NOIR</h4>
-            <p style={styles.mood}>
-              Eau de Parfum
-              <br />
-              Woody · Aromatic · Musky
-            </p>
+            <p style={styles.mood}>Woody · Aromatic · Musky</p>
           </div>
 
-          {/* NO. 02 — MORNING VEIL (UNISEX) */}
+          {/* NO. 02 */}
           <div
             style={{ ...styles.perfumeCard, ...styles.offset }}
             onClick={() => navigate("/perfume/morning-veil")}
           >
-            <img
-              src={morningVeilImg}
-              alt="KAEORN Morning Veil unisex perfume"
-              style={styles.perfumeImage}
-            />
+            <img src={morningVeilImg} alt="" style={styles.perfumeImage} />
             <span style={styles.index}>UNISEX</span>
             <h4 style={styles.name}>MORNING VEIL</h4>
-            <p style={styles.mood}>
-              Clean · Airy · Luminous
-              <br />
-              Eau de Parfum
-            </p>
+            <p style={styles.mood}>Clean · Airy · Luminous</p>
           </div>
 
-          {/* NO. 03 — SOIE FEMME */}
+          {/* NO. 03 */}
           <div
             style={styles.perfumeCard}
             onClick={() => navigate("/perfume/quiet-woods")}
           >
-            <img
-              src={quietWoodsImg}
-              alt="KAEORN Soie Femme perfume"
-              style={styles.perfumeImage}
-            />
+            <img src={quietWoodsImg} alt="" style={styles.perfumeImage} />
             <span style={styles.index}>WOMEN</span>
             <h4 style={styles.name}>SOIE FEMME</h4>
-            <p style={styles.mood}>
-              Luxury · Women’s
-              <br />
-              Eau de Parfum
-            </p>
+            <p style={styles.mood}>Luxury · Feminine</p>
           </div>
         </div>
 
@@ -181,7 +170,6 @@ const styles = {
   },
 
   hero: {
-    minHeight: "92vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -208,7 +196,7 @@ const styles = {
   },
 
   heroTitle: {
-    fontSize: "clamp(32px,5vw,44px)",
+    fontSize: "clamp(30px,5vw,44px)",
     fontWeight: 500,
     lineHeight: 1.25,
     marginBottom: 24,
@@ -219,17 +207,17 @@ const styles = {
     fontSize: 16,
     lineHeight: 1.8,
     color: "#666",
-    marginBottom: 44,
+    marginBottom: 36,
   },
 
   productButton: {
     display: "flex",
-    gap: 18,
-    flexWrap: "wrap",
+    gap: 16,
+    marginTop: 10,
   },
 
   primaryBtn: {
-    padding: "16px 34px",
+    padding: "16px 28px",
     borderRadius: 40,
     background: "#111",
     color: "#fff",
@@ -238,7 +226,7 @@ const styles = {
   },
 
   primaryBtnOutline: {
-    padding: "16px 34px",
+    padding: "16px 28px",
     borderRadius: 40,
     background: "transparent",
     border: "1px solid #111",
@@ -246,13 +234,9 @@ const styles = {
   },
 
   perfumeSection: {
-    padding: "160px 24px",
+    padding: "140px 24px",
     background:
       "radial-gradient(1000px 500px at 50% -10%, #f4f1ed 0%, #ffffff 60%)",
-  },
-
-  snap: {
-    scrollSnapAlign: "start",
   },
 
   perfumeIntro: {
@@ -309,7 +293,6 @@ const styles = {
     fontSize: 12,
     letterSpacing: 2.5,
     color: "#888",
-    display: "block",
     marginBottom: 6,
   },
 
