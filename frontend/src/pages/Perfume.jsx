@@ -75,7 +75,7 @@ export default function Perfume() {
           </div>
         </div>
 
-        {/* NO. 02 — MORNING VEIL (UNISEX) */}
+        {/* NO. 02 — MORNING VEIL */}
         <div
           style={{
             ...styles.card,
@@ -149,14 +149,14 @@ export default function Perfume() {
 const styles = {
   page: {
     fontFamily: "Inter, sans-serif",
-    paddingBottom: 180,
+    paddingBottom: 160,
     background:
       "radial-gradient(1200px 600px at 50% -10%, #f4f1ed 0%, #ffffff 60%)",
   },
 
   hero: {
     maxWidth: 700,
-    margin: "150px auto 180px",
+    margin: "80px auto 120px", // ✅ FIXED TOP SPACE
     padding: "0 24px",
     textAlign: "center",
   },
@@ -165,20 +165,20 @@ const styles = {
     fontSize: 12,
     letterSpacing: 3,
     color: "#8a7f72",
-    marginBottom: 18,
+    marginBottom: 14,
   },
 
   title: {
-    fontSize: "clamp(36px,5vw,44px)",
+    fontSize: "clamp(34px,5vw,42px)",
     fontWeight: 400,
     lineHeight: 1.25,
-    marginBottom: 26,
+    marginBottom: 22,
     color: "#111",
   },
 
   subtitle: {
     fontSize: 17,
-    lineHeight: 1.9,
+    lineHeight: 1.8,
     color: "#666",
   },
 
