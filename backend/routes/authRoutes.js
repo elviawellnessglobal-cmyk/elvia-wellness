@@ -6,64 +6,68 @@ const { sendOTPEmail } = require("../utils/sendOtp");
 const router = express.Router();
 
 /* ---------- HELPERS ---------- */
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 function signToken(user) {
   return jwt.sign(
-    { id: user._id, email: user.email, isAdmin: user.isAdmin },
+    { id: user._id, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 }
 
-function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-/* ---------- REQUEST OTP ---------- */
-router.post("/request-otp", async (req, res) => {
+/* =====================================================
+   SEND OTP (LOGIN)
+   POST /api/auth/forgot-password
+===================================================== */
+router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email required" });
-
-    let user = await User.findOne({ email });
-    if (!user) user = await User.create({ email });
-
-    // 🔒 DO NOT overwrite if OTP still valid
-    if (user.otp && user.otpExpiry > new Date()) {
-      return res.json({ success: true });
+    if (!email) {
+      return res.status(400).json({ message: "Email required" });
     }
 
     const otp = generateOTP();
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({ email });
+    }
 
     user.otp = otp;
-    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+    user.otpExpiry = expiry;
     await user.save();
 
     await sendOTPEmail(email, otp);
 
     res.json({ success: true });
   } catch (err) {
-    console.error("OTP request error:", err);
-    res.status(500).json({ message: "OTP failed" });
+    console.error("Send OTP error:", err);
+    res.status(500).json({ message: "Unable to send code" });
   }
 });
 
-/* ---------- VERIFY OTP ---------- */
+/* =====================================================
+   VERIFY OTP & LOGIN
+   POST /api/auth/verify-otp
+===================================================== */
 router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
 
     const user = await User.findOne({ email });
-
     if (
       !user ||
-      !user.otp ||
-      user.otp !== String(otp).trim() ||
+      user.otp !== otp ||
+      !user.otpExpiry ||
       user.otpExpiry < new Date()
     ) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+      return res.status(400).json({ message: "Invalid or expired code" });
     }
 
-    // ✅ CLEAR OTP
     user.otp = null;
     user.otpExpiry = null;
     await user.save();
@@ -75,13 +79,11 @@ router.post("/verify-otp", async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name,
-        isAdmin: user.isAdmin,
       },
     });
   } catch (err) {
-    console.error("OTP verify error:", err);
-    res.status(500).json({ message: "OTP verification failed" });
+    console.error("Verify OTP error:", err);
+    res.status(500).json({ message: "Verification failed" });
   }
 });
 
