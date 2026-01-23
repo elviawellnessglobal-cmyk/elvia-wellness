@@ -14,8 +14,12 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
+  // ✅ FIXED TOKEN PAYLOAD
   const token = jwt.sign(
-    { role: "admin", email },
+    {
+      email,
+      isAdmin: true, // ✅ REQUIRED
+    },
     process.env.JWT_SECRET,
     { expiresIn: "1d" }
   );

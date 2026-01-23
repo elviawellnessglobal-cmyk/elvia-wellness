@@ -10,7 +10,7 @@ export default function Navbar() {
   const location = useLocation();
   const { user } = useAuth();
 
-  const [authType, setAuthType] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
   const isMobile = window.innerWidth < 768;
 
   /* ---------------- BACK BUTTON LOGIC ---------------- */
@@ -21,9 +21,7 @@ export default function Navbar() {
   return (
     <>
       {/* AUTH MODAL */}
-      {authType && (
-        <AuthModal type={authType} onClose={() => setAuthType(null)} />
-      )}
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
       <header style={styles.header}>
         {/* LEFT */}
@@ -49,7 +47,7 @@ export default function Navbar() {
           {!isMobile ? (
             <>
               <a
-                href="https://www.instagram.com/elviawellness/"
+                href="https://www.instagram.com/kaeornwellness/"
                 target="_blank"
                 rel="noreferrer"
                 style={styles.link}
@@ -57,7 +55,7 @@ export default function Navbar() {
                 Instagram
               </a>
               <a
-                href="https://www.youtube.com/@ElviaWellness"
+                href="https://www.youtube.com/@KAEORNWELLNESS"
                 target="_blank"
                 rel="noreferrer"
                 style={styles.link}
@@ -66,28 +64,32 @@ export default function Navbar() {
               </a>
             </>
           ) : (
-            <>
-              <Instagram size={18} />
-              <Youtube size={18} />
-            </>
+            <div style={styles.mobileIcons}>
+              <a
+                href="https://www.instagram.com/kaeornwellness/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Instagram size={18} />
+              </a>
+              <a
+                href="https://www.youtube.com/@KAEORNWELLNESS"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Youtube size={18} />
+              </a>
+            </div>
           )}
 
           {/* AUTH */}
           {!user ? (
-            <>
-              <button
-                style={styles.authBtn}
-                onClick={() => setAuthType("login")}
-              >
-                Login
-              </button>
-              <button
-                style={styles.authBtn}
-                onClick={() => setAuthType("signup")}
-              >
-                Sign up
-              </button>
-            </>
+            <button
+              style={styles.signInBtn}
+              onClick={() => setShowAuth(true)}
+            >
+              Sign in
+            </button>
           ) : (
             <ProfileMenu />
           )}
@@ -107,16 +109,17 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "18px 24px",
-    background: "rgba(255,255,255,0.9)",
-    backdropFilter: "blur(6px)",
+    padding: "14px 20px",
+    background: "rgba(255,255,255,0.92)",
+    backdropFilter: "blur(8px)",
     borderBottom: "1px solid #eee",
+    fontFamily: "Inter, sans-serif",
   },
 
   left: {
     display: "flex",
     alignItems: "center",
-    gap: "14px",
+    gap: 12,
   },
 
   backBtn: {
@@ -129,30 +132,37 @@ const styles = {
   },
 
   logo: {
-    fontSize: "16px",
-    letterSpacing: "3px",
-    fontWeight: "500",
+    fontSize: 15,
+    letterSpacing: 3,
+    fontWeight: 500,
     cursor: "pointer",
   },
 
   right: {
     display: "flex",
     alignItems: "center",
-    gap: "18px",
+    gap: 14,
   },
 
   link: {
     color: "#111",
     textDecoration: "none",
-    fontSize: "14px",
+    fontSize: 13,
   },
 
-  authBtn: {
+  mobileIcons: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  signInBtn: {
     border: "1px solid #111",
-    background: "transparent",
-    padding: "6px 14px",
-    borderRadius: "20px",
-    fontSize: "13px",
+    background: "#111",
+    color: "#fff",
+    padding: "8px 16px",
+    borderRadius: 999,
+    fontSize: 13,
     cursor: "pointer",
   },
 };

@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalRevenue: 0,
@@ -22,6 +25,7 @@ export default function Dashboard() {
 
       if (!token) {
         alert("Admin session expired. Please login again.");
+        navigate("/admin/login");
         return;
       }
 
@@ -36,7 +40,7 @@ export default function Dashboard() {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Failed to load stats");
+        throw new Error(err.message || "Admin only");
       }
 
       const orders = await res.json();
@@ -58,21 +62,6 @@ export default function Dashboard() {
           inTransit++;
         }
       });
-      <button
-        onClick={() => navigate("/admin/chats")}
-        style={{
-          padding: "18px 26px",
-          borderRadius: 18,
-          border: "1px solid #111",
-          background: "#111",
-          color: "#fff",
-          fontSize: 15,
-          cursor: "pointer",
-        }}
-      >
-        Support Chats
-      </button>
-
 
       setStats({
         totalOrders: orders.length,
@@ -83,7 +72,8 @@ export default function Dashboard() {
       });
     } catch (err) {
       console.error("Dashboard error:", err);
-      alert("Failed to load dashboard data");
+      alert("Admin access denied or session expired");
+      navigate("/admin/login");
     } finally {
       setLoading(false);
     }
@@ -100,8 +90,20 @@ export default function Dashboard() {
   return (
     <AdminLayout>
       <div style={styles.page}>
-        <h1 style={styles.heading}>Dashboard</h1>
-        <p style={styles.subheading}>Business overview</p>
+        <div style={styles.headerRow}>
+          <div>
+            <h1 style={styles.heading}>Dashboard</h1>
+            <p style={styles.subheading}>Business overview</p>
+          </div>
+
+          {/* ✅ MOVED BUTTON HERE */}
+          <button
+            onClick={() => navigate("/admin/chats")}
+            style={styles.chatBtn}
+          >
+            Support Chats
+          </button>
+        </div>
 
         <div style={styles.grid}>
           <Card title="Total Orders" value={stats.totalOrders} />
@@ -134,6 +136,15 @@ const styles = {
     fontFamily: "Inter, sans-serif",
   },
 
+  headerRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 32,
+    flexWrap: "wrap",
+    gap: 16,
+  },
+
   heading: {
     fontSize: "32px",
     marginBottom: "6px",
@@ -142,7 +153,6 @@ const styles = {
   subheading: {
     fontSize: "14px",
     color: "#666",
-    marginBottom: "32px",
   },
 
   grid: {
@@ -169,5 +179,15 @@ const styles = {
     fontSize: "28px",
     fontWeight: "500",
     color: "#111",
+  },
+
+  chatBtn: {
+    padding: "14px 22px",
+    borderRadius: 14,
+    border: "1px solid #111",
+    background: "#111",
+    color: "#fff",
+    fontSize: 14,
+    cursor: "pointer",
   },
 };

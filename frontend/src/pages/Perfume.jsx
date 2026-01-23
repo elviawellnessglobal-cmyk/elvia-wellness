@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 
-/* IMAGES — SAME AS HOME */
+/* IMAGES */
 const softSkinImg =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769074475/ChatGPT_Image_Jan_22_2026_03_03_50_PM_kct4ad.png";
 
@@ -29,6 +29,22 @@ export default function Perfume() {
     return () => obs.disconnect();
   }, []);
 
+  function imageStyle(index) {
+    if (isMobile) {
+      return {
+        ...styles.image,
+        filter: "none",
+        transform: "scale(1)",
+      };
+    }
+
+    return {
+      ...styles.image,
+      filter: hovered === index ? "grayscale(0%)" : "grayscale(100%)",
+      transform: hovered === index ? "scale(1.03)" : "scale(1)",
+    };
+  }
+
   return (
     <main style={styles.page}>
       {/* ---------- HERO ---------- */}
@@ -43,104 +59,103 @@ export default function Perfume() {
 
       {/* ---------- COLLECTION ---------- */}
       <section ref={sectionRef} style={styles.collection}>
-        {/* NO. 01 — THÉ NOIR MEN */}
-        <div
-          style={{
-            ...styles.card,
-            ...(visible ? styles.show(0) : styles.hide),
-          }}
-          onMouseEnter={() => setHovered(0)}
-          onMouseLeave={() => setHovered(null)}
+        {/* THÉ NOIR MEN */}
+        <Card
+          index={0}
+          image={softSkinImg}
+          title="THÉ NOIR"
+          type="MEN"
+          mood="Woody · Aromatic · Musky"
           onClick={() => navigate("/perfume/soft-skin")}
-        >
-          <div style={styles.imageWrap}>
-            <img
-              src={softSkinImg}
-              alt="KAEORN Thé Noir Men"
-              style={{
-                ...styles.image,
-                filter: hovered === 0 ? "grayscale(0%)" : "grayscale(100%)",
-                transform: hovered === 0 ? "scale(1.03)" : "scale(1)",
-              }}
-            />
-            <div style={styles.vignette} />
-            {hovered === 0 && <div style={styles.view}>View</div>}
-          </div>
+          hovered={hovered}
+          setHovered={setHovered}
+          visible={visible}
+          isMobile={isMobile}
+          imageStyle={imageStyle}
+        />
 
-          <div style={styles.cardText}>
-            <span style={styles.index}>MEN</span>
-            <h3 style={styles.name}>THÉ NOIR</h3>
-            <p style={styles.mood}>Woody · Aromatic · Musky</p>
-            <p style={styles.concentration}>Eau de Parfum</p>
-          </div>
-        </div>
-
-        {/* NO. 02 — MORNING VEIL */}
-        <div
-          style={{
-            ...styles.card,
-            ...(visible ? styles.show(1) : styles.hide),
-            ...(isMobile ? {} : styles.offset),
-          }}
-          onMouseEnter={() => setHovered(1)}
-          onMouseLeave={() => setHovered(null)}
+        {/* MORNING VEIL */}
+        <Card
+          index={1}
+          image={morningVeilImg}
+          title="MORNING VEIL"
+          type="UNISEX"
+          mood="Clean · Airy · Luminous"
           onClick={() => navigate("/perfume/morning-veil")}
-        >
-          <div style={styles.imageWrap}>
-            <img
-              src={morningVeilImg}
-              alt="KAEORN Morning Veil"
-              style={{
-                ...styles.image,
-                filter: hovered === 1 ? "grayscale(0%)" : "grayscale(100%)",
-                transform: hovered === 1 ? "scale(1.03)" : "scale(1)",
-              }}
-            />
-            <div style={styles.vignette} />
-            {hovered === 1 && <div style={styles.view}>View</div>}
-          </div>
+          hovered={hovered}
+          setHovered={setHovered}
+          visible={visible}
+          isMobile={isMobile}
+          imageStyle={imageStyle}
+          offset={!isMobile}
+        />
 
-          <div style={styles.cardText}>
-            <span style={styles.index}>UNISEX</span>
-            <h3 style={styles.name}>MORNING VEIL</h3>
-            <p style={styles.mood}>Clean · Airy · Luminous</p>
-            <p style={styles.concentration}>Eau de Parfum</p>
-          </div>
-        </div>
-
-        {/* NO. 03 — SOIE FEMME */}
-        <div
-          style={{
-            ...styles.card,
-            ...(visible ? styles.show(2) : styles.hide),
-          }}
-          onMouseEnter={() => setHovered(2)}
-          onMouseLeave={() => setHovered(null)}
+        {/* SOIE FEMME */}
+        <Card
+          index={2}
+          image={quietWoodsImg}
+          title="SOIE FEMME"
+          type="WOMEN"
+          mood="Soft · Elegant · Feminine"
           onClick={() => navigate("/perfume/quiet-woods")}
-        >
-          <div style={styles.imageWrap}>
-            <img
-              src={quietWoodsImg}
-              alt="KAEORN Soie Femme"
-              style={{
-                ...styles.image,
-                filter: hovered === 2 ? "grayscale(0%)" : "grayscale(100%)",
-                transform: hovered === 2 ? "scale(1.03)" : "scale(1)",
-              }}
-            />
-            <div style={styles.vignette} />
-            {hovered === 2 && <div style={styles.view}>View</div>}
-          </div>
-
-          <div style={styles.cardText}>
-            <span style={styles.index}>WOMEN</span>
-            <h3 style={styles.name}>SOIE FEMME</h3>
-            <p style={styles.mood}>Soft · Elegant · Feminine</p>
-            <p style={styles.concentration}>Eau de Parfum</p>
-          </div>
-        </div>
+          hovered={hovered}
+          setHovered={setHovered}
+          visible={visible}
+          isMobile={isMobile}
+          imageStyle={imageStyle}
+        />
       </section>
     </main>
+  );
+}
+
+/* ---------- CARD COMPONENT ---------- */
+
+function Card({
+  index,
+  image,
+  title,
+  type,
+  mood,
+  onClick,
+  hovered,
+  setHovered,
+  visible,
+  isMobile,
+  imageStyle,
+  offset,
+}) {
+  return (
+    <div
+      style={{
+        ...styles.card,
+        ...(visible ? styles.show(index) : styles.hide),
+        ...(offset ? styles.offset : {}),
+      }}
+      onMouseEnter={() => !isMobile && setHovered(index)}
+      onMouseLeave={() => !isMobile && setHovered(null)}
+      onClick={onClick}
+    >
+      <div style={styles.imageWrap}>
+        <img src={image} alt={title} style={imageStyle(index)} />
+        <div style={styles.vignette} />
+
+        {/* Desktop hover */}
+        {!isMobile && hovered === index && (
+          <div style={styles.view}>View</div>
+        )}
+
+        {/* Mobile CTA */}
+        {isMobile && <div style={styles.mobileView}>Tap to view</div>}
+      </div>
+
+      <div style={styles.cardText}>
+        <span style={styles.index}>{type}</span>
+        <h3 style={styles.name}>{title}</h3>
+        <p style={styles.mood}>{mood}</p>
+        <p style={styles.concentration}>Eau de Parfum</p>
+      </div>
+    </div>
   );
 }
 
@@ -149,14 +164,14 @@ export default function Perfume() {
 const styles = {
   page: {
     fontFamily: "Inter, sans-serif",
-    paddingBottom: 160,
+    paddingBottom: 140,
     background:
       "radial-gradient(1200px 600px at 50% -10%, #f4f1ed 0%, #ffffff 60%)",
   },
 
   hero: {
     maxWidth: 700,
-    margin: "80px auto 120px", // ✅ FIXED TOP SPACE
+    margin: "48px auto 96px", // ✅ FIXED TOP SPACE
     padding: "0 24px",
     textAlign: "center",
   },
@@ -169,15 +184,13 @@ const styles = {
   },
 
   title: {
-    fontSize: "clamp(34px,5vw,42px)",
+    fontSize: "clamp(32px,5vw,42px)",
     fontWeight: 400,
-    lineHeight: 1.25,
-    marginBottom: 22,
-    color: "#111",
+    marginBottom: 18,
   },
 
   subtitle: {
-    fontSize: 17,
+    fontSize: 16,
     lineHeight: 1.8,
     color: "#666",
   },
@@ -188,7 +201,7 @@ const styles = {
     padding: "0 24px",
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: 90,
+    gap: 80,
   },
 
   hide: {
@@ -208,7 +221,7 @@ const styles = {
   },
 
   offset: {
-    transform: "translateY(36px)",
+    transform: "translateY(32px)",
   },
 
   imageWrap: {
@@ -220,7 +233,7 @@ const styles = {
 
   image: {
     width: "100%",
-    height: 480,
+    height: 460,
     objectFit: "cover",
     transition: "all 0.8s ease",
   },
@@ -229,7 +242,7 @@ const styles = {
     position: "absolute",
     inset: 0,
     background:
-      "radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.25) 100%)",
+      "linear-gradient(to top, rgba(0,0,0,0.25), rgba(0,0,0,0) 60%)",
     pointerEvents: "none",
   },
 
@@ -237,12 +250,24 @@ const styles = {
     position: "absolute",
     bottom: 18,
     right: 18,
-    background: "rgba(0,0,0,0.65)",
+    background: "rgba(0,0,0,0.7)",
     color: "#fff",
     fontSize: 12,
     padding: "8px 14px",
     borderRadius: 20,
-    letterSpacing: 1.2,
+  },
+
+  mobileView: {
+    position: "absolute",
+    bottom: 16,
+    left: "50%",
+    transform: "translateX(-50%)",
+    background: "rgba(0,0,0,0.75)",
+    color: "#fff",
+    fontSize: 12,
+    padding: "8px 16px",
+    borderRadius: 20,
+    letterSpacing: 0.8,
   },
 
   cardText: {
@@ -253,15 +278,14 @@ const styles = {
     fontSize: 12,
     letterSpacing: 2.5,
     color: "#888",
-    display: "block",
     marginBottom: 6,
+    display: "block",
   },
 
   name: {
     fontSize: 20,
     fontWeight: 400,
     marginBottom: 6,
-    color: "#111",
   },
 
   mood: {
@@ -272,7 +296,7 @@ const styles = {
 
   concentration: {
     fontSize: 12,
-    letterSpacing: 1.5,
+    letterSpacing: 1.4,
     color: "#999",
   },
 };
