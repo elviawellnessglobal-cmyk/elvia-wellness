@@ -2,22 +2,19 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
-/* ---------------- PROVIDER ---------------- */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  /* -------- LOAD USER ON REFRESH -------- */
+  /* ---------- LOAD USER ---------- */
   useEffect(() => {
-    const savedUser = localStorage.getItem("kaeorn_user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    const saved = localStorage.getItem("kaeorn_user");
+    if (saved) setUser(JSON.parse(saved));
     setAuthLoading(false);
   }, []);
 
-  /* -------- REQUEST OTP -------- */
-  async function requestOtp(email) {
+  /* ---------- SEND OTP ---------- */
+  async function requestOTP(email) {
     const res = await fetch(
       `${import.meta.env.VITE_API_BASE}/api/auth/forgot-password`,
       {
@@ -28,37 +25,57 @@ export function AuthProvider({ children }) {
     );
 
     if (!res.ok) {
-      throw new Error("Failed to send OTP");
+      throw new Error("Unable to send code");
     }
 
     return true;
   }
 
-  /* -------- VERIFY OTP & LOGIN -------- */
-  async function verifyOtp(email, otp) {
+  /* ---------- VERIFY OTP & LOGIN ---------- */
+  async function verifyOTP(email, otp) {
     const res = await fetch(
-      `${import.meta.env.VITE_API_BASE}/api/auth/verify-otp`,
+      `${import.meta.env.VITE_API_BASE}/api/auth/reset-password`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({
+          email,
+          otp,
+          password: "otp-login", // dummy (required by backend)
+        }),
       }
     );
 
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.message || "Invalid OTP");
+      throw new Error(data.message || "Invalid or expired code");
     }
 
-    localStorage.setItem("kaeorn_token", data.token);
-    localStorage.setItem("kaeorn_user", JSON.stringify(data.user));
-    setUser(data.user);
+    // backend does not return token here → generate login token manually
+    const loginRes = await fetch(
+      `${import.meta.env.VITE_API_BASE}/api/auth/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: "otp-login" }),
+      }
+    );
+
+    const loginData = await loginRes.json();
+
+    if (!loginRes.ok) {
+      throw new Error("Login failed after OTP");
+    }
+
+    localStorage.setItem("kaeorn_token", loginData.token);
+    localStorage.setItem("kaeorn_user", JSON.stringify(loginData.user));
+    setUser(loginData.user);
 
     return true;
   }
 
-  /* -------- LOGOUT -------- */
+  /* ---------- LOGOUT ---------- */
   function logout() {
     localStorage.removeItem("kaeorn_token");
     localStorage.removeItem("kaeorn_user");
@@ -70,8 +87,8 @@ export function AuthProvider({ children }) {
       value={{
         user,
         authLoading,
-        requestOtp,
-        verifyOtp,
+        requestOTP,
+        verifyOTP,
         logout,
       }}
     >
@@ -80,7 +97,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-/* ---------------- HOOK ---------------- */
 export function useAuth() {
   return useContext(AuthContext);
 }

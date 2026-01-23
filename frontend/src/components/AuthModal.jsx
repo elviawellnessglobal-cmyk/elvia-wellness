@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 export default function AuthModal({ onClose }) {
   const { requestOTP, verifyOTP } = useAuth();
 
-  const [step, setStep] = useState("email"); // email | otp
+  const [step, setStep] = useState("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,8 +22,8 @@ export default function AuthModal({ onClose }) {
       await requestOTP(email);
       setStep("otp");
       startTimer();
-    } catch {
-      setError("Unable to send code. Try again.");
+    } catch (err) {
+      setError("Unable to send code. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -99,8 +99,8 @@ export default function AuthModal({ onClose }) {
               onChange={(e) => setOtp(e.target.value)}
               maxLength={6}
               required
-              style={styles.otpInput}
               autoFocus
+              style={styles.otpInput}
             />
 
             {error && <p style={styles.error}>{error}</p>}
@@ -128,6 +128,8 @@ export default function AuthModal({ onClose }) {
     </div>
   );
 }
+
+/* ---------- STYLES ---------- */
 const styles = {
   overlay: {
     position: "fixed",
@@ -138,7 +140,6 @@ const styles = {
     alignItems: "center",
     zIndex: 1000,
   },
-
   card: {
     background: "#fff",
     borderRadius: 20,
@@ -150,7 +151,6 @@ const styles = {
     position: "relative",
     fontFamily: "Inter, sans-serif",
   },
-
   close: {
     position: "absolute",
     top: 14,
@@ -160,33 +160,28 @@ const styles = {
     border: "none",
     cursor: "pointer",
   },
-
   title: {
     fontSize: 22,
     fontWeight: 500,
     marginBottom: 10,
   },
-
   subtitle: {
     fontSize: 14,
     color: "#666",
     marginBottom: 24,
     lineHeight: 1.6,
   },
-
   form: {
     display: "flex",
     flexDirection: "column",
     gap: 14,
   },
-
   input: {
     padding: 14,
     borderRadius: 12,
     border: "1px solid #ddd",
     fontSize: 14,
   },
-
   otpInput: {
     padding: 16,
     borderRadius: 14,
@@ -195,9 +190,7 @@ const styles = {
     letterSpacing: 6,
     textAlign: "center",
   },
-
   button: {
-    marginTop: 6,
     padding: 16,
     borderRadius: 40,
     border: "none",
@@ -206,13 +199,11 @@ const styles = {
     fontSize: 15,
     cursor: "pointer",
   },
-
   resend: {
     marginTop: 16,
     fontSize: 13,
     color: "#777",
   },
-
   resendBtn: {
     background: "none",
     border: "none",
@@ -220,7 +211,6 @@ const styles = {
     fontWeight: 500,
     cursor: "pointer",
   },
-
   error: {
     color: "#c62828",
     fontSize: 13,
