@@ -6,14 +6,14 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  /* ---------- LOAD USER ---------- */
+  /* LOAD USER */
   useEffect(() => {
-    const saved = localStorage.getItem("kaeorn_user");
-    if (saved) setUser(JSON.parse(saved));
+    const savedUser = localStorage.getItem("kaeorn_user");
+    if (savedUser) setUser(JSON.parse(savedUser));
     setAuthLoading(false);
   }, []);
 
-  /* ---------- SEND OTP ---------- */
+  /* SEND OTP */
   async function requestOTP(email) {
     const res = await fetch(
       `${import.meta.env.VITE_API_BASE}/api/auth/forgot-password`,
@@ -27,55 +27,30 @@ export function AuthProvider({ children }) {
     if (!res.ok) {
       throw new Error("Unable to send code");
     }
-
-    return true;
   }
 
-  /* ---------- VERIFY OTP & LOGIN ---------- */
+  /* VERIFY OTP & LOGIN */
   async function verifyOTP(email, otp) {
     const res = await fetch(
-      `${import.meta.env.VITE_API_BASE}/api/auth/reset-password`,
+      `${import.meta.env.VITE_API_BASE}/api/auth/verify-otp`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          otp,
-          password: "otp-login", // dummy (required by backend)
-        }),
+        body: JSON.stringify({ email, otp }),
       }
     );
 
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.message || "Invalid or expired code");
+      throw new Error(data.message || "Invalid code");
     }
 
-    // backend does not return token here → generate login token manually
-    const loginRes = await fetch(
-      `${import.meta.env.VITE_API_BASE}/api/auth/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: "otp-login" }),
-      }
-    );
-
-    const loginData = await loginRes.json();
-
-    if (!loginRes.ok) {
-      throw new Error("Login failed after OTP");
-    }
-
-    localStorage.setItem("kaeorn_token", loginData.token);
-    localStorage.setItem("kaeorn_user", JSON.stringify(loginData.user));
-    setUser(loginData.user);
-
-    return true;
+    localStorage.setItem("kaeorn_token", data.token);
+    localStorage.setItem("kaeorn_user", JSON.stringify(data.user));
+    setUser(data.user);
   }
 
-  /* ---------- LOGOUT ---------- */
   function logout() {
     localStorage.removeItem("kaeorn_token");
     localStorage.removeItem("kaeorn_user");

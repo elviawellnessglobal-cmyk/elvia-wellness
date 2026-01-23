@@ -13,8 +13,6 @@ export default function AuthModal({ onClose }) {
 
   async function handleSendOTP(e) {
     e.preventDefault();
-    if (loading) return;
-
     setLoading(true);
     setError("");
 
@@ -22,8 +20,8 @@ export default function AuthModal({ onClose }) {
       await requestOTP(email);
       setStep("otp");
       startTimer();
-    } catch (err) {
-      setError("Unable to send code. Please try again.");
+    } catch {
+      setError("Unable to send code");
     } finally {
       setLoading(false);
     }
@@ -31,8 +29,6 @@ export default function AuthModal({ onClose }) {
 
   async function handleVerifyOTP(e) {
     e.preventDefault();
-    if (loading) return;
-
     setLoading(true);
     setError("");
 
@@ -40,7 +36,7 @@ export default function AuthModal({ onClose }) {
       await verifyOTP(email, otp);
       onClose();
     } catch (err) {
-      setError(err.message || "Invalid code");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -48,10 +44,10 @@ export default function AuthModal({ onClose }) {
 
   function startTimer() {
     setTimer(30);
-    const interval = setInterval(() => {
+    const i = setInterval(() => {
       setTimer((t) => {
         if (t <= 1) {
-          clearInterval(interval);
+          clearInterval(i);
           return 0;
         }
         return t - 1;
@@ -70,7 +66,7 @@ export default function AuthModal({ onClose }) {
 
         <p style={styles.subtitle}>
           {step === "email"
-            ? "Sign in with your email — no password required."
+            ? "Sign in with your email. No password required."
             : `We sent a 6-digit code to ${email}`}
         </p>
 
@@ -84,9 +80,7 @@ export default function AuthModal({ onClose }) {
               required
               style={styles.input}
             />
-
             {error && <p style={styles.error}>{error}</p>}
-
             <button style={styles.button} disabled={loading}>
               {loading ? "Sending…" : "Continue"}
             </button>
@@ -99,25 +93,19 @@ export default function AuthModal({ onClose }) {
               onChange={(e) => setOtp(e.target.value)}
               maxLength={6}
               required
+              style={styles.otp}
               autoFocus
-              style={styles.otpInput}
             />
-
             {error && <p style={styles.error}>{error}</p>}
-
             <button style={styles.button} disabled={loading}>
-              {loading ? "Verifying…" : "Verify & Continue"}
+              {loading ? "Verifying…" : "Verify & Login"}
             </button>
 
             <div style={styles.resend}>
               {timer > 0 ? (
-                <span>Resend code in {timer}s</span>
+                <span>Resend in {timer}s</span>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleSendOTP}
-                  style={styles.resendBtn}
-                >
+                <button type="button" onClick={handleSendOTP} style={styles.resendBtn}>
                   Resend code
                 </button>
               )}
@@ -129,66 +117,46 @@ export default function AuthModal({ onClose }) {
   );
 }
 
-/* ---------- STYLES ---------- */
+/* ---- STYLES ---- */
 const styles = {
   overlay: {
     position: "fixed",
     inset: 0,
     background: "rgba(0,0,0,0.45)",
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
     zIndex: 1000,
   },
   card: {
     background: "#fff",
-    borderRadius: 20,
     padding: 36,
+    borderRadius: 20,
     width: "100%",
     maxWidth: 380,
     textAlign: "center",
-    boxShadow: "0 40px 120px rgba(0,0,0,0.15)",
     position: "relative",
-    fontFamily: "Inter, sans-serif",
   },
   close: {
     position: "absolute",
-    top: 14,
     right: 16,
+    top: 12,
     fontSize: 22,
-    background: "none",
     border: "none",
+    background: "none",
     cursor: "pointer",
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 500,
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 24,
-    lineHeight: 1.6,
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 14,
-  },
-  input: {
-    padding: 14,
-    borderRadius: 12,
-    border: "1px solid #ddd",
-    fontSize: 14,
-  },
-  otpInput: {
+  title: { fontSize: 22, marginBottom: 10 },
+  subtitle: { fontSize: 14, color: "#666", marginBottom: 24 },
+  form: { display: "flex", flexDirection: "column", gap: 14 },
+  input: { padding: 14, borderRadius: 12, border: "1px solid #ddd" },
+  otp: {
     padding: 16,
-    borderRadius: 14,
-    border: "1px solid #ddd",
     fontSize: 18,
     letterSpacing: 6,
     textAlign: "center",
+    borderRadius: 14,
+    border: "1px solid #ddd",
   },
   button: {
     padding: 16,
@@ -196,23 +164,13 @@ const styles = {
     border: "none",
     background: "#111",
     color: "#fff",
-    fontSize: 15,
-    cursor: "pointer",
   },
-  resend: {
-    marginTop: 16,
-    fontSize: 13,
-    color: "#777",
-  },
+  resend: { marginTop: 14, fontSize: 13 },
   resendBtn: {
     background: "none",
     border: "none",
-    color: "#111",
     fontWeight: 500,
     cursor: "pointer",
   },
-  error: {
-    color: "#c62828",
-    fontSize: 13,
-  },
+  error: { color: "#c62828", fontSize: 13 },
 };
