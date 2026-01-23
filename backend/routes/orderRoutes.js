@@ -26,7 +26,7 @@ router.post("/", userAuth, async (req, res) => {
       validatedItems.push({
         productId: product.productId,
         name: product.name,
-        price: product.price, // 🔒 FROM DB
+        price: product.price,
         quantity: item.quantity,
         image: item.image,
       });
@@ -39,6 +39,7 @@ router.post("/", userAuth, async (req, res) => {
 
     const order = await Order.create({
       user: req.user || null,
+      userEmail: req.userEmail || req.body.address?.email || null,
       items: validatedItems,
       address: req.body.address,
       totalAmount,
@@ -75,13 +76,19 @@ router.get("/my-orders/:id", userAuth, async (req, res) => {
 
 /* ---------------- ADMIN: ALL ORDERS ---------------- */
 router.get("/", adminAuth, async (req, res) => {
-  const orders = await Order.find().sort({ createdAt: -1 });
+  const orders = await Order.find()
+    .populate("user", "email name")
+    .sort({ createdAt: -1 });
+
   res.json(orders);
 });
 
 /* ---------------- ADMIN: ORDER DETAIL ---------------- */
 router.get("/:id", adminAuth, async (req, res) => {
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id).populate(
+    "user",
+    "email name"
+  );
   res.json(order);
 });
 

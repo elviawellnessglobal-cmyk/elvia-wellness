@@ -4,7 +4,9 @@ module.exports = function userAuth(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
+    req.user = null;
+    req.userEmail = null;
+    return next(); // guest allowed
   }
 
   try {
@@ -12,8 +14,12 @@ module.exports = function userAuth(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = decoded.id;
+    req.userEmail = decoded.email;
+
     next();
-  } catch {
-    return res.status(401).json({ message: "Invalid token" });
+  } catch (err) {
+    req.user = null;
+    req.userEmail = null;
+    next();
   }
 };

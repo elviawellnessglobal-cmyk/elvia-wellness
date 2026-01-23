@@ -13,6 +13,7 @@ export default function Dashboard() {
     delivered: 0,
   });
 
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,14 +44,15 @@ export default function Dashboard() {
         throw new Error(err.message || "Admin only");
       }
 
-      const orders = await res.json();
+      const data = await res.json();
+      setOrders(data);
 
       let revenue = 0;
       let pending = 0;
       let delivered = 0;
       let inTransit = 0;
 
-      orders.forEach((order) => {
+      data.forEach((order) => {
         revenue += order.totalAmount || 0;
 
         if (order.status === "Pending") pending++;
@@ -64,7 +66,7 @@ export default function Dashboard() {
       });
 
       setStats({
-        totalOrders: orders.length,
+        totalOrders: data.length,
         totalRevenue: revenue,
         pending,
         delivered,
@@ -79,6 +81,15 @@ export default function Dashboard() {
     }
   }
 
+  function getCustomerEmail(order) {
+    return (
+      order.user?.email ||
+      order.userEmail ||
+      order.address?.email ||
+      "Guest user"
+    );
+  }
+
   if (loading) {
     return (
       <AdminLayout>
@@ -90,13 +101,13 @@ export default function Dashboard() {
   return (
     <AdminLayout>
       <div style={styles.page}>
+        {/* HEADER */}
         <div style={styles.headerRow}>
           <div>
             <h1 style={styles.heading}>Dashboard</h1>
             <p style={styles.subheading}>Business overview</p>
           </div>
 
-          {/* ✅ MOVED BUTTON HERE */}
           <button
             onClick={() => navigate("/admin/chats")}
             style={styles.chatBtn}
@@ -105,12 +116,43 @@ export default function Dashboard() {
           </button>
         </div>
 
+        {/* STATS */}
         <div style={styles.grid}>
           <Card title="Total Orders" value={stats.totalOrders} />
           <Card title="Revenue" value={`₹${stats.totalRevenue}`} />
           <Card title="Pending Orders" value={stats.pending} />
           <Card title="In Transit" value={stats.inTransit} />
           <Card title="Delivered" value={stats.delivered} />
+        </div>
+
+        {/* RECENT ORDERS */}
+        <h3 style={styles.sectionTitle}>Recent Orders</h3>
+
+        <div style={styles.tableWrap}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Email</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.slice(0, 10).map((order) => (
+                <tr key={order._id}>
+                  <td>{order._id.slice(-6)}</td>
+                  <td>{getCustomerEmail(order)}</td>
+                  <td>₹{order.totalAmount}</td>
+                  <td>{order.status}</td>
+                  <td>
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </AdminLayout>
@@ -159,6 +201,7 @@ const styles = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: "24px",
+    marginBottom: 50,
   },
 
   card: {
@@ -189,5 +232,31 @@ const styles = {
     color: "#fff",
     fontSize: 14,
     cursor: "pointer",
+  },
+
+  sectionTitle: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+
+  tableWrap: {
+    overflowX: "auto",
+    background: "#fff",
+    borderRadius: 14,
+    border: "1px solid #eee",
+  },
+
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    fontSize: 14,
+  },
+
+  th: {
+    textAlign: "left",
+  },
+
+  td: {
+    padding: "14px",
   },
 };
