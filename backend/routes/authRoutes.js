@@ -15,19 +15,21 @@ function signToken(user) {
   );
 }
 
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 /* ---------- SIGNUP ---------- */
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ message: "Missing fields" });
-    }
 
     const exists = await User.findOne({ email });
-    if (exists) {
+    if (exists)
       return res.status(400).json({ message: "Account already exists" });
-    }
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -41,11 +43,7 @@ router.post("/signup", async (req, res) => {
 
     res.json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (err) {
     console.error("Signup error:", err);
@@ -53,20 +51,18 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-/* ---------- LOGIN ---------- */
+/* ---------- LOGIN (PASSWORD) ---------- */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user || !user.password) {
+    if (!user || !user.password)
       return res.status(400).json({ message: "Invalid credentials" });
-    }
 
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) {
+    if (!ok)
       return res.status(400).json({ message: "Invalid credentials" });
-    }
 
     const token = signToken(user);
 
@@ -85,14 +81,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/* ---------- GOOGLE LOGIN (CUSTOMERS ONLY) ---------- */
+/* ---------- GOOGLE LOGIN (CUSTOMERS) ---------- */
 router.post("/google", async (req, res) => {
   try {
     const { email, name, googleId } = req.body;
-
-    if (!email || !googleId) {
+    if (!email || !googleId)
       return res.status(400).json({ message: "Invalid Google data" });
-    }
 
     let user = await User.findOne({ email });
 
@@ -108,11 +102,7 @@ router.post("/google", async (req, res) => {
 
     res.json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (err) {
     console.error("Google auth error:", err);
@@ -120,16 +110,76 @@ router.post("/google", async (req, res) => {
   }
 });
 
-/* ---------- FORGOT PASSWORD (SEND OTP) ---------- */
+/* ======================================================
+   🔐 OTP LOGIN (NEW — DOES NOT BREAK OLD LOGIC)
+====================================================== */
+
+/* ---------- REQUEST OTP (LOGIN) ---------- */
+router.post("/request-otp", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return res.status(400).json({ message: "Email required" });
+
+    const otp = generateOTP();
+
+    let user = await User.findOne({ email });
+    if (!user) user = await User.create({ email });
+
+    user.otp = otp;
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+
+    await sendOTPEmail(email, otp);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Request OTP error:", err);
+    res.status(500).json({ message: "OTP failed" });
+  }
+});
+
+/* ---------- VERIFY OTP (LOGIN) ---------- */
+router.post("/verify-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user || user.otp !== otp || user.otpExpiry < new Date()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    const token = signToken(user);
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        isAdmin: user.isAdmin,
+      },
+    });
+  } catch (err) {
+    console.error("Verify OTP error:", err);
+    res.status(500).json({ message: "OTP verification failed" });
+  }
+});
+
+/* ---------- FORGOT PASSWORD (OTP) ---------- */
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Silent success (security best practice)
     const user = await User.findOne({ email });
     if (!user) return res.json({ success: true });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOTP();
 
     user.resetOtp = otp;
     user.resetOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
