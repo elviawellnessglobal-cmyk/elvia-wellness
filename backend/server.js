@@ -19,8 +19,14 @@ const app = express();
 /* ---------------- CORS ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
+
+  // Vercel deployments
   "https://elvia-wellness.vercel.app",
   "https://kaeorn-wellness.vercel.app",
+
+  // Custom domain (VERY IMPORTANT)
+  "https://kaeorn.com",
+  "https://www.kaeorn.com",
 ];
 
 app.use(
