@@ -11,13 +11,10 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
 
-    password: String, // email/password users
+    googleId: String,
 
-    googleId: String, // google users
-
-    // 🔐 FORGOT PASSWORD OTP
-    resetOtp: String,
-    resetOtpExpiry: Date,
+    otp: String,
+    otpExpiry: Date,
 
     isAdmin: {
       type: Boolean,

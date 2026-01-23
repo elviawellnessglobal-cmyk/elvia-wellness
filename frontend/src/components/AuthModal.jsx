@@ -2,229 +2,203 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 export default function AuthModal({ onClose }) {
-  const { setUser, loginWithGoogle } = useAuth();
+  const { requestOTP, verifyOTP } = useAuth();
 
   const [step, setStep] = useState("email"); // email | otp
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [timer, setTimer] = useState(0);
 
-  /* ---------------- SEND OTP ---------------- */
-  async function sendOtp() {
-    if (!email) return;
+  async function handleSendOTP(e) {
+    e.preventDefault();
+    if (loading) return;
 
     setLoading(true);
     setError("");
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE}/api/auth/request-otp`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      if (!res.ok) throw new Error("Failed to send OTP");
-
+      await requestOTP(email);
       setStep("otp");
-    } catch (err) {
+      startTimer();
+    } catch {
       setError("Unable to send code. Try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  /* ---------------- VERIFY OTP ---------------- */
-  async function verifyOtp() {
-    if (!otp || otp.length !== 6) return;
+  async function handleVerifyOTP(e) {
+    e.preventDefault();
+    if (loading) return;
 
     setLoading(true);
     setError("");
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE}/api/auth/verify-otp`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp }),
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-
-      localStorage.setItem("kaeorn_token", data.token);
-      localStorage.setItem("kaeorn_user", JSON.stringify(data.user));
-      setUser(data.user);
+      await verifyOTP(email, otp);
       onClose();
     } catch (err) {
-      setError("Invalid or expired code");
+      setError(err.message || "Invalid code");
     } finally {
       setLoading(false);
     }
   }
 
+  function startTimer() {
+    setTimer(30);
+    const interval = setInterval(() => {
+      setTimer((t) => {
+        if (t <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+  }
+
   return (
     <div style={styles.overlay}>
-      <div style={styles.box}>
-        <button style={styles.close} onClick={onClose}>×</button>
+      <div style={styles.card}>
+        <button onClick={onClose} style={styles.close}>×</button>
 
-        {/* ---------- STEP 1 : EMAIL ---------- */}
-        {step === "email" && (
-          <>
-            <div style={styles.brand}>KAEORN</div>
-            <h2 style={styles.title}>Welcome</h2>
-            <p style={styles.subtitle}>
-              Enter your email to continue
-            </p>
+        <h2 style={styles.title}>
+          {step === "email" ? "Welcome to KAEORN" : "Enter verification code"}
+        </h2>
 
+        <p style={styles.subtitle}>
+          {step === "email"
+            ? "Sign in with your email — no password required."
+            : `We sent a 6-digit code to ${email}`}
+        </p>
+
+        {step === "email" ? (
+          <form onSubmit={handleSendOTP} style={styles.form}>
             <input
               type="email"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               style={styles.input}
             />
 
             {error && <p style={styles.error}>{error}</p>}
 
-            <button
-              style={styles.submit}
-              onClick={sendOtp}
-              disabled={loading}
-            >
+            <button style={styles.button} disabled={loading}>
               {loading ? "Sending…" : "Continue"}
             </button>
-
-            <div style={styles.divider}>or</div>
-
-            {/* GOOGLE LOGIN */}
-            <div
-              id="google-button"
-              style={styles.google}
-              onClick={() =>
-                window.google.accounts.id.prompt((notification) => {
-                  if (notification.isNotDisplayed()) {
-                    setError("Google login unavailable");
-                  }
-                })
-              }
-            >
-              Continue with Google
-            </div>
-          </>
-        )}
-
-        {/* ---------- STEP 2 : OTP ---------- */}
-        {step === "otp" && (
-          <>
-            <div style={styles.brand}>KAEORN</div>
-            <h2 style={styles.title}>Enter your code</h2>
-            <p style={styles.subtitle}>
-              We sent a 6-digit code to <strong>{email}</strong>
-            </p>
-
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOTP} style={styles.form}>
             <input
-              placeholder="••••••"
+              placeholder="6-digit code"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               maxLength={6}
+              required
               style={styles.otpInput}
+              autoFocus
             />
 
             {error && <p style={styles.error}>{error}</p>}
 
-            <button
-              style={styles.submit}
-              onClick={verifyOtp}
-              disabled={loading}
-            >
-              {loading ? "Verifying…" : "Verify & Login"}
+            <button style={styles.button} disabled={loading}>
+              {loading ? "Verifying…" : "Verify & Continue"}
             </button>
 
-            <p style={styles.resend}>
-              Didn’t receive it?{" "}
-              <span style={styles.link} onClick={sendOtp}>
-                Resend code
-              </span>
-            </p>
-          </>
+            <div style={styles.resend}>
+              {timer > 0 ? (
+                <span>Resend code in {timer}s</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSendOTP}
+                  style={styles.resendBtn}
+                >
+                  Resend code
+                </button>
+              )}
+            </div>
+          </form>
         )}
       </div>
     </div>
   );
 }
-
-/* ---------------- STYLES ---------------- */
-
 const styles = {
   overlay: {
     position: "fixed",
     inset: 0,
     background: "rgba(0,0,0,0.45)",
     display: "flex",
-    alignItems: "center",
     justifyContent: "center",
-    zIndex: 9999,
+    alignItems: "center",
+    zIndex: 1000,
   },
-  box: {
+
+  card: {
     background: "#fff",
-    padding: "42px",
-    borderRadius: "20px",
+    borderRadius: 20,
+    padding: 36,
     width: "100%",
-    maxWidth: "400px",
+    maxWidth: 380,
     textAlign: "center",
+    boxShadow: "0 40px 120px rgba(0,0,0,0.15)",
     position: "relative",
+    fontFamily: "Inter, sans-serif",
   },
+
   close: {
     position: "absolute",
+    top: 14,
     right: 16,
-    top: 12,
     fontSize: 22,
-    border: "none",
     background: "none",
+    border: "none",
     cursor: "pointer",
   },
-  brand: {
-    letterSpacing: 3,
-    fontSize: 12,
-    color: "#888",
-    marginBottom: 16,
-  },
+
   title: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: 500,
     marginBottom: 10,
   },
+
   subtitle: {
     fontSize: 14,
     color: "#666",
-    marginBottom: 26,
+    marginBottom: 24,
+    lineHeight: 1.6,
   },
+
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 14,
+  },
+
   input: {
-    width: "100%",
-    padding: "14px",
+    padding: 14,
     borderRadius: 12,
     border: "1px solid #ddd",
-    marginBottom: 18,
+    fontSize: 14,
   },
+
   otpInput: {
-    width: "100%",
-    padding: "18px",
-    fontSize: 20,
-    letterSpacing: 10,
-    textAlign: "center",
+    padding: 16,
     borderRadius: 14,
     border: "1px solid #ddd",
-    marginBottom: 20,
+    fontSize: 18,
+    letterSpacing: 6,
+    textAlign: "center",
   },
-  submit: {
-    width: "100%",
-    padding: "16px",
+
+  button: {
+    marginTop: 6,
+    padding: 16,
     borderRadius: 40,
     border: "none",
     background: "#111",
@@ -232,30 +206,23 @@ const styles = {
     fontSize: 15,
     cursor: "pointer",
   },
-  divider: {
-    margin: "22px 0",
-    fontSize: 12,
-    color: "#aaa",
-  },
-  google: {
-    border: "1px solid #ddd",
-    borderRadius: 40,
-    padding: "14px",
-    cursor: "pointer",
-    fontSize: 14,
-  },
+
   resend: {
-    marginTop: 18,
+    marginTop: 16,
     fontSize: 13,
-    color: "#666",
+    color: "#777",
   },
-  link: {
-    cursor: "pointer",
+
+  resendBtn: {
+    background: "none",
+    border: "none",
+    color: "#111",
     fontWeight: 500,
+    cursor: "pointer",
   },
+
   error: {
     color: "#c62828",
     fontSize: 13,
-    marginBottom: 14,
   },
 };
