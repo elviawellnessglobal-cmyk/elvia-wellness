@@ -1,215 +1,245 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
-export default function AuthModal({ type = "login", onClose }) {
-  const { login } = useAuth();
-  const [mode, setMode] = useState(type);
+export default function AuthModal({ onClose }) {
+  const { loginWithGoogle } = useAuth();
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState("email"); // email → otp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e) {
+  async function sendOtp(e) {
     e.preventDefault();
-    if (loading) return;
-
+    setLoading(true);
     setError("");
+
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE}/api/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      }
+    );
+
+    if (!res.ok) {
+      setError("Unable to send code");
+      setLoading(false);
+      return;
+    }
+
+    setStep("otp");
+    setLoading(false);
+  }
+
+  async function verifyOtp(e) {
+    e.preventDefault();
     setLoading(true);
 
-    try {
-      /* -------- SIGNUP -------- */
-      if (mode === "signup") {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_BASE}/api/auth/signup`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name,
-              email,
-              phone,
-              password,
-            }),
-          }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          setError(data.message || "Signup failed");
-          setLoading(false);
-          return;
-        }
-
-        setMode("login");
-        setLoading(false);
-        return;
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE}/api/auth/reset-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          otp,
+          password: otp, // temp pass for auto-login
+        }),
       }
+    );
 
-      /* -------- LOGIN -------- */
-      const result = await login({ email, password });
+    if (!res.ok) {
+      setError("Invalid or expired code");
       setLoading(false);
-
-      if (result?.error) {
-        setError(result.error);
-        return;
-      }
-
-      onClose(); // ✅ CLOSE MODAL
-    } catch (err) {
-      console.error("Auth error:", err);
-      setError("Something went wrong. Please try again.");
-      setLoading(false);
+      return;
     }
+
+    window.location.reload(); // auto-login via JWT
   }
 
   return (
     <div style={styles.overlay}>
-      <div style={styles.box}>
-        <button style={styles.close} onClick={onClose}>
-          ×
-        </button>
+      <div style={styles.card}>
+        <button onClick={onClose} style={styles.close}>×</button>
 
+        <p style={styles.brand}>KAEORN</p>
         <h2 style={styles.title}>
-          {mode === "login" ? "Welcome Back" : "Create Account"}
+          {step === "email" ? "Welcome back" : "Enter your code"}
         </h2>
+        <p style={styles.subtitle}>
+          {step === "email"
+            ? "Sign in to continue your ritual"
+            : "We sent a 6-digit code to your email"}
+        </p>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {mode === "signup" && (
-            <>
-              <input
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                style={styles.input}
-              />
-
-              <input
-                placeholder="Mobile Number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </>
+        <form onSubmit={step === "email" ? sendOtp : verifyOtp}>
+          {step === "email" && (
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              required
+              onChange={(e) => setEmail(e.target.value)}
+              style={styles.input}
+            />
           )}
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={styles.input}
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
+          {step === "otp" && (
+            <input
+              placeholder="••••••"
+              value={otp}
+              required
+              onChange={(e) => setOtp(e.target.value)}
+              style={{
+                ...styles.input,
+                letterSpacing: 6,
+                textAlign: "center",
+                fontSize: 18,
+              }}
+            />
+          )}
 
           {error && <p style={styles.error}>{error}</p>}
 
-          <button style={styles.submit} disabled={loading}>
+          <button disabled={loading} style={styles.primaryBtn}>
             {loading
               ? "Please wait…"
-              : mode === "login"
-              ? "Login"
-              : "Create Account"}
+              : step === "email"
+              ? "Continue"
+              : "Verify & Login"}
           </button>
         </form>
 
-        <p style={styles.switch}>
-          {mode === "login" ? (
-            <>
-              New here?{" "}
-              <span style={styles.link} onClick={() => setMode("signup")}>
-                Create account
-              </span>
-            </>
-          ) : (
-            <>
-              Already have an account?{" "}
-              <span style={styles.link} onClick={() => setMode("login")}>
-                Login
-              </span>
-            </>
-          )}
+        {/* Divider */}
+        <div style={styles.divider}>
+          <span />
+          <small>or</small>
+          <span />
+        </div>
+
+        {/* Google Login */}
+        <button
+          onClick={() => window.google?.accounts.id.prompt()}
+          style={styles.googleBtn}
+        >
+          Continue with Google
+        </button>
+
+        <p style={styles.note}>
+          By continuing, you agree to our Terms & Privacy Policy
         </p>
       </div>
     </div>
   );
 }
 
-/* -------- STYLES (UNCHANGED) -------- */
+/* ---------------- LUXURY STYLES ---------------- */
 
 const styles = {
   overlay: {
     position: "fixed",
     inset: 0,
-    background: "rgba(0,0,0,0.45)",
+    background: "rgba(0,0,0,0.55)",
+    backdropFilter: "blur(6px)",
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
-    zIndex: 1000,
+    justifyContent: "center",
+    zIndex: 2000,
   },
-  box: {
+
+  card: {
     background: "#fff",
-    padding: "36px",
-    borderRadius: "18px",
+    padding: "44px",
+    borderRadius: 24,
     width: "100%",
-    maxWidth: "380px",
-    position: "relative",
+    maxWidth: 420,
     textAlign: "center",
+    boxShadow: "0 40px 120px rgba(0,0,0,0.18)",
+    position: "relative",
   },
+
   close: {
     position: "absolute",
-    right: "16px",
-    top: "12px",
-    fontSize: "22px",
+    right: 20,
+    top: 14,
+    fontSize: 26,
     border: "none",
     background: "none",
     cursor: "pointer",
+    color: "#999",
   },
+
+  brand: {
+    fontSize: 12,
+    letterSpacing: 4,
+    marginBottom: 18,
+    color: "#888",
+  },
+
   title: {
-    marginBottom: "20px",
+    fontSize: 26,
+    fontWeight: 500,
+    marginBottom: 10,
   },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
+
+  subtitle: {
+    fontSize: 15,
+    color: "#666",
+    marginBottom: 32,
   },
+
   input: {
-    padding: "12px",
-    borderRadius: "10px",
-    border: "1px solid #ccc",
+    width: "100%",
+    padding: "16px",
+    borderRadius: 14,
+    border: "1px solid #e5e5e5",
+    marginBottom: 16,
+    fontSize: 15,
+    outline: "none",
   },
-  submit: {
-    padding: "14px",
-    borderRadius: "40px",
-    border: "none",
+
+  primaryBtn: {
+    width: "100%",
+    padding: "16px",
+    borderRadius: 999,
     background: "#111",
     color: "#fff",
+    border: "none",
+    fontSize: 15,
     cursor: "pointer",
+    marginTop: 6,
   },
+
+  divider: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    margin: "26px 0",
+    color: "#aaa",
+  },
+
+  googleBtn: {
+    width: "100%",
+    padding: "14px",
+    borderRadius: 999,
+    border: "1px solid #ddd",
+    background: "#fafafa",
+    cursor: "pointer",
+    fontSize: 14,
+  },
+
+  note: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 22,
+  },
+
   error: {
-    color: "red",
-    fontSize: "13px",
-  },
-  switch: {
-    marginTop: "18px",
-    fontSize: "13px",
-  },
-  link: {
-    cursor: "pointer",
-    fontWeight: "500",
+    fontSize: 13,
+    color: "#c62828",
+    marginBottom: 12,
   },
 };

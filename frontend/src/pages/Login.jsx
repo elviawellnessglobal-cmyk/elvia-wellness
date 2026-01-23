@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import GoogleLoginButton from "../components/GoogleLoginButton";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -46,10 +48,15 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <div style={{ marginTop: 18 }}>
+  <GoogleLoginButton />
+</div>
+
 
         <button type="submit" disabled={loading}>
           {loading ? "Signing in..." : "Sign In"}
         </button>
+        
       </form>
 
       <div className="auth-links">
@@ -60,6 +67,7 @@ export default function Login() {
         New to KAEORN? <Link to="/signup">Create your account</Link>
       </p>
     </div>
+    
   );
 }
 

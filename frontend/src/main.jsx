@@ -48,6 +48,7 @@ import { CartProvider } from "./context/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtected from "./components/AdminProtected";
 import ChatDetail from "./admin/ChatDetail";
+import ResetPassword from "./pages/ResetPassword";
 
 /* ---------------- NAVBAR CONTROLLER ---------------- */
 
@@ -97,7 +98,7 @@ function AppRoot() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/refund" element={<Refund />} />
         <Route path="/shipping" element={<Shipping />} />
-
+<Route path="/reset-password" element={<ResetPassword />} />
         {/* ---------- CART ---------- */}
         <Route
           path="/cart"

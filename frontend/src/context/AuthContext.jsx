@@ -6,63 +6,59 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  /* -------- LOAD USER ON REFRESH -------- */
   useEffect(() => {
-    const savedUser = localStorage.getItem("kaeorn_user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    const saved = localStorage.getItem("kaeorn_user");
+    if (saved) setUser(JSON.parse(saved));
     setAuthLoading(false);
   }, []);
 
-  /* -------- LOGIN -------- */
-  async function login({ email, password }) {
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE}/api/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      if (!res.ok) {
-        const text = await res.text();
-        return { error: text || "Login failed" };
-      }
-
-      const data = await res.json();
-
-      localStorage.setItem("kaeorn_token", data.token);
-      localStorage.setItem("kaeorn_user", JSON.stringify(data.user));
-
-      setUser(data.user);
-
-      return { success: true };
-    } catch (err) {
-      console.error("Login error:", err);
-      return { error: "Network error. Please try again." };
-    }
+  function saveAuth(data) {
+    localStorage.setItem("kaeorn_token", data.token);
+    localStorage.setItem("kaeorn_user", JSON.stringify(data.user));
+    setUser(data.user);
   }
 
-  /* -------- LOGOUT -------- */
+  async function login({ email, password }) {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE}/api/auth/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) return { error: data.message };
+    saveAuth(data);
+    return { success: true };
+  }
+
+  async function loginWithGoogle(credential) {
+    const payload = JSON.parse(atob(credential.split(".")[1]));
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE}/api/auth/google`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: payload.email,
+          name: payload.name,
+          googleId: payload.sub,
+        }),
+      }
+    );
+    const data = await res.json();
+    saveAuth(data);
+  }
+
   function logout() {
-    localStorage.removeItem("kaeorn_token");
-    localStorage.removeItem("kaeorn_user");
+    localStorage.clear();
     setUser(null);
   }
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        authLoading,
-      }}
+      value={{ user, login, loginWithGoogle, logout, authLoading }}
     >
       {children}
     </AuthContext.Provider>
