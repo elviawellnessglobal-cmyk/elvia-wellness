@@ -6,10 +6,6 @@ const { sendOTPEmail } = require("../utils/sendOtp");
 const router = express.Router();
 
 /* ---------- HELPERS ---------- */
-function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
 function signToken(user) {
   return jwt.sign(
     { id: user._id, email: user.email, isAdmin: user.isAdmin },
@@ -18,33 +14,40 @@ function signToken(user) {
   );
 }
 
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 /* ---------- REQUEST OTP ---------- */
 router.post("/request-otp", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email)
-      return res.status(400).json({ message: "Email required" });
-
-    const otp = generateOTP();
-    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+    if (!email) return res.status(400).json({ message: "Email required" });
 
     let user = await User.findOne({ email });
     if (!user) user = await User.create({ email });
 
+    // 🔒 DO NOT overwrite if OTP still valid
+    if (user.otp && user.otpExpiry > new Date()) {
+      return res.json({ success: true });
+    }
+
+    const otp = generateOTP();
+
     user.otp = otp;
-    user.otpExpiry = expiry;
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min
     await user.save();
 
     await sendOTPEmail(email, otp);
 
     res.json({ success: true });
   } catch (err) {
-    console.error("Request OTP error:", err);
-    res.status(500).json({ message: "Failed to send OTP" });
+    console.error("OTP request error:", err);
+    res.status(500).json({ message: "OTP failed" });
   }
 });
 
-/* ---------- VERIFY OTP & LOGIN ---------- */
+/* ---------- VERIFY OTP ---------- */
 router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -53,12 +56,14 @@ router.post("/verify-otp", async (req, res) => {
 
     if (
       !user ||
-      user.otp !== otp ||
+      !user.otp ||
+      user.otp !== String(otp).trim() ||
       user.otpExpiry < new Date()
     ) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
+    // ✅ CLEAR OTP
     user.otp = null;
     user.otpExpiry = null;
     await user.save();
@@ -75,38 +80,8 @@ router.post("/verify-otp", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Verify OTP error:", err);
+    console.error("OTP verify error:", err);
     res.status(500).json({ message: "OTP verification failed" });
-  }
-});
-
-/* ---------- GOOGLE LOGIN (CUSTOMERS) ---------- */
-router.post("/google", async (req, res) => {
-  try {
-    const { email, name, googleId } = req.body;
-
-    let user = await User.findOne({ email });
-
-    if (!user) {
-      user = await User.create({ email, name, googleId });
-    } else if (!user.googleId) {
-      user.googleId = googleId;
-      if (!user.name) user.name = name;
-      await user.save();
-    }
-
-    const token = signToken(user);
-
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-        name: user.name,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ message: "Google login failed" });
   }
 });
 
