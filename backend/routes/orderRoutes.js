@@ -11,7 +11,7 @@ router.post("/", userAuth, async (req, res) => {
   try {
     const validatedItems = [];
 
-    for (const item of req.body.items) {
+    for (const item of req.body.items || []) {
       const product = await Product.findOne({
         productId: item.productId,
         isActive: true,
@@ -32,33 +32,51 @@ router.post("/", userAuth, async (req, res) => {
       });
     }
 
+    if (!validatedItems.length) {
+      return res.status(400).json({ message: "No items in order" });
+    }
+
     const totalAmount = validatedItems.reduce(
       (sum, i) => sum + i.price * i.quantity,
       0
     );
 
-    /* ---------------- NORMALIZE ADDRESS ---------------- */
+    /* ---------------- ULTRA-DEFENSIVE ADDRESS NORMALIZATION ---------------- */
 
-    const rawAddress = req.body.address || {};
+    const body = req.body || {};
+    const address =
+      body.address ||
+      body.shippingAddress ||
+      body.deliveryAddress ||
+      {};
 
-    const customerEmail =
-      rawAddress.email ||
-      rawAddress.emailAddress ||
-      req.body.email ||
+    const contact = address.contact || {};
+
+    let customerEmail =
+      address.email ||
+      address.emailAddress ||
+      contact.email ||
+      body.email ||
       null;
 
-    const customerPhone =
-      rawAddress.phone ||
-      rawAddress.phoneNumber ||
-      rawAddress.mobile ||
-      req.body.phone ||
+    let customerPhone =
+      address.phone ||
+      address.phoneNumber ||
+      address.mobile ||
+      contact.phone ||
+      body.phone ||
       null;
+
+    // Convert phone number → string if needed
+    if (typeof customerPhone === "number") {
+      customerPhone = customerPhone.toString();
+    }
 
     if (
       !customerEmail ||
       !customerPhone ||
-      customerEmail.trim() === "" ||
-      customerPhone.trim() === ""
+      String(customerEmail).trim() === "" ||
+      String(customerPhone).trim() === ""
     ) {
       return res.status(400).json({
         message: "Email and phone are required in address",
@@ -69,9 +87,9 @@ router.post("/", userAuth, async (req, res) => {
       user: req.user || null,
       items: validatedItems,
       address: {
-        ...rawAddress,
-        email: customerEmail.trim(),
-        phone: customerPhone.trim(),
+        ...address,
+        email: String(customerEmail).trim(),
+        phone: String(customerPhone).trim(),
       },
       totalAmount,
       status: "Pending",
