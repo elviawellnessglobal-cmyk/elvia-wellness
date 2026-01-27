@@ -44,6 +44,14 @@ export default function OrderView() {
 
   const address = order.address || {};
 
+  // ✅ SINGLE SOURCE OF TRUTH FOR EMAIL
+  const customerEmail =
+    order.customerEmail ||
+    address.email ||
+    order.userEmail ||
+    order.user?.email ||
+    "—";
+
   return (
     <div style={styles.layout}>
       <Sidebar />
@@ -70,7 +78,7 @@ export default function OrderView() {
           </p>
           <p>
             <b>Email:</b>{" "}
-            {address.email || order.userEmail || order.user?.email || "—"}
+            {customerEmail}
           </p>
         </div>
 
