@@ -42,15 +42,41 @@ export default function OrderView() {
     return <p style={{ padding: "40px" }}>Order not found</p>;
   }
 
-  const address = order.address || {};
+  /* ---------------- LEGACY-SAFE NORMALIZATION ---------------- */
 
-  // ✅ SINGLE SOURCE OF TRUTH FOR EMAIL
+  const address =
+    typeof order.address === "object" ? order.address : {};
+
   const customerEmail =
     order.customerEmail ||
-    address.email ||
     order.userEmail ||
     order.user?.email ||
+    (typeof order.address === "object" ? order.address.email : null) ||
     "—";
+
+  const customerPhone =
+    address.phone ||
+    order.phone ||
+    "—";
+
+  const customerName =
+    address.name ||
+    order.user?.name ||
+    "—";
+
+  const addressText =
+    typeof order.address === "string"
+      ? order.address
+      : [
+          address.addressLine,
+          address.street,
+          address.city,
+          address.state,
+          address.pincode,
+          address.country,
+        ]
+          .filter(Boolean)
+          .join(", ") || "—";
 
   return (
     <div style={styles.layout}>
@@ -68,31 +94,15 @@ export default function OrderView() {
         {/* CUSTOMER */}
         <div style={styles.card}>
           <h3 style={styles.label}>CUSTOMER</h3>
-          <p>
-            <b>Name:</b>{" "}
-            {address.name || order.user?.name || "—"}
-          </p>
-          <p>
-            <b>Phone:</b>{" "}
-            {address.phone || "—"}
-          </p>
-          <p>
-            <b>Email:</b>{" "}
-            {customerEmail}
-          </p>
+          <p><b>Name:</b> {customerName}</p>
+          <p><b>Phone:</b> {customerPhone}</p>
+          <p><b>Email:</b> {customerEmail}</p>
         </div>
 
         {/* ADDRESS */}
         <div style={styles.card}>
           <h3 style={styles.label}>DELIVERY ADDRESS</h3>
-          <p>
-            {address.addressLine || address.street || "—"}
-            <br />
-            {address.city || "—"}, {address.state || "—"} –{" "}
-            {address.pincode || "—"}
-            <br />
-            {address.country || "India"}
-          </p>
+          <p>{addressText}</p>
         </div>
 
         {/* ITEMS */}
