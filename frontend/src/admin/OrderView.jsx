@@ -42,6 +42,8 @@ export default function OrderView() {
     return <p style={{ padding: "40px" }}>Order not found</p>;
   }
 
+  const address = order.address || {};
+
   return (
     <div style={styles.layout}>
       <Sidebar />
@@ -58,17 +60,30 @@ export default function OrderView() {
         {/* CUSTOMER */}
         <div style={styles.card}>
           <h3 style={styles.label}>CUSTOMER</h3>
-          <p><b>Name:</b> {order.customerName || "-"}</p>
-          <p><b>Phone:</b> {order.phone || "-"}</p>
-          <p><b>Email:</b> {order.email || "-"}</p>
+          <p>
+            <b>Name:</b>{" "}
+            {address.name || order.user?.name || "—"}
+          </p>
+          <p>
+            <b>Phone:</b>{" "}
+            {address.phone || "—"}
+          </p>
+          <p>
+            <b>Email:</b>{" "}
+            {address.email || order.userEmail || order.user?.email || "—"}
+          </p>
         </div>
 
         {/* ADDRESS */}
         <div style={styles.card}>
           <h3 style={styles.label}>DELIVERY ADDRESS</h3>
           <p>
-            {order.address || "-"}<br />
-            {order.city || "-"}, {order.state || "-"} – {order.pincode || "-"}
+            {address.addressLine || address.street || "—"}
+            <br />
+            {address.city || "—"}, {address.state || "—"} –{" "}
+            {address.pincode || "—"}
+            <br />
+            {address.country || "India"}
           </p>
         </div>
 
