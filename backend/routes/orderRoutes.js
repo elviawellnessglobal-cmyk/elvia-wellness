@@ -37,11 +37,29 @@ router.post("/", userAuth, async (req, res) => {
       0
     );
 
-    // ✅ EMAIL SOURCE OF TRUTH
-    const customerEmail = req.body.address?.email || null;
-    const customerPhone = req.body.address?.phone || null;
+    /* ---------------- NORMALIZE ADDRESS ---------------- */
 
-    if (!customerEmail || !customerPhone) {
+    const rawAddress = req.body.address || {};
+
+    const customerEmail =
+      rawAddress.email ||
+      rawAddress.emailAddress ||
+      req.body.email ||
+      null;
+
+    const customerPhone =
+      rawAddress.phone ||
+      rawAddress.phoneNumber ||
+      rawAddress.mobile ||
+      req.body.phone ||
+      null;
+
+    if (
+      !customerEmail ||
+      !customerPhone ||
+      customerEmail.trim() === "" ||
+      customerPhone.trim() === ""
+    ) {
       return res.status(400).json({
         message: "Email and phone are required in address",
       });
@@ -51,9 +69,9 @@ router.post("/", userAuth, async (req, res) => {
       user: req.user || null,
       items: validatedItems,
       address: {
-        ...req.body.address,
-        email: customerEmail,
-        phone: customerPhone,
+        ...rawAddress,
+        email: customerEmail.trim(),
+        phone: customerPhone.trim(),
       },
       totalAmount,
       status: "Pending",
@@ -94,7 +112,6 @@ router.get("/", adminAuth, async (req, res) => {
     .sort({ createdAt: -1 })
     .populate("user", "email name");
 
-  // ✅ NORMALIZED RESPONSE FOR ADMIN
   const safeOrders = orders.map((order) => ({
     ...order.toObject(),
     customerEmail:
