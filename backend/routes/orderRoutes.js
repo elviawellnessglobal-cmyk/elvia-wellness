@@ -1,176 +1,115 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Sidebar from "./Sidebar";
+const express = require("express");
+const Order = require("../models/Order");
+const Product = require("../models/Product");
+const adminAuth = require("../middleware/adminAuth");
+const userAuth = require("../middleware/userAuth");
 
-export default function OrderView() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
+const router = express.Router();
 
-  useEffect(() => {
-    const token = localStorage.getItem("adminToken");
+/* ---------------- CREATE ORDER (LEGACY SAFE) ---------------- */
+router.post("/", userAuth, async (req, res) => {
+  try {
+    const validatedItems = [];
 
-    if (!token) {
-      navigate("/admin/login");
-      return;
+    for (const item of req.body.items || []) {
+      const product = await Product.findOne({
+        productId: item.productId,
+        isActive: true,
+      });
+
+      if (!product) {
+        return res.status(400).json({
+          message: `Invalid product: ${item.productId}`,
+        });
+      }
+
+      validatedItems.push({
+        productId: product.productId,
+        name: product.name,
+        price: product.price,
+        quantity: item.quantity,
+        image: item.image,
+      });
     }
 
-    fetch(`${import.meta.env.VITE_API_BASE}/api/orders/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load order");
-        return res.json();
-      })
-      .then((data) => {
-        setOrder(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        navigate("/admin/orders");
-      });
-  }, [id, navigate]);
+    const totalAmount = validatedItems.reduce(
+      (sum, i) => sum + i.price * i.quantity,
+      0
+    );
 
-  if (loading) {
-    return <p style={{ padding: "40px" }}>Loading order…</p>;
+    const order = await Order.create({
+      user: req.user || null,
+      userEmail: req.user?.email || null, // safe source
+      items: validatedItems,
+      address: req.body.address || null, // string or object (legacy)
+      totalAmount,
+      status: "Pending",
+    });
+
+    res.status(201).json(order);
+  } catch (error) {
+    console.error("Create order error:", error);
+    res.status(500).json({ message: "Failed to create order" });
   }
+});
+
+/* ---------------- USER: ALL ORDERS ---------------- */
+router.get("/my-orders", userAuth, async (req, res) => {
+  const orders = await Order.find({ user: req.user }).sort({
+    createdAt: -1,
+  });
+  res.json(orders);
+});
+
+/* ---------------- ADMIN: ALL ORDERS ---------------- */
+router.get("/", adminAuth, async (req, res) => {
+  const orders = await Order.find()
+    .populate("user", "email name")
+    .sort({ createdAt: -1 });
+
+  const normalized = orders.map((order) => ({
+    ...order.toObject(),
+    customerEmail:
+      order.userEmail ||
+      order.user?.email ||
+      "N/A",
+  }));
+
+  res.json(normalized);
+});
+
+/* ---------------- ADMIN: ORDER DETAIL ---------------- */
+router.get("/:id", adminAuth, async (req, res) => {
+  const order = await Order.findById(req.params.id).populate(
+    "user",
+    "email name"
+  );
 
   if (!order) {
-    return <p style={{ padding: "40px" }}>Order not found</p>;
+    return res.status(404).json({ message: "Order not found" });
   }
 
-  /* ---------------- LEGACY-SAFE NORMALIZATION ---------------- */
+  res.json({
+    ...order.toObject(),
+    customerEmail:
+      order.userEmail ||
+      order.user?.email ||
+      "N/A",
+  });
+});
 
-  const address =
-    typeof order.address === "object" ? order.address : {};
+/* ---------------- ADMIN: UPDATE STATUS ---------------- */
+router.put("/:id/status", adminAuth, async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  order.status = req.body.status;
+  await order.save();
+  res.json(order);
+});
 
-  const customerEmail =
-    order.customerEmail ||
-    order.userEmail ||
-    order.user?.email ||
-    (typeof order.address === "object" ? order.address.email : null) ||
-    "—";
+/* ---------------- ADMIN: DELETE ORDER ---------------- */
+router.delete("/:id", adminAuth, async (req, res) => {
+  await Order.findByIdAndDelete(req.params.id);
+  res.json({ success: true });
+});
 
-  const customerPhone =
-    address.phone ||
-    order.phone ||
-    "—";
-
-  const customerName =
-    address.name ||
-    order.user?.name ||
-    "—";
-
-  const addressText =
-    typeof order.address === "string"
-      ? order.address
-      : [
-          address.addressLine,
-          address.street,
-          address.city,
-          address.state,
-          address.pincode,
-          address.country,
-        ]
-          .filter(Boolean)
-          .join(", ") || "—";
-
-  return (
-    <div style={styles.layout}>
-      <Sidebar />
-
-      <main style={styles.main}>
-        <button style={styles.back} onClick={() => navigate(-1)}>
-          ← Back to Orders
-        </button>
-
-        <h1 style={styles.heading}>
-          Order #{order._id.slice(-6).toUpperCase()}
-        </h1>
-
-        {/* CUSTOMER */}
-        <div style={styles.card}>
-          <h3 style={styles.label}>CUSTOMER</h3>
-          <p><b>Name:</b> {customerName}</p>
-          <p><b>Phone:</b> {customerPhone}</p>
-          <p><b>Email:</b> {customerEmail}</p>
-        </div>
-
-        {/* ADDRESS */}
-        <div style={styles.card}>
-          <h3 style={styles.label}>DELIVERY ADDRESS</h3>
-          <p>{addressText}</p>
-        </div>
-
-        {/* ITEMS */}
-        <div style={styles.card}>
-          <h3 style={styles.label}>ITEMS</h3>
-          {order.items?.map((item, i) => (
-            <p key={i}>
-              {item.name} × {item.quantity}
-            </p>
-          ))}
-        </div>
-
-        {/* TOTAL */}
-        <div style={styles.card}>
-          <h3 style={styles.label}>TOTAL</h3>
-          <p style={styles.total}>₹{order.totalAmount}</p>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-/* ---------------- STYLES ---------------- */
-
-const styles = {
-  layout: {
-    display: "flex",
-    minHeight: "100vh",
-    background: "#fafafa",
-    fontFamily: "Inter, sans-serif",
-  },
-
-  main: {
-    flex: 1,
-    padding: "48px",
-  },
-
-  back: {
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "14px",
-    marginBottom: "20px",
-    color: "#555",
-  },
-
-  heading: {
-    fontSize: "30px",
-    marginBottom: "32px",
-  },
-
-  card: {
-    background: "#fff",
-    borderRadius: "16px",
-    padding: "24px",
-    marginBottom: "24px",
-    border: "1px solid #eee",
-  },
-
-  label: {
-    fontSize: "12px",
-    letterSpacing: "2px",
-    color: "#777",
-    marginBottom: "12px",
-  },
-
-  total: {
-    fontSize: "22px",
-    fontWeight: "500",
-  },
-};
+module.exports = router;
