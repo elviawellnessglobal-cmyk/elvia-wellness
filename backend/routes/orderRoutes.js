@@ -1,17 +1,25 @@
 const express = require("express");
-const Order = require("../models/Order");
-const Product = require("../models/Product");
-const adminAuth = require("../middleware/adminAuth");
-const userAuth = require("../middleware/userAuth");
-
 const router = express.Router();
 
-/* ---------------- CREATE ORDER (LEGACY SAFE) ---------------- */
+const Order = require("../models/Order");
+const Product = require("../models/Product");
+const userAuth = require("../middleware/userAuth");
+const adminAuth = require("../middleware/adminAuth");
+
+/* =========================================================
+   CREATE ORDER  (CUSTOMER)
+   ========================================================= */
 router.post("/", userAuth, async (req, res) => {
   try {
+    const items = req.body.items || [];
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "No items provided" });
+    }
+
     const validatedItems = [];
 
-    for (const item of req.body.items || []) {
+    for (const item of items) {
       const product = await Product.findOne({
         productId: item.productId,
         isActive: true,
@@ -39,9 +47,9 @@ router.post("/", userAuth, async (req, res) => {
 
     const order = await Order.create({
       user: req.user || null,
-      userEmail: req.user?.email || null, // safe source
+      userEmail: req.user?.email || null, // ✅ SAFE SOURCE
       items: validatedItems,
-      address: req.body.address || null, // string or object (legacy)
+      address: req.body.address || null, // string or object (legacy safe)
       totalAmount,
       status: "Pending",
     });
@@ -53,63 +61,123 @@ router.post("/", userAuth, async (req, res) => {
   }
 });
 
-/* ---------------- USER: ALL ORDERS ---------------- */
+/* =========================================================
+   USER – GET MY ORDERS
+   ========================================================= */
 router.get("/my-orders", userAuth, async (req, res) => {
-  const orders = await Order.find({ user: req.user }).sort({
-    createdAt: -1,
-  });
-  res.json(orders);
-});
+  try {
+    const orders = await Order.find({ user: req.user })
+      .sort({ createdAt: -1 });
 
-/* ---------------- ADMIN: ALL ORDERS ---------------- */
-router.get("/", adminAuth, async (req, res) => {
-  const orders = await Order.find()
-    .populate("user", "email name")
-    .sort({ createdAt: -1 });
-
-  const normalized = orders.map((order) => ({
-    ...order.toObject(),
-    customerEmail:
-      order.userEmail ||
-      order.user?.email ||
-      "N/A",
-  }));
-
-  res.json(normalized);
-});
-
-/* ---------------- ADMIN: ORDER DETAIL ---------------- */
-router.get("/:id", adminAuth, async (req, res) => {
-  const order = await Order.findById(req.params.id).populate(
-    "user",
-    "email name"
-  );
-
-  if (!order) {
-    return res.status(404).json({ message: "Order not found" });
+    res.json(orders);
+  } catch (error) {
+    console.error("My orders error:", error);
+    res.status(500).json({ message: "Failed to fetch orders" });
   }
-
-  res.json({
-    ...order.toObject(),
-    customerEmail:
-      order.userEmail ||
-      order.user?.email ||
-      "N/A",
-  });
 });
 
-/* ---------------- ADMIN: UPDATE STATUS ---------------- */
+/* =========================================================
+   USER – GET SINGLE ORDER
+   ========================================================= */
+router.get("/my-orders/:id", userAuth, async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      user: req.user,
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error("Single order error:", error);
+    res.status(500).json({ message: "Failed to fetch order" });
+  }
+});
+
+/* =========================================================
+   ADMIN – ALL ORDERS
+   ========================================================= */
+router.get("/", adminAuth, async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("user", "email name")
+      .sort({ createdAt: -1 });
+
+    const formatted = orders.map((order) => ({
+      ...order.toObject(),
+      customerEmail:
+        order.userEmail ||
+        order.user?.email ||
+        "N/A",
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    console.error("Admin orders error:", error);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+});
+
+/* =========================================================
+   ADMIN – SINGLE ORDER
+   ========================================================= */
+router.get("/:id", adminAuth, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate("user", "email name");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json({
+      ...order.toObject(),
+      customerEmail:
+        order.userEmail ||
+        order.user?.email ||
+        "N/A",
+    });
+  } catch (error) {
+    console.error("Admin single order error:", error);
+    res.status(500).json({ message: "Failed to fetch order" });
+  }
+});
+
+/* =========================================================
+   ADMIN – UPDATE STATUS
+   ========================================================= */
 router.put("/:id/status", adminAuth, async (req, res) => {
-  const order = await Order.findById(req.params.id);
-  order.status = req.body.status;
-  await order.save();
-  res.json(order);
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.status = req.body.status;
+    await order.save();
+
+    res.json(order);
+  } catch (error) {
+    console.error("Update status error:", error);
+    res.status(500).json({ message: "Failed to update status" });
+  }
 });
 
-/* ---------------- ADMIN: DELETE ORDER ---------------- */
+/* =========================================================
+   ADMIN – DELETE ORDER
+   ========================================================= */
 router.delete("/:id", adminAuth, async (req, res) => {
-  await Order.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Delete order error:", error);
+    res.status(500).json({ message: "Failed to delete order" });
+  }
 });
 
 module.exports = router;
