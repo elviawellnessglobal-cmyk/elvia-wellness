@@ -6,7 +6,7 @@ const userAuth = require("../middleware/userAuth");
 
 const router = express.Router();
 
-/* ---------------- CREATE ORDER (SECURE) ---------------- */
+/* ---------------- CREATE ORDER (LEGACY SAFE) ---------------- */
 router.post("/", userAuth, async (req, res) => {
   try {
     const validatedItems = [];
@@ -32,65 +32,26 @@ router.post("/", userAuth, async (req, res) => {
       });
     }
 
-    if (!validatedItems.length) {
-      return res.status(400).json({ message: "No items in order" });
-    }
-
     const totalAmount = validatedItems.reduce(
       (sum, i) => sum + i.price * i.quantity,
       0
     );
 
-    /* ---------------- ULTRA-DEFENSIVE ADDRESS NORMALIZATION ---------------- */
-
-    const body = req.body || {};
-    const address =
-      body.address ||
-      body.shippingAddress ||
-      body.deliveryAddress ||
-      {};
-
-    const contact = address.contact || {};
-
-    let customerEmail =
-      address.email ||
-      address.emailAddress ||
-      contact.email ||
-      body.email ||
-      null;
-
-    let customerPhone =
-      address.phone ||
-      address.phoneNumber ||
-      address.mobile ||
-      contact.phone ||
-      body.phone ||
-      null;
-
-    // Convert phone number → string if needed
-    if (typeof customerPhone === "number") {
-      customerPhone = customerPhone.toString();
-    }
-
-    if (
-      !customerEmail ||
-      !customerPhone ||
-      String(customerEmail).trim() === "" ||
-      String(customerPhone).trim() === ""
-    ) {
-      return res.status(400).json({
-        message: "Email and phone are required in address",
-      });
-    }
+    // 🔒 DO NOT VALIDATE / BLOCK — JUST STORE
+    const rawAddress = req.body.address || {};
 
     const order = await Order.create({
       user: req.user || null,
+
+      // ✅ preserve legacy behavior
+      userEmail:
+        req.user?.email ||
+        rawAddress.email ||
+        rawAddress.emailAddress ||
+        null,
+
       items: validatedItems,
-      address: {
-        ...address,
-        email: String(customerEmail).trim(),
-        phone: String(customerPhone).trim(),
-      },
+      address: rawAddress,
       totalAmount,
       status: "Pending",
     });
@@ -127,17 +88,20 @@ router.get("/my-orders/:id", userAuth, async (req, res) => {
 /* ---------------- ADMIN: ALL ORDERS ---------------- */
 router.get("/", adminAuth, async (req, res) => {
   const orders = await Order.find()
-    .sort({ createdAt: -1 })
-    .populate("user", "email name");
+    .populate("user", "email name")
+    .sort({ createdAt: -1 });
 
-  const safeOrders = orders.map((order) => ({
+  // ✅ ADMIN SAFE VIEW (NO BREAKING)
+  const normalized = orders.map((order) => ({
     ...order.toObject(),
     customerEmail:
-      order.address?.email || order.user?.email || "N/A",
-    customerPhone: order.address?.phone || "N/A",
+      order.address?.email ||
+      order.userEmail ||
+      order.user?.email ||
+      "N/A",
   }));
 
-  res.json(safeOrders);
+  res.json(normalized);
 });
 
 /* ---------------- ADMIN: ORDER DETAIL ---------------- */
@@ -154,8 +118,10 @@ router.get("/:id", adminAuth, async (req, res) => {
   res.json({
     ...order.toObject(),
     customerEmail:
-      order.address?.email || order.user?.email || "N/A",
-    customerPhone: order.address?.phone || "N/A",
+      order.address?.email ||
+      order.userEmail ||
+      order.user?.email ||
+      "N/A",
   });
 });
 
