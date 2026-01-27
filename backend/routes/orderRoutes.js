@@ -37,12 +37,26 @@ router.post("/", userAuth, async (req, res) => {
       0
     );
 
+    // ✅ EMAIL SOURCE OF TRUTH
+    const customerEmail = req.body.address?.email || null;
+    const customerPhone = req.body.address?.phone || null;
+
+    if (!customerEmail || !customerPhone) {
+      return res.status(400).json({
+        message: "Email and phone are required in address",
+      });
+    }
+
     const order = await Order.create({
       user: req.user || null,
-      userEmail: req.userEmail || req.body.address?.email || null,
       items: validatedItems,
-      address: req.body.address,
+      address: {
+        ...req.body.address,
+        email: customerEmail,
+        phone: customerPhone,
+      },
       totalAmount,
+      status: "Pending",
     });
 
     res.status(201).json(order);
@@ -77,10 +91,18 @@ router.get("/my-orders/:id", userAuth, async (req, res) => {
 /* ---------------- ADMIN: ALL ORDERS ---------------- */
 router.get("/", adminAuth, async (req, res) => {
   const orders = await Order.find()
-    .populate("user", "email name")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .populate("user", "email name");
 
-  res.json(orders);
+  // ✅ NORMALIZED RESPONSE FOR ADMIN
+  const safeOrders = orders.map((order) => ({
+    ...order.toObject(),
+    customerEmail:
+      order.address?.email || order.user?.email || "N/A",
+    customerPhone: order.address?.phone || "N/A",
+  }));
+
+  res.json(safeOrders);
 });
 
 /* ---------------- ADMIN: ORDER DETAIL ---------------- */
@@ -89,7 +111,17 @@ router.get("/:id", adminAuth, async (req, res) => {
     "user",
     "email name"
   );
-  res.json(order);
+
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  res.json({
+    ...order.toObject(),
+    customerEmail:
+      order.address?.email || order.user?.email || "N/A",
+    customerPhone: order.address?.phone || "N/A",
+  });
 });
 
 /* ---------------- ADMIN: UPDATE STATUS ---------------- */

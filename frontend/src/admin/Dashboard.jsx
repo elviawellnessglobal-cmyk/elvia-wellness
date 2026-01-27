@@ -81,12 +81,13 @@ export default function Dashboard() {
     }
   }
 
+  // ✅ FIXED: single source of truth
   function getCustomerEmail(order) {
     return (
-      order.user?.email ||
-      order.userEmail ||
+      order.customerEmail ||
       order.address?.email ||
-      "Guest user"
+      order.user?.email ||
+      "N/A"
     );
   }
 
@@ -250,13 +251,5 @@ const styles = {
     width: "100%",
     borderCollapse: "collapse",
     fontSize: 14,
-  },
-
-  th: {
-    textAlign: "left",
-  },
-
-  td: {
-    padding: "14px",
   },
 };
