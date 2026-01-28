@@ -7,7 +7,7 @@ const userAuth = require("../middleware/userAuth");
 const adminAuth = require("../middleware/adminAuth");
 
 /* =========================================================
-   CREATE ORDER  (CUSTOMER)
+   CREATE ORDER  (LOCKED: ALWAYS SAVE userEmail)
    ========================================================= */
 router.post("/", userAuth, async (req, res) => {
   try {
@@ -45,11 +45,20 @@ router.post("/", userAuth, async (req, res) => {
       0
     );
 
+    // 🔒 LOCKED SOURCE OF TRUTH
+    const userEmail = req.user?.email || null;
+
     const order = await Order.create({
       user: req.user || null,
-      userEmail: req.user?.email || null, // ✅ SAFE SOURCE
+
+      // ✅ ALWAYS SAVED FROM AUTH SESSION
+      userEmail,
+
       items: validatedItems,
-      address: req.body.address || null, // string or object (legacy safe)
+
+      // legacy-safe: string or object
+      address: req.body.address || null,
+
       totalAmount,
       status: "Pending",
     });
@@ -108,6 +117,8 @@ router.get("/", adminAuth, async (req, res) => {
 
     const formatted = orders.map((order) => ({
       ...order.toObject(),
+
+      // ✅ SINGLE ADMIN SOURCE
       customerEmail:
         order.userEmail ||
         order.user?.email ||
@@ -135,6 +146,8 @@ router.get("/:id", adminAuth, async (req, res) => {
 
     res.json({
       ...order.toObject(),
+
+      // ✅ ALWAYS PRESENT FOR NEW ORDERS
       customerEmail:
         order.userEmail ||
         order.user?.email ||
