@@ -42,38 +42,33 @@ export default function OrderView() {
     return <p style={{ padding: "40px" }}>Order not found</p>;
   }
 
-  /* ---------------- LEGACY-SAFE NORMALIZATION ---------------- */
+  /* =========================================================
+     LOCKED ADMIN VIEW NORMALIZATION
+     ========================================================= */
 
-  const address =
-    typeof order.address === "object" ? order.address : {};
-
-  const customerEmail =
-    order.customerEmail ||
-    order.userEmail ||
-    order.user?.email ||
-    (typeof order.address === "object" ? order.address.email : null) ||
-    "—";
-
-  const customerPhone =
-    address.phone ||
-    order.phone ||
-    "—";
+  // 🔒 SINGLE SOURCE OF TRUTH
+  const customerEmail = order.customerEmail || "N/A";
 
   const customerName =
-    address.name ||
-    order.user?.name ||
-    "—";
+    order.address && typeof order.address === "object"
+      ? order.address.name
+      : order.user?.name || "—";
+
+  const customerPhone =
+    order.address && typeof order.address === "object"
+      ? order.address.phone
+      : "—";
 
   const addressText =
     typeof order.address === "string"
       ? order.address
       : [
-          address.addressLine,
-          address.street,
-          address.city,
-          address.state,
-          address.pincode,
-          address.country,
+          order.address?.addressLine,
+          order.address?.street,
+          order.address?.city,
+          order.address?.state,
+          order.address?.pincode,
+          order.address?.country,
         ]
           .filter(Boolean)
           .join(", ") || "—";
