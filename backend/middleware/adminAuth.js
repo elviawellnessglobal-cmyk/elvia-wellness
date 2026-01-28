@@ -11,14 +11,18 @@ module.exports = function adminAuth(req, res, next) {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // ✅ FIX: use isAdmin
-    if (!decoded.isAdmin) {
+    // ✅ ACCEPT BOTH LEGACY & NEW ADMIN TOKENS
+    const isAdmin =
+      decoded.isAdmin === true || decoded.role === "admin";
+
+    if (!isAdmin) {
       return res.status(403).json({ message: "Admin only" });
     }
 
     req.admin = decoded;
     next();
   } catch (err) {
+    console.error("Admin auth error:", err.message);
     return res.status(401).json({ message: "Invalid token" });
   }
 };
