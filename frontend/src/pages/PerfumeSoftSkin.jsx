@@ -233,8 +233,6 @@ export default function PerfumeSoftSkin() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </>
   );
 }
