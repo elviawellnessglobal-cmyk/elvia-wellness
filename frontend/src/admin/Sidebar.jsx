@@ -13,17 +13,34 @@ export default function Sidebar() {
       <h2 style={styles.brand}>KAEORN</h2>
 
       <nav style={styles.nav}>
-        <button onClick={() => navigate("/admin/dashboard")}>
+        <button
+          style={styles.navBtn}
+          onClick={() => navigate("/admin/dashboard")}
+        >
           Dashboard
         </button>
 
-        <button onClick={() => navigate("/admin/orders")}>
+        <button
+          style={styles.navBtn}
+          onClick={() => navigate("/admin/orders")}
+        >
           Orders
         </button>
 
-        {/* ✅ NEW: SUPPORT CHATS */}
-        <button onClick={() => navigate("/admin/chats")}>
+        {/* ✅ SUPPORT CHATS */}
+        <button
+          style={styles.navBtn}
+          onClick={() => navigate("/admin/chats")}
+        >
           Support Chats
+        </button>
+
+        {/* 🖤 NEW — EMAIL ANALYTICS */}
+        <button
+          style={styles.navBtn}
+          onClick={() => navigate("/admin/emails")}
+        >
+          Email Analytics
         </button>
       </nav>
 
@@ -57,6 +74,16 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "14px",
+  },
+
+  navBtn: {
+    background: "none",
+    border: "none",
+    textAlign: "left",
+    cursor: "pointer",
+    fontSize: "14px",
+    padding: "8px 0",
+    color: "#111",
   },
 
   logout: {
