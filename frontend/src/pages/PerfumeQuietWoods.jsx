@@ -210,8 +210,6 @@ export default function PerfumeQuietWoods() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </>
   );
 }

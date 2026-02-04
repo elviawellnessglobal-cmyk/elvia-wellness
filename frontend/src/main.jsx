@@ -49,6 +49,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtected from "./components/AdminProtected";
 import ChatDetail from "./admin/ChatDetail";
 import ResetPassword from "./pages/ResetPassword";
+import ScrollToTop from "./components/ScrollToTop";
+import Footer from "./components/Footer";
 
 /* ---------------- NAVBAR CONTROLLER ---------------- */
 
@@ -69,6 +71,7 @@ function Layout({ children }) {
 function AppRoot() {
   return (
     <Layout>
+      <ScrollToTop/>
       <Routes>
         {/* ---------- PUBLIC ---------- */}
         <Route path="/" element={<Home />} />
@@ -180,6 +183,7 @@ function AppRoot() {
           }
         />
       </Routes>
+      <Footer/>
     </Layout>
   );
 }

@@ -222,8 +222,6 @@ export default function PerfumeMorningVeil() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </>
   );
 }

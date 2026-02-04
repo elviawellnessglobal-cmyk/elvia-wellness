@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import Footer from "../components/Footer";
 
 /* IMAGES */
 const softSkinImg =
@@ -106,6 +107,8 @@ export default function Perfume() {
         />
       </section>
     </main>
+    
+    
   );
 }
 
@@ -167,6 +170,7 @@ const styles = {
     paddingBottom: 140,
     background:
       "radial-gradient(1200px 600px at 50% -10%, #f4f1ed 0%, #ffffff 60%)",
+    paddingTop: 10,
   },
 
   hero: {
