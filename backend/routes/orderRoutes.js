@@ -6,6 +6,8 @@ const Product = require("../models/Product");
 const userAuth = require("../middleware/userAuth");
 const adminAuth = require("../middleware/adminAuth");
 
+const queueOrderEmail = require("../utils/emailQueue");
+
 /* =========================================================
    CREATE ORDER  (LOCKED: ALWAYS SAVE userEmail)
    ========================================================= */
@@ -45,20 +47,13 @@ router.post("/", userAuth, async (req, res) => {
       0
     );
 
-    // 🔒 LOCKED SOURCE OF TRUTH
     const userEmail = req.user?.email || null;
 
     const order = await Order.create({
       user: req.user || null,
-
-      // ✅ ALWAYS SAVED FROM AUTH SESSION
       userEmail,
-
       items: validatedItems,
-
-      // legacy-safe: string or object
       address: req.body.address || null,
-
       totalAmount,
       status: "Pending",
     });
@@ -75,8 +70,9 @@ router.post("/", userAuth, async (req, res) => {
    ========================================================= */
 router.get("/my-orders", userAuth, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user })
-      .sort({ createdAt: -1 });
+    const orders = await Order.find({ user: req.user }).sort({
+      createdAt: -1,
+    });
 
     res.json(orders);
   } catch (error) {
@@ -117,8 +113,6 @@ router.get("/", adminAuth, async (req, res) => {
 
     const formatted = orders.map((order) => ({
       ...order.toObject(),
-
-      // ✅ SINGLE ADMIN SOURCE
       customerEmail:
         order.userEmail ||
         order.user?.email ||
@@ -146,8 +140,6 @@ router.get("/:id", adminAuth, async (req, res) => {
 
     res.json({
       ...order.toObject(),
-
-      // ✅ ALWAYS PRESENT FOR NEW ORDERS
       customerEmail:
         order.userEmail ||
         order.user?.email ||
@@ -160,18 +152,26 @@ router.get("/:id", adminAuth, async (req, res) => {
 });
 
 /* =========================================================
-   ADMIN – UPDATE STATUS
+   ADMIN – UPDATE STATUS (ENTERPRISE EMAIL SYSTEM)
    ========================================================= */
 router.put("/:id/status", adminAuth, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id)
+      .populate("user", "email name");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    order.status = req.body.status;
+    const previousStatus = order.status;
+    const newStatus = req.body.status;
+
+    order.status = newStatus;
     await order.save();
+
+    if (previousStatus !== newStatus) {
+      queueOrderEmail(order);
+    }
 
     res.json(order);
   } catch (error) {

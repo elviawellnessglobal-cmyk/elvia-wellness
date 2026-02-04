@@ -2,68 +2,65 @@ const { Resend } = require("resend");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * Send order status update email
- * @param {Object} order - Order document
- */
+function getCustomerEmail(order) {
+  return (
+    order.userEmail ||
+    order.customerEmail ||
+    order.user?.email ||
+    order.address?.email ||
+    null
+  );
+}
+
+function buildEmail(order) {
+  const orderId = order._id.toString().slice(-6).toUpperCase();
+
+  let subject = "";
+  let message = "";
+
+  if (order.status === "Shipped") {
+    subject = "Your KAEORN order has been shipped";
+    message = "Your order is now on its way.";
+  }
+
+  if (order.status === "Out for Delivery") {
+    subject = "Your KAEORN order is arriving today";
+    message = "Your order is out for delivery.";
+  }
+
+  if (order.status === "Delivered") {
+    subject = "Your KAEORN order has been delivered";
+    message = "We hope you enjoy your order.";
+  }
+
+  return {
+    subject,
+    html: `
+      <div style="font-family:Inter,Arial;">
+        <h2>${subject}</h2>
+        <p>${message}</p>
+        <p>Order ID: #${orderId}</p>
+        <p>Total: ₹${order.totalAmount}</p>
+        <hr/>
+        <p style="font-size:12px;color:#666;">KAEORN Wellness</p>
+      </div>
+    `,
+  };
+}
+
 async function sendOrderStatusEmail(order) {
-  if (!order?.email) {
-    console.log("⚠️ No customer email, skipping email send");
-    return;
-  }
+  const email = getCustomerEmail(order);
+  if (!email) return;
 
-  try {
-    const itemsHtml = order.items
-      .map(
-        (item) =>
-          `<li>${item.name} × ${item.quantity}</li>`
-      )
-      .join("");
+  const emailData = buildEmail(order);
+  if (!emailData.subject) return;
 
-    const response = await resend.emails.send({
-      from: "ELVIA WELLNESS <onboarding@resend.dev>", // ✅ REQUIRED (no domain)
-      to: order.email,
-      subject: "Update regarding your ELVIA order",
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height:1.6; color:#111">
-          <h2 style="margin-bottom:10px;">Order Update</h2>
-
-          <p>Hello <b>${order.customerName || "Customer"}</b>,</p>
-
-          <p>
-            This is a quick update regarding your order
-            <b>#${order._id.toString().slice(-6).toUpperCase()}</b>.
-          </p>
-
-          <p>
-            <b>Current Status:</b><br/>
-            ${order.status}
-          </p>
-
-          <p><b>Items:</b></p>
-          <ul>${itemsHtml}</ul>
-
-          <p><b>Total:</b> ₹${order.totalAmount}</p>
-
-          <hr style="margin:24px 0;" />
-
-          <p style="font-size:13px; color:#666">
-            Thank you for choosing <b>ELVIA WELLNESS</b>.
-          </p>
-        </div>
-      `,
-    });
-
-    console.log(
-      `✅ Status email sent to ${order.email}`,
-      response.id
-    );
-  } catch (err) {
-    console.error(
-      "❌ Email send failed:",
-      err?.message || err
-    );
-  }
+  await resend.emails.send({
+    from: "KAEORN <support@kaeorn.com>",
+    to: email,
+    subject: emailData.subject,
+    html: emailData.html,
+  });
 }
 
 module.exports = sendOrderStatusEmail;
