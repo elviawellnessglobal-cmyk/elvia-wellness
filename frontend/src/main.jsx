@@ -52,6 +52,8 @@ import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
 
+import EmailAnalytics from "./pages/Admin/EmailAnalytics";
+
 /* ---------------- NAVBAR CONTROLLER ---------------- */
 
 function Layout({ children }) {
@@ -93,6 +95,8 @@ function AppRoot() {
           element={<MyOrders type="previous" />}
         />
         <Route path="/order/:id" element={<OrderDetail />} />
+        <Route path="/admin/emails" element={<EmailAnalytics />} />
+
 
         {/* ---------- LEGAL ---------- */}
         <Route path="/about" element={<About />} />
@@ -101,6 +105,7 @@ function AppRoot() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/refund" element={<Refund />} />
         <Route path="/shipping" element={<Shipping />} />
+        
 <Route path="/reset-password" element={<ResetPassword />} />
         {/* ---------- CART ---------- */}
         <Route

@@ -12,6 +12,10 @@ const productRoutes = require("./routes/productRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const addressRoutes = require("./routes/addressRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const adminEmailRoutes = require("./routes/adminEmailRoutes");
+
+
+
 
 /* ---------------- APP ---------------- */
 const app = express();
@@ -59,6 +63,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/admin", adminEmailRoutes);
+
 
 /* ---------------- DATABASE ---------------- */
 mongoose
