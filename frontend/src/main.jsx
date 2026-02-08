@@ -40,6 +40,8 @@ import AdminLogin from "./admin/AdminLogin";
 import Orders from "./admin/Orders";
 import OrderPage from "./admin/OrderPage";
 import Dashboard from "./admin/Dashboard";
+import EmailAnalytics from "./admin/EmailAnalytics"; // ✅ FIXED IMPORT
+
 import Support from "./pages/Support";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -51,9 +53,6 @@ import ChatDetail from "./admin/ChatDetail";
 import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
-
-import EmailAnalytics from "./admin/EmailAnalytics";
-
 
 /* ---------------- NAVBAR CONTROLLER ---------------- */
 
@@ -74,7 +73,7 @@ function Layout({ children }) {
 function AppRoot() {
   return (
     <Layout>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Routes>
         {/* ---------- PUBLIC ---------- */}
         <Route path="/" element={<Home />} />
@@ -91,13 +90,18 @@ function AppRoot() {
         <Route path="/account" element={<Account />} />
         <Route path="/addresses" element={<AddressBook />} />
         <Route path="/my-orders" element={<MyOrders />} />
-        <Route
-          path="/previous-orders"
-          element={<MyOrders type="previous" />}
-        />
+        <Route path="/previous-orders" element={<MyOrders type="previous" />} />
         <Route path="/order/:id" element={<OrderDetail />} />
-        <Route path="/admin/emails" element={<EmailAnalytics />} />
 
+        {/* 🖤 EMAIL ANALYTICS */}
+        <Route
+          path="/admin/emails"
+          element={
+            <AdminProtected>
+              <EmailAnalytics />
+            </AdminProtected>
+          }
+        />
 
         {/* ---------- LEGAL ---------- */}
         <Route path="/about" element={<About />} />
@@ -106,8 +110,8 @@ function AppRoot() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/refund" element={<Refund />} />
         <Route path="/shipping" element={<Shipping />} />
-        
-<Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
         {/* ---------- CART ---------- */}
         <Route
           path="/cart"
@@ -189,7 +193,7 @@ function AppRoot() {
           }
         />
       </Routes>
-      <Footer/>
+      <Footer />
     </Layout>
   );
 }
