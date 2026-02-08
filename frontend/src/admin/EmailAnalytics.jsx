@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-iimport AdminLayout from "./AdminLayout";
+import AdminLayout from "./AdminLayout";
 
 
 export default function EmailAnalytics() {
