@@ -52,7 +52,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
 
-import EmailAnalytics from "./pages/Admin/EmailAnalytics";
+import EmailAnalytics from "./pages/admin/EmailAnalytics";
 
 /* ---------------- NAVBAR CONTROLLER ---------------- */
 
