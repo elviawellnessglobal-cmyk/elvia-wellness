@@ -5,20 +5,14 @@ import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
 
 /* ---------------- IMAGES ---------------- */
-const imgFront =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769081520/ChatGPT_Image_Jan_22_2026_05_01_01_PM_nzxsqv.png";
-const imgSide =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769082852/ChatGPT_Image_Jan_22_2026_05_22_45_PM_acztym.png";
-const imgAngle =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083201/ChatGPT_Image_Jan_22_2026_05_29_15_PM_o5qpcx.png";
-const imgDetail =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083325/ChatGPT_Image_Jan_22_2026_05_30_28_PM_marrlk.png";
-const imgMood =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083469/ChatGPT_Image_Jan_22_2026_05_33_06_PM_ucfz1x.png";
-const imgBox =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083604/ChatGPT_Image_Jan_22_2026_05_35_29_PM_sgvxbh.png";
-
-const images = [imgAngle, imgSide, imgFront, imgDetail, imgMood, imgBox];
+const images = [
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083201/ChatGPT_Image_Jan_22_2026_05_29_15_PM_o5qpcx.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769082852/ChatGPT_Image_Jan_22_2026_05_22_45_PM_acztym.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769081520/ChatGPT_Image_Jan_22_2026_05_01_01_PM_nzxsqv.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083325/ChatGPT_Image_Jan_22_2026_05_30_28_PM_marrlk.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083469/ChatGPT_Image_Jan_22_2026_05_33_06_PM_ucfz1x.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083604/ChatGPT_Image_Jan_22_2026_05_35_29_PM_sgvxbh.png",
+];
 
 /* 🌸 BACKGROUND IMAGE */
 const bg =
@@ -30,9 +24,7 @@ export default function PerfumeQuietWoods() {
   const { addToCart } = useCart();
 
   const productRef = useRef(null);
-
   const [visible, setVisible] = useState(false);
-  const [activeImage, setActiveImage] = useState(images[0]);
   const [authType, setAuthType] = useState(null);
   const [added, setAdded] = useState(false);
   const [open, setOpen] = useState("description");
@@ -62,8 +54,7 @@ export default function PerfumeQuietWoods() {
       setAuthType("login");
       return;
     }
-
-    addToCart({ ...product, image: activeImage, quantity: 1 });
+    addToCart({ ...product, image: images[0], quantity: 1 });
     navigate("/cart");
   }
 
@@ -72,18 +63,19 @@ export default function PerfumeQuietWoods() {
       setAuthType("login");
       return;
     }
-
-    addToCart({ ...product, image: activeImage, quantity: 1 });
+    addToCart({ ...product, image: images[0], quantity: 1 });
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
   }
 
   function Accordion({ title, id, children }) {
     const isOpen = open === id;
-
     return (
       <div style={styles.accordionItem}>
-        <div style={styles.accordionHeader} onClick={() => setOpen(isOpen ? null : id)}>
+        <div
+          style={styles.accordionHeader}
+          onClick={() => setOpen(isOpen ? null : id)}
+        >
           {title}
           <span>{isOpen ? "−" : "+"}</span>
         </div>
@@ -94,7 +86,9 @@ export default function PerfumeQuietWoods() {
 
   return (
     <>
-      {authType && <AuthModal type={authType} onClose={() => setAuthType(null)} />}
+      {authType && (
+        <AuthModal type={authType} onClose={() => setAuthType(null)} />
+      )}
 
       <section
         ref={productRef}
@@ -103,27 +97,16 @@ export default function PerfumeQuietWoods() {
           ...(visible ? styles.show : styles.hide),
         }}
       >
-        {/* IMAGE SIDE */}
-        <div style={styles.imageColumn}>
-          <img src={activeImage} alt="" style={styles.mainImage} />
-
-          <div style={styles.thumbnailRow}>
-            {images.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt=""
-                onClick={() => setActiveImage(img)}
-                style={{
-                  ...styles.thumbnail,
-                  opacity: activeImage === img ? 1 : 0.45,
-                }}
-              />
-            ))}
-          </div>
+        {/* 🖤 IMAGE SLIDER (SAME AS THÉ NOIR MEN) */}
+        <div style={styles.gallery}>
+          {images.map((img, i) => (
+            <div key={i} style={styles.slide}>
+              <img src={img} alt="" style={styles.mainImage} />
+            </div>
+          ))}
         </div>
 
-        {/* DETAILS SIDE */}
+        {/* DETAILS */}
         <div
           style={{
             ...styles.detailsColumn,
@@ -134,7 +117,6 @@ export default function PerfumeQuietWoods() {
 
           <div style={styles.inner}>
             <p style={styles.category}>WOMEN · EAU DE PARFUM</p>
-
             <h1 style={styles.productTitle}>SOIE FEMME</h1>
 
             <div style={styles.saleBadge}>RELEASE SALE</div>
@@ -166,62 +148,37 @@ export default function PerfumeQuietWoods() {
               </button>
             </div>
 
-            {/* CHANEL STYLE DROPDOWNS */}
             <div style={styles.accordionWrap}>
               <Accordion title="DESCRIPTION" id="description">
                 SOIE FEMME opens with a luminous softness that instantly feels elegant and modern.
-                The scent sits close to the skin, creating a refined aura rather than overwhelming
-                projection. As it evolves, a gentle warmth appears — creamy, feminine and quietly
-                confident. Designed for women who appreciate understated luxury, this fragrance feels
-                polished, graceful and emotionally comforting. People often notice it when they come
-                closer rather than across the room, making it deeply personal and intimate.
-                <br /><br />
-                • Smooth feminine elegance<br/>
-                • Soft luxury presence<br/>
-                • Designed for everyday sophistication
+                The scent stays close to the skin, creating a refined aura rather than loud projection.
+                As it settles, gentle warmth and creamy femininity emerge — polished, graceful and deeply comforting.
               </Accordion>
 
               <Accordion title="HOW IT MAKES YOU FEEL" id="feel">
-                Wearing SOIE FEMME feels like stepping into a calm, confident version of yourself.
-                The fragrance creates a soft emotional warmth — gentle yet empowering. It doesn’t try
-                to dominate a space; instead, it builds an aura that feels graceful and effortless.
-                Many describe it as comforting, intimate and quietly romantic.
-                <br /><br />
-                • Feminine confidence<br/>
-                • Calm luxury energy<br/>
-                • Soft romantic presence
+                Wearing SOIE FEMME feels calm, confident and emotionally grounding.
+                It enhances femininity without exaggeration — soft confidence, quiet beauty and modern grace.
               </Accordion>
 
               <Accordion title="PERFORMANCE" id="performance">
-                Created with a high-concentration Eau de Parfum structure, SOIE FEMME is designed
-                to last throughout the day with a smooth evolution. Expect a soft projection that
-                feels premium rather than loud.
-                <br /><br />
-                • Longevity: up to 24 hours<br/>
-                • Projection: soft luxury aura<br/>
-                • Sillage: elegant feminine trail
+                Longevity up to 24 hours with a smooth, evolving profile.
+                Projection remains refined and elegant, designed for intimate luxury.
               </Accordion>
 
               <Accordion title="HOW TO APPLY" id="apply">
-                Apply 2–4 sprays on pulse points to allow the fragrance to develop naturally.
-                Neck, wrists and collarbone are ideal areas. Avoid rubbing the perfume into the skin
-                — letting it settle naturally keeps the scent smoother and more refined.
-                <br /><br />
-                • Neck sides<br/>
-                • Behind ears<br/>
-                • Wrists & collarbone
+                Apply 2–4 sprays on pulse points such as neck, wrists and collarbone.
+                Avoid rubbing to preserve the fragrance structure.
               </Accordion>
 
               <Accordion title="REVIEWS FROM INDIA" id="reviews">
-                ★★★★★ Riya – Delhi: “Feels like an expensive designer perfume.”<br/><br/>
-                ★★★★★ Aanya – Mumbai: “Very soft, elegant and feminine.”<br/><br/>
-                ★★★★☆ Kavya – Bangalore: “Perfect daily luxury scent.”
+                ★★★★★ Riya — Delhi: “Feels truly premium.”  
+                ★★★★★ Aanya — Mumbai: “Soft, elegant and addictive.”  
+                ★★★★☆ Kavya — Bangalore: “Perfect everyday luxury scent.”
               </Accordion>
 
               <Accordion title="KAEORN PHILOSOPHY" id="philosophy">
-                KAEORN fragrances are built around quiet luxury — a philosophy where beauty is
-                refined, intentional and deeply personal. Rather than loud projection, our scents
-                focus on emotional presence and modern elegance.
+                KAEORN creates fragrances for quiet luxury — refined, intentional and intimate.
+                Beauty that doesn’t shout, but stays remembered.
               </Accordion>
             </div>
           </div>
@@ -247,21 +204,25 @@ const styles = {
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
 
-  imageColumn: { flex: 1, minWidth: 320 },
+  /* IMAGE SLIDER */
+  gallery: {
+    flex: 1,
+    minWidth: 320,
+    display: "flex",
+    overflowX: "auto",
+    gap: 24,
+    scrollSnapType: "x mandatory",
+  },
+
+  slide: {
+    minWidth: "100%",
+    scrollSnapAlign: "center",
+  },
 
   mainImage: {
     width: "100%",
     borderRadius: 24,
     boxShadow: "0 30px 60px rgba(0,0,0,0.12)",
-  },
-
-  thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
-
-  thumbnail: {
-    width: 74,
-    height: 74,
-    borderRadius: 14,
-    cursor: "pointer",
     objectFit: "cover",
   },
 
@@ -284,7 +245,7 @@ const styles = {
   inner: { position: "relative", padding: "40px" },
 
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
-  productTitle: { fontSize: 40, fontWeight: 500, marginTop: 6 },
+  productTitle: { fontSize: 40, fontWeight: 500 },
 
   saleBadge: {
     marginTop: 10,
@@ -304,7 +265,7 @@ const styles = {
 
   subtitle: { fontSize: 16, color: "#555", lineHeight: 1.8 },
 
-  ctaRow: { display: "flex", gap: 16, flexWrap: "wrap" },
+  ctaRow: { display: "flex", gap: 16, marginTop: 20 },
 
   buyButton: {
     padding: "16px 34px",
@@ -312,8 +273,6 @@ const styles = {
     background: "#111",
     color: "#fff",
     border: "none",
-    fontSize: 15,
-    cursor: "pointer",
   },
 
   addToCartBtn: {
@@ -321,8 +280,6 @@ const styles = {
     borderRadius: 50,
     background: "transparent",
     border: "1px solid #111",
-    fontSize: 15,
-    cursor: "pointer",
   },
 
   addedBtn: { background: "#111", color: "#fff" },

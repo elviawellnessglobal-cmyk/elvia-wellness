@@ -5,20 +5,14 @@ import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
 
 /* ---------------- IMAGES ---------------- */
-const imgFront =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084646/ChatGPT_Image_Jan_22_2026_05_53_40_PM_fxiq9d.png";
-const imgSide =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084897/ChatGPT_Image_Jan_22_2026_05_57_33_PM_omnxe9.png";
-const imgAngle =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084884/ChatGPT_Image_Jan_22_2026_05_54_05_PM_hzov1u.png";
-const imgDetail =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085158/ChatGPT_Image_Jan_22_2026_06_01_54_PM_pz0txu.png";
-const imgMood =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085354/ChatGPT_Image_Jan_22_2026_06_05_02_PM_hvhel5.png";
-const imgBox =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085557/ChatGPT_Image_Jan_22_2026_06_08_42_PM_nlsn7w.png";
-
-const images = [imgFront, imgSide, imgAngle, imgDetail, imgMood, imgBox];
+const images = [
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084646/ChatGPT_Image_Jan_22_2026_05_53_40_PM_fxiq9d.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084897/ChatGPT_Image_Jan_22_2026_05_57_33_PM_omnxe9.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084884/ChatGPT_Image_Jan_22_2026_05_54_05_PM_hzov1u.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085158/ChatGPT_Image_Jan_22_2026_06_01_54_PM_pz0txu.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085354/ChatGPT_Image_Jan_22_2026_06_05_02_PM_hvhel5.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085557/ChatGPT_Image_Jan_22_2026_06_08_42_PM_nlsn7w.png",
+];
 
 /* 🌫️ BACKGROUND */
 const bg =
@@ -31,7 +25,6 @@ export default function PerfumeMorningVeil() {
 
   const productRef = useRef(null);
   const [visible, setVisible] = useState(false);
-  const [activeImage, setActiveImage] = useState(images[0]);
   const [authType, setAuthType] = useState(null);
   const [added, setAdded] = useState(false);
   const [open, setOpen] = useState("description");
@@ -61,7 +54,7 @@ export default function PerfumeMorningVeil() {
       setAuthType("login");
       return;
     }
-    addToCart({ ...product, image: activeImage, quantity: 1 });
+    addToCart({ ...product, image: images[0], quantity: 1 });
     navigate("/cart");
   }
 
@@ -70,7 +63,7 @@ export default function PerfumeMorningVeil() {
       setAuthType("login");
       return;
     }
-    addToCart({ ...product, image: activeImage, quantity: 1 });
+    addToCart({ ...product, image: images[0], quantity: 1 });
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
   }
@@ -104,24 +97,13 @@ export default function PerfumeMorningVeil() {
           ...(visible ? styles.show : styles.hide),
         }}
       >
-        {/* IMAGE COLUMN (ORIGINAL SIZE) */}
-        <div style={styles.imageColumn}>
-          <img src={activeImage} alt="" style={styles.mainImage} />
-
-          <div style={styles.thumbnailRow}>
-            {images.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt=""
-                onClick={() => setActiveImage(img)}
-                style={{
-                  ...styles.thumbnail,
-                  opacity: activeImage === img ? 1 : 0.45,
-                }}
-              />
-            ))}
-          </div>
+        {/* 🖤 IMAGE SLIDER (SAME SYSTEM) */}
+        <div style={styles.gallery}>
+          {images.map((img, i) => (
+            <div key={i} style={styles.slide}>
+              <img src={img} alt="" style={styles.mainImage} />
+            </div>
+          ))}
         </div>
 
         {/* DETAILS */}
@@ -135,7 +117,6 @@ export default function PerfumeMorningVeil() {
 
           <div style={styles.inner}>
             <p style={styles.category}>UNISEX · EAU DE PARFUM</p>
-
             <h1 style={styles.productTitle}>VEIL</h1>
 
             <div style={styles.priceWrap}>
@@ -171,7 +152,7 @@ export default function PerfumeMorningVeil() {
             {/* DROPDOWNS */}
             <div style={styles.accordionWrap}>
               <Accordion title="DESCRIPTION" id="description">
-                VEIL opens with a clean, creamy softness that feels instantly
+                   VEIL opens with a clean, creamy softness that feels instantly
                 refined and modern. Rather than projecting loudly, it stays
                 close to the skin, creating an intimate aura that feels
                 effortlessly luxurious. As it settles, the fragrance develops
@@ -183,7 +164,7 @@ export default function PerfumeMorningVeil() {
               </Accordion>
 
               <Accordion title="HOW IT MAKES YOU FEEL" id="feel">
-                Wearing VEIL feels like stepping into a composed, confident
+                  Wearing VEIL feels like stepping into a composed, confident
                 version of yourself. It creates a sense of calm luxury —
                 comforting, grounding, and subtly empowering. The fragrance
                 doesn’t demand attention, yet it leaves an impression of
@@ -202,9 +183,10 @@ export default function PerfumeMorningVeil() {
                 fragrance feels luxurious and appropriate across all settings —
                 never overpowering, always polished.
               </Accordion>
+              
 
               <Accordion title="HOW TO APPLY" id="apply">
-                Apply VEIL on clean, moisturized skin for best results. Two to
+                 Apply VEIL on clean, moisturized skin for best results. Two to
                 four sprays are sufficient. Focus on pulse points such as the
                 sides of the neck, wrists, behind the ears, and collarbone.
                 Avoid rubbing the fragrance after application, as this disrupts
@@ -214,7 +196,7 @@ export default function PerfumeMorningVeil() {
               </Accordion>
 
               <Accordion title="REVIEWS FROM INDIA" id="reviews">
-                ★★★★★ Riya, Delhi — “Feels like a niche European perfume.”  
+              ★★★★★ Riya, Delhi — “Feels like a niche European perfume.”  
                 ★★★★★ Aarav, Mumbai — “Very calming and classy.”  
                 ★★★★☆ Meera, Bangalore — “Perfect everyday luxury scent.”  
                 ★★★★★ Nikhil, Pune — “Subtle, clean and addictive.”
@@ -252,16 +234,26 @@ const styles = {
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
 
-  imageColumn: { flex: 1, minWidth: 320 },
-  mainImage: { width: "100%", borderRadius: 24 },
+  /* IMAGE SLIDER */
+  gallery: {
+    flex: 1,
+    minWidth: 320,
+    display: "flex",
+    overflowX: "auto",
+    gap: 24,
+    scrollSnapType: "x mandatory",
+  },
 
-  thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
-  thumbnail: {
-    width: 74,
-    height: 74,
-    borderRadius: 14,
-    cursor: "pointer",
+  slide: {
+    minWidth: "100%",
+    scrollSnapAlign: "center",
+  },
+
+  mainImage: {
+    width: "100%",
+    borderRadius: 24,
     objectFit: "cover",
+    boxShadow: "0 30px 60px rgba(0,0,0,0.12)",
   },
 
   detailsColumn: {
@@ -290,15 +282,11 @@ const styles = {
   originalPrice: { textDecoration: "line-through", color: "#888" },
   discount: { color: "#e91e63", fontSize: 13 },
 
-  monthOrders: {
-    marginTop: 6,
-    fontSize: 13,
-    fontWeight: 500,
-  },
+  monthOrders: { marginTop: 6, fontSize: 13, fontWeight: 500 },
 
   subtitle: { fontSize: 16, color: "#555", lineHeight: 1.8 },
 
-  ctaRow: { display: "flex", gap: 16, flexWrap: "wrap" },
+  ctaRow: { display: "flex", gap: 16, marginTop: 20 },
 
   buyButton: {
     padding: "16px 34px",
@@ -306,16 +294,14 @@ const styles = {
     background: "#111",
     color: "#fff",
     border: "none",
-    fontSize: 15,
     cursor: "pointer",
   },
 
   addToCartBtn: {
     padding: "16px 34px",
     borderRadius: 50,
-    background: "transparent",
     border: "1px solid #111",
-    fontSize: 15,
+    background: "transparent",
     cursor: "pointer",
   },
 
