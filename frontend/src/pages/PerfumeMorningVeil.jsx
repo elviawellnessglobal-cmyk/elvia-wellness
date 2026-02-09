@@ -3,25 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
-import Footer from "../components/Footer";
 
-/* ---------------- TEMP PERFUME IMAGES (REPLACE LATER) ---------------- */
+/* ---------------- IMAGES ---------------- */
 const imgFront =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084646/ChatGPT_Image_Jan_22_2026_05_53_40_PM_fxiq9d.png";
-const imgSide = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084897/ChatGPT_Image_Jan_22_2026_05_57_33_PM_omnxe9.png";
-const imgAngle = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084884/ChatGPT_Image_Jan_22_2026_05_54_05_PM_hzov1u.png";
-const imgDetail = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085158/ChatGPT_Image_Jan_22_2026_06_01_54_PM_pz0txu.png";
-const imgMood = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085354/ChatGPT_Image_Jan_22_2026_06_05_02_PM_hvhel5.png";
-const imgBox = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085557/ChatGPT_Image_Jan_22_2026_06_08_42_PM_nlsn7w.png";
+const imgSide =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084897/ChatGPT_Image_Jan_22_2026_05_57_33_PM_omnxe9.png";
+const imgAngle =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769084884/ChatGPT_Image_Jan_22_2026_05_54_05_PM_hzov1u.png";
+const imgDetail =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085158/ChatGPT_Image_Jan_22_2026_06_01_54_PM_pz0txu.png";
+const imgMood =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085354/ChatGPT_Image_Jan_22_2026_06_05_02_PM_hvhel5.png";
+const imgBox =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769085557/ChatGPT_Image_Jan_22_2026_06_08_42_PM_nlsn7w.png";
 
-const images = [
-  imgFront,
-  imgSide,
-  imgAngle,
-  imgDetail,
-  imgMood,
-  imgBox,
-];
+const images = [imgFront, imgSide, imgAngle, imgDetail, imgMood, imgBox];
+
+/* 🌫️ BACKGROUND */
+const bg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1770669629/dc9fb4aaf164ae5f44160471f5eb9a7b_hmhsw6.jpg";
 
 export default function PerfumeMorningVeil() {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function PerfumeMorningVeil() {
   const [activeImage, setActiveImage] = useState(images[0]);
   const [authType, setAuthType] = useState(null);
   const [added, setAdded] = useState(false);
+  const [open, setOpen] = useState("description");
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -43,25 +45,23 @@ export default function PerfumeMorningVeil() {
     return () => obs.disconnect();
   }, []);
 
-  /* -------- PRODUCT (UNISEX) -------- */
   const product = {
     id: "perfume-veil-unisex",
     name: "KAEORN — VEIL",
-    price: 3499,
+    price: 3129,
   };
+
+  const originalPrice = 11240;
+  const discountPercent = Math.round(
+    ((originalPrice - product.price) / originalPrice) * 100
+  );
 
   function handleOrderNow() {
     if (!user) {
       setAuthType("login");
       return;
     }
-
-    addToCart({
-      ...product,
-      image: activeImage,
-      quantity: 1,
-    });
-
+    addToCart({ ...product, image: activeImage, quantity: 1 });
     navigate("/cart");
   }
 
@@ -70,15 +70,25 @@ export default function PerfumeMorningVeil() {
       setAuthType("login");
       return;
     }
-
-    addToCart({
-      ...product,
-      image: activeImage,
-      quantity: 1,
-    });
-
+    addToCart({ ...product, image: activeImage, quantity: 1 });
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
+  }
+
+  function Accordion({ title, id, children }) {
+    const isOpen = open === id;
+    return (
+      <div style={styles.accordionItem}>
+        <div
+          style={styles.accordionHeader}
+          onClick={() => setOpen(isOpen ? null : id)}
+        >
+          {title}
+          <span>{isOpen ? "−" : "+"}</span>
+        </div>
+        {isOpen && <div style={styles.accordionContent}>{children}</div>}
+      </div>
+    );
   }
 
   return (
@@ -87,7 +97,6 @@ export default function PerfumeMorningVeil() {
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
 
-      {/* ---------------- PRODUCT SECTION ---------------- */}
       <section
         ref={productRef}
         style={{
@@ -95,13 +104,9 @@ export default function PerfumeMorningVeil() {
           ...(visible ? styles.show : styles.hide),
         }}
       >
-        {/* IMAGES */}
+        {/* IMAGE COLUMN (ORIGINAL SIZE) */}
         <div style={styles.imageColumn}>
-          <img
-            src={activeImage}
-            alt={product.name}
-            style={styles.mainImage}
-          />
+          <img src={activeImage} alt="" style={styles.mainImage} />
 
           <div style={styles.thumbnailRow}>
             {images.map((img, i) => (
@@ -117,45 +122,41 @@ export default function PerfumeMorningVeil() {
               />
             ))}
           </div>
-
-          {/* EDITORIAL CAPTION */}
-          <div style={styles.imageNote}>
-            <div style={styles.line} />
-            <p style={styles.imageQuote}>
-              A fragrance that blends seamlessly with skin —
-              soft, intimate, quietly unforgettable.
-            </p>
-            <div style={styles.imageMeta}>
-              <span>Unisex</span>
-              <span>Eau de Parfum</span>
-            </div>
-          </div>
         </div>
 
         {/* DETAILS */}
-        <div style={styles.detailsColumn}>
-          <p style={styles.category}>FINE FRAGRANCE · UNISEX</p>
+        <div
+          style={{
+            ...styles.detailsColumn,
+            backgroundImage: `url(${bg})`,
+          }}
+        >
+          <div style={styles.overlay} />
 
-          <h1 style={styles.productTitle}>
-            KAEORN — VEIL
-          </h1>
+          <div style={styles.inner}>
+            <p style={styles.category}>UNISEX · EAU DE PARFUM</p>
 
-          <p style={styles.subtitle}>
-            VEIL is a modern unisex fragrance designed to feel like
-            a second skin. Clean, creamy, and comforting —
-            it settles quietly, becoming personal to the wearer.
-            Minimal, genderless, and deeply refined.
-          </p>
+            <h1 style={styles.productTitle}>VEIL</h1>
 
-          <p style={styles.price}>₹3,499</p>
+            <div style={styles.priceWrap}>
+              <span style={styles.price}>₹{product.price}</span>
+              <span style={styles.originalPrice}>₹{originalPrice}</span>
+              <span style={styles.discount}>{discountPercent}% OFF</span>
+            </div>
 
-          {/* CTA */}
-          <div style={styles.ctaRow}>
-            <button style={styles.buyButton} onClick={handleOrderNow}>
-              Order Now
-            </button>
+            <p style={styles.monthOrders}>🔥 500+ ordered this month</p>
 
-            <div style={{ position: "relative" }}>
+            <p style={styles.subtitle}>
+              A fragrance designed to dissolve into skin — subtle, creamy and
+              emotionally comforting. VEIL is not worn to be announced, but to
+              be remembered.
+            </p>
+
+            <div style={styles.ctaRow}>
+              <button style={styles.buyButton} onClick={handleOrderNow}>
+                Order Now
+              </button>
+
               <button
                 style={{
                   ...styles.addToCartBtn,
@@ -165,60 +166,69 @@ export default function PerfumeMorningVeil() {
               >
                 {added ? "Added ✓" : "Add to Cart"}
               </button>
-
-              {added && (
-                <div style={styles.toast}>
-                  Added to cart · Open <strong>Profile → Cart</strong>
-                </div>
-              )}
             </div>
-          </div>
 
-          {/* BADGES */}
-          <div style={styles.badges}>
-            <span>Unisex</span>
-            <span>Skin-scent luxury</span>
-            <span>Soft Sillage</span>
-          </div>
+            {/* DROPDOWNS */}
+            <div style={styles.accordionWrap}>
+              <Accordion title="DESCRIPTION" id="description">
+                VEIL opens with a clean, creamy softness that feels instantly
+                refined and modern. Rather than projecting loudly, it stays
+                close to the skin, creating an intimate aura that feels
+                effortlessly luxurious. As it settles, the fragrance develops
+                a smooth warmth — not sweet, not sharp — but balanced and calm.
+                This is a scent designed for everyday elegance, for moments that
+                don’t need drama to feel special. VEIL becomes part of you,
+                adapting to your skin chemistry and mood, making it feel deeply
+                personal and quietly addictive.
+              </Accordion>
 
-          {/* SCENT MOOD */}
-          <div style={styles.section}>
-            <h4 style={styles.sectionTitle}>Scent Mood</h4>
-            <p>
-              Clean · Creamy · Comforting.
-              Designed for those who prefer subtle presence
-              over bold projection.
-            </p>
-          </div>
+              <Accordion title="HOW IT MAKES YOU FEEL" id="feel">
+                Wearing VEIL feels like stepping into a composed, confident
+                version of yourself. It creates a sense of calm luxury —
+                comforting, grounding, and subtly empowering. The fragrance
+                doesn’t demand attention, yet it leaves an impression of
+                refinement and taste. Many describe the feeling as soothing,
+                intimate, and emotionally warm — like clean skin, soft fabric,
+                and quiet confidence combined. It’s ideal for those who value
+                elegance without excess.
+              </Accordion>
 
-          {/* PERFORMANCE */}
-          <div style={styles.section}>
-            <h4 style={styles.sectionTitle}>Performance</h4>
-            <ul style={styles.list}>
-              <li>Longevity: 8–10 hours</li>
-              <li>Projection: Soft, skin-close aura</li>
-              <li>Sillage: Intimate and personal</li>
-              <li>Concentration: Eau de Parfum</li>
-            </ul>
-          </div>
+              <Accordion title="PERFORMANCE" id="performance">
+                VEIL is crafted as an Eau de Parfum with a refined balance
+                between longevity and softness. On skin, it lasts comfortably
+                for 8–10 hours while maintaining a gentle projection. The
+                sillage remains intimate and elegant, noticeable only when
+                someone comes close. This controlled performance ensures the
+                fragrance feels luxurious and appropriate across all settings —
+                never overpowering, always polished.
+              </Accordion>
 
-          {/* WHEN TO WEAR */}
-          <div style={styles.section}>
-            <h4 style={styles.sectionTitle}>When to Wear</h4>
-            <p>
-              Ideal for daily wear, work settings, quiet evenings,
-              and personal moments. A versatile signature
-              for all seasons.
-            </p>
-          </div>
+              <Accordion title="HOW TO APPLY" id="apply">
+                Apply VEIL on clean, moisturized skin for best results. Two to
+                four sprays are sufficient. Focus on pulse points such as the
+                sides of the neck, wrists, behind the ears, and collarbone.
+                Avoid rubbing the fragrance after application, as this disrupts
+                its natural development. Allow it to settle and evolve
+                naturally with your body heat for a smoother, longer-lasting
+                effect.
+              </Accordion>
 
-          {/* PHILOSOPHY */}
-          <div style={styles.recommendBox}>
-            <p style={styles.recommendText}>
-              <strong>Luxury does not announce itself.</strong>
-              <br />
-              It feels natural. Effortless. Personal.
-            </p>
+              <Accordion title="REVIEWS FROM INDIA" id="reviews">
+                ★★★★★ Riya, Delhi — “Feels like a niche European perfume.”  
+                ★★★★★ Aarav, Mumbai — “Very calming and classy.”  
+                ★★★★☆ Meera, Bangalore — “Perfect everyday luxury scent.”  
+                ★★★★★ Nikhil, Pune — “Subtle, clean and addictive.”
+              </Accordion>
+
+              <Accordion title="KAEORN PHILOSOPHY" id="philosophy">
+                KAEORN believes in quiet luxury — fragrance as a personal ritual
+                rather than a statement. Each creation is designed to feel
+                intentional, refined, and emotionally resonant. Instead of
+                loud projection, KAEORN focuses on intimacy, balance, and modern
+                elegance. VEIL represents this philosophy fully: a fragrance
+                that enhances who you are, without ever overshadowing you.
+              </Accordion>
+            </div>
           </div>
         </div>
       </section>
@@ -236,6 +246,7 @@ const styles = {
     maxWidth: 1200,
     margin: "56px auto",
     padding: "0 24px",
+    fontFamily: "Inter, sans-serif",
   },
 
   hide: { opacity: 0, transform: "translateY(40px)" },
@@ -243,8 +254,8 @@ const styles = {
 
   imageColumn: { flex: 1, minWidth: 320 },
   mainImage: { width: "100%", borderRadius: 24 },
-  thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
 
+  thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
   thumbnail: {
     width: 74,
     height: 74,
@@ -253,40 +264,39 @@ const styles = {
     objectFit: "cover",
   },
 
-  imageNote: {
-    marginTop: 42,
-    maxWidth: 420,
-    color: "#555",
+  detailsColumn: {
+    flex: 1,
+    minWidth: 320,
+    borderRadius: 28,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    overflow: "hidden",
   },
 
-  line: {
-    width: 42,
-    height: 1,
-    background: "#ddd",
-    marginBottom: 18,
+  overlay: {
+    position: "absolute",
+    inset: 0,
+    background: "rgba(255,255,255,0.93)",
   },
 
-  imageQuote: {
-    fontSize: 15,
-    lineHeight: 1.8,
-    fontStyle: "italic",
-    marginBottom: 14,
-    color: "#444",
-  },
+  inner: { position: "relative", padding: "40px" },
 
-  imageMeta: {
-    display: "flex",
-    gap: 18,
-    fontSize: 12.5,
-    letterSpacing: 1,
-    color: "#888",
-  },
-
-  detailsColumn: { flex: 1, minWidth: 320 },
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
-  productTitle: { fontSize: 40, fontWeight: 500, marginTop: 6 },
+  productTitle: { fontSize: 40, fontWeight: 500 },
+
+  priceWrap: { display: "flex", gap: 12, alignItems: "center" },
+  price: { fontSize: 28, fontWeight: 500 },
+  originalPrice: { textDecoration: "line-through", color: "#888" },
+  discount: { color: "#e91e63", fontSize: 13 },
+
+  monthOrders: {
+    marginTop: 6,
+    fontSize: 13,
+    fontWeight: 500,
+  },
+
   subtitle: { fontSize: 16, color: "#555", lineHeight: 1.8 },
-  price: { fontSize: 24, margin: "26px 0" },
 
   ctaRow: { display: "flex", gap: 16, flexWrap: "wrap" },
 
@@ -304,68 +314,29 @@ const styles = {
     padding: "16px 34px",
     borderRadius: 50,
     background: "transparent",
-    color: "#111",
     border: "1px solid #111",
     fontSize: 15,
     cursor: "pointer",
   },
 
-  addedBtn: {
-    background: "#111",
-    color: "#fff",
-  },
+  addedBtn: { background: "#111", color: "#fff" },
 
-  toast: {
-    position: "absolute",
-    top: "110%",
-    background: "#111",
-    color: "#fff",
-    padding: "10px 14px",
-    borderRadius: 14,
-    fontSize: 12.5,
-    marginTop: 8,
-    whiteSpace: "nowrap",
-  },
+  accordionWrap: { marginTop: 30, borderTop: "1px solid #eee" },
+  accordionItem: { borderBottom: "1px solid #eee", padding: "22px 0" },
 
-  badges: {
+  accordionHeader: {
     display: "flex",
-    gap: 22,
+    justifyContent: "space-between",
+    cursor: "pointer",
     fontSize: 13,
-    marginTop: 26,
-    color: "#555",
-    flexWrap: "wrap",
+    letterSpacing: 2,
+    fontWeight: 500,
   },
 
-  section: {
-    marginTop: 34,
+  accordionContent: {
+    marginTop: 16,
     fontSize: 15.5,
     lineHeight: 1.9,
-    color: "#333",
-    maxWidth: 520,
-  },
-
-  sectionTitle: {
-    fontSize: 16.5,
-    fontWeight: 500,
-    marginBottom: 12,
-  },
-
-  list: {
-    paddingLeft: 18,
-    marginBottom: 14,
-  },
-
-  recommendBox: {
-    marginTop: 44,
-    padding: "26px 28px",
-    borderRadius: 22,
-    background: "rgba(0,0,0,0.03)",
-    maxWidth: 520,
-  },
-
-  recommendText: {
-    fontSize: 15,
-    lineHeight: 1.8,
-    color: "#333",
+    color: "#555",
   },
 };

@@ -1,9 +1,17 @@
-import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+
+/* 🌫️ BACKGROUND IMAGES */
+const footerBg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1770671993/8de08499f5cb6e803e8484a529bca7b5_1_ondd0a.jpg";
+
+const popupBg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1770666221/89fd7611007d023518c1f4c965a287df_o4p9oi.jpg";
 
 export default function Footer() {
   const footerRef = useRef(null);
   const [visible, setVisible] = useState(false);
+  const [hovered, setHovered] = useState(null);
+  const [openPopup, setOpenPopup] = useState(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -13,91 +21,120 @@ export default function Footer() {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.2 }
     );
 
     if (footerRef.current) observer.observe(footerRef.current);
     return () => observer.disconnect();
   }, []);
 
+  const policyLinks = [
+    "About",
+    "Contact",
+    "Privacy",
+    "Terms",
+    "Refund",
+    "Shipping",
+  ];
+
   return (
-    <footer
-      ref={footerRef}
-      style={{
-        ...styles.footer,
-        ...(visible ? styles.footerVisible : styles.footerHidden),
-      }}
-    >
-      <div style={styles.inner}>
-        {/* BRAND */}
-        <div style={styles.brand}>
-          <h3 style={styles.logo}>KAEORN WELLNESS</h3>
-          <p style={styles.tagline}>
-            Premium skincare designed with intention.
-          </p>
+    <>
+      {/* ---------------- POPUP CARD ---------------- */}
+      {openPopup && (
+        <div style={styles.popupWrapper} onClick={() => setOpenPopup(null)}>
+          <div
+            style={{
+              ...styles.popupCard,
+              backgroundImage: `url(${popupBg})`,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={styles.popupOverlay} />
 
-          {/* SOCIAL ICONS */}
-          <div style={styles.socials}>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={styles.socialIcon}
-              aria-label="Instagram"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <rect
-                  x="2"
-                  y="2"
-                  width="20"
-                  height="20"
-                  rx="5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
-              </svg>
-            </a>
+            <div style={styles.popupInner}>
+              <h3 style={styles.popupTitle}>ELVIA — {openPopup}</h3>
 
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={styles.socialIcon}
-              aria-label="YouTube"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <rect
-                  x="2"
-                  y="5"
-                  width="20"
-                  height="14"
-                  rx="4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <path d="M10 9l5 3-5 3V9z" fill="currentColor" />
-              </svg>
-            </a>
+              <p style={styles.popupText}>
+                ELVIA believes luxury should feel calm, refined and effortless.
+                Every policy exists to support a smooth and elevated customer
+                experience. From formulation to delivery, ELVIA focuses on
+                thoughtful craftsmanship and quiet confidence.
+                <br />
+                <br />
+                Orders are processed carefully, support remains respectful and
+                every interaction is designed to feel premium. Thank you for
+                choosing ELVIA — where modern beauty meets intentional luxury.
+              </p>
+
+              <button
+                style={styles.closeBtn}
+                onClick={() => setOpenPopup(null)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
+      )}
 
-        {/* LEGAL LINKS */}
-        <div style={styles.links}>
-          <Link to="/about" style={styles.link}>About</Link>
-          <Link to="/contact" style={styles.link}>Contact</Link>
-          <Link to="/privacy" style={styles.link}>Privacy</Link>
-          <Link to="/refund" style={styles.link}>Refund</Link>
-          <Link to="/shipping" style={styles.link}>Shipping</Link>
-          <Link to="/terms" style={styles.link}>Terms</Link>
+      {/* ---------------- FOOTER ---------------- */}
+      <footer
+        ref={footerRef}
+        style={{
+          ...styles.footer,
+          backgroundImage: `url(${footerBg})`,
+          ...(visible ? styles.visible : styles.hidden),
+        }}
+      >
+        <div style={styles.footerOverlay} />
+
+        <div style={styles.footerInner}>
+          <p style={styles.brand}>© ELVIA</p>
+
+          {/* LINKS */}
+          <div style={styles.links}>
+            {policyLinks.map((label) => (
+              <a
+                key={label}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOpenPopup(label);
+                }}
+                style={{
+                  ...styles.link,
+                  ...(hovered === label ? styles.linkHover : {}),
+                }}
+                onMouseEnter={() => setHovered(label)}
+                onMouseLeave={() => setHovered(null)}
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+
+          {/* SOCIALS */}
+          <div style={styles.socials}>
+            {["Instagram", "YouTube"].map((platform) => (
+              <a
+                key={platform}
+                href={`https://${platform.toLowerCase()}.com`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  ...styles.icon,
+                  ...(hovered === platform ? styles.linkHover : {}),
+                }}
+                onMouseEnter={() => setHovered(platform)}
+                onMouseLeave={() => setHovered(null)}
+              >
+                {platform}
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
-
-      <div style={styles.bottom}>
-        © {new Date().getFullYear()} KAEORN WELLNESS. All rights reserved.
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
 
@@ -105,71 +142,134 @@ export default function Footer() {
 
 const styles = {
   footer: {
-    borderTop: "1px solid #eee",
-    background: "#fafafa",
-    transition: "all 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+    position: "relative",
+    textAlign: "center",
+    padding: "90px 20px",
+    color: "#444",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
+    fontFamily: `"Playfair Display","Inter",serif`,
   },
-  footerHidden: {
+
+  footerOverlay: {
+    position: "absolute",
+    inset: 0,
+    background: "rgba(255,255,255,0.94)",
+  },
+
+  footerInner: {
+    position: "relative",
+    zIndex: 2,
+  },
+
+  hidden: {
     opacity: 0,
     transform: "translateY(40px)",
   },
-  footerVisible: {
+
+  visible: {
     opacity: 1,
     transform: "translateY(0)",
   },
-  inner: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "40px 20px",
-    display: "flex",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: "40px",
-  },
+
   brand: {
-    maxWidth: "340px",
-  },
-  logo: {
+    fontSize: "12px",
     letterSpacing: "3px",
-    fontWeight: "500",
-    marginBottom: "10px",
+    marginBottom: "24px",
   },
-  tagline: {
-    fontSize: "14px",
-    color: "#666",
-    lineHeight: 1.6,
-    marginBottom: "18px",
+
+  links: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "26px",
+    flexWrap: "wrap",
+    marginBottom: "26px",
+    fontSize: "13px",
   },
+
+  link: {
+    color: "#444",
+    textDecoration: "none",
+    transition: "all 0.35s cubic-bezier(0.22,1,0.36,1)",
+    cursor: "pointer",
+  },
+
   socials: {
     display: "flex",
-    gap: "14px",
+    justifyContent: "center",
+    gap: "28px",
+    fontSize: "13px",
   },
-  socialIcon: {
-    width: "36px",
-    height: "36px",
-    borderRadius: "50%",
-    border: "1px solid #ddd",
+
+  icon: {
+    color: "#444",
+    textDecoration: "none",
+    transition: "all 0.35s cubic-bezier(0.22,1,0.36,1)",
+  },
+
+  linkHover: {
+    opacity: 0.6,
+    transform: "translateY(-2px)",
+  },
+
+  /* 🌸 POPUP */
+  popupWrapper: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.45)",
+    backdropFilter: "blur(10px)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#111",
-    transition: "all 0.25s ease",
+    zIndex: 9999,
+    padding: "20px",
   },
-  links: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-    fontSize: "14px",
+
+  popupCard: {
+    position: "relative",
+    width: "100%",
+    maxWidth: "520px",
+    borderRadius: "26px",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    overflow: "hidden",
+    boxShadow: "0 30px 80px rgba(0,0,0,0.25)",
+    animation: "fadeUp 0.5s ease",
   },
-  link: {
-    color: "#555",
-    transition: "all 0.2s ease",
+
+  popupOverlay: {
+    position: "absolute",
+    inset: 0,
+    background: "rgba(255,255,255,0.94)",
   },
-  bottom: {
+
+  popupInner: {
+    position: "relative",
+    padding: "40px",
     textAlign: "center",
-    fontSize: "12px",
-    color: "#777",
-    padding: "16px 20px",
-    borderTop: "1px solid #eee",
+  },
+
+  popupTitle: {
+    fontSize: "20px",
+    marginBottom: "18px",
+    letterSpacing: "1px",
+  },
+
+  popupText: {
+    fontSize: "15px",
+    lineHeight: "1.9",
+    color: "#555",
+    marginBottom: "26px",
+  },
+
+  closeBtn: {
+    padding: "12px 28px",
+    borderRadius: "40px",
+    background: "#111",
+    color: "#fff",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
   },
 };

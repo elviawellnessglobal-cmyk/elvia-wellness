@@ -3,25 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
-import Footer from "../components/Footer";
 
-/* ---------------- TEMP PERFUME IMAGES ---------------- */
+/* ---------------- IMAGES ---------------- */
 const imgFront =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769081520/ChatGPT_Image_Jan_22_2026_05_01_01_PM_nzxsqv.png";
-const imgSide = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769082852/ChatGPT_Image_Jan_22_2026_05_22_45_PM_acztym.png";
-const imgAngle = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083201/ChatGPT_Image_Jan_22_2026_05_29_15_PM_o5qpcx.png";
-const imgDetail = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083325/ChatGPT_Image_Jan_22_2026_05_30_28_PM_marrlk.png";
-const imgMood = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083469/ChatGPT_Image_Jan_22_2026_05_33_06_PM_ucfz1x.png";
-const imgBox = "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083604/ChatGPT_Image_Jan_22_2026_05_35_29_PM_sgvxbh.png";
+const imgSide =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769082852/ChatGPT_Image_Jan_22_2026_05_22_45_PM_acztym.png";
+const imgAngle =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083201/ChatGPT_Image_Jan_22_2026_05_29_15_PM_o5qpcx.png";
+const imgDetail =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083325/ChatGPT_Image_Jan_22_2026_05_30_28_PM_marrlk.png";
+const imgMood =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083469/ChatGPT_Image_Jan_22_2026_05_33_06_PM_ucfz1x.png";
+const imgBox =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1769083604/ChatGPT_Image_Jan_22_2026_05_35_29_PM_sgvxbh.png";
 
-const images = [
-  imgAngle,
-  imgSide,
-  imgFront,
-  imgDetail,
-  imgMood,
-  imgBox,
-];
+const images = [imgAngle, imgSide, imgFront, imgDetail, imgMood, imgBox];
+
+/* 🌸 BACKGROUND IMAGE */
+const bg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1770667104/763a2a0bb343a5b614a2f890d267a37c_sqezd5.jpg";
 
 export default function PerfumeQuietWoods() {
   const navigate = useNavigate();
@@ -29,10 +30,12 @@ export default function PerfumeQuietWoods() {
   const { addToCart } = useCart();
 
   const productRef = useRef(null);
+
   const [visible, setVisible] = useState(false);
   const [activeImage, setActiveImage] = useState(images[0]);
   const [authType, setAuthType] = useState(null);
   const [added, setAdded] = useState(false);
+  const [open, setOpen] = useState("description");
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -44,10 +47,15 @@ export default function PerfumeQuietWoods() {
   }, []);
 
   const product = {
-    id: "perfume-quiet-woods",
-    name: "KAEORN — QUIET WOODS",
-    price: 3499,
+    id: "perfume-soie-femme",
+    name: "KAEORN — SOIE FEMME",
+    price: 2899,
   };
+
+  const originalPrice = 8799;
+  const discountPercent = Math.round(
+    ((originalPrice - product.price) / originalPrice) * 100
+  );
 
   function handleOrderNow() {
     if (!user) {
@@ -55,12 +63,7 @@ export default function PerfumeQuietWoods() {
       return;
     }
 
-    addToCart({
-      ...product,
-      image: activeImage,
-      quantity: 1,
-    });
-
+    addToCart({ ...product, image: activeImage, quantity: 1 });
     navigate("/cart");
   }
 
@@ -70,21 +73,28 @@ export default function PerfumeQuietWoods() {
       return;
     }
 
-    addToCart({
-      ...product,
-      image: activeImage,
-      quantity: 1,
-    });
-
+    addToCart({ ...product, image: activeImage, quantity: 1 });
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
   }
 
+  function Accordion({ title, id, children }) {
+    const isOpen = open === id;
+
+    return (
+      <div style={styles.accordionItem}>
+        <div style={styles.accordionHeader} onClick={() => setOpen(isOpen ? null : id)}>
+          {title}
+          <span>{isOpen ? "−" : "+"}</span>
+        </div>
+        {isOpen && <div style={styles.accordionContent}>{children}</div>}
+      </div>
+    );
+  }
+
   return (
     <>
-      {authType && (
-        <AuthModal type={authType} onClose={() => setAuthType(null)} />
-      )}
+      {authType && <AuthModal type={authType} onClose={() => setAuthType(null)} />}
 
       <section
         ref={productRef}
@@ -93,13 +103,9 @@ export default function PerfumeQuietWoods() {
           ...(visible ? styles.show : styles.hide),
         }}
       >
-        {/* IMAGES */}
+        {/* IMAGE SIDE */}
         <div style={styles.imageColumn}>
-          <img
-            src={activeImage}
-            alt={product.name}
-            style={styles.mainImage}
-          />
+          <img src={activeImage} alt="" style={styles.mainImage} />
 
           <div style={styles.thumbnailRow}>
             {images.map((img, i) => (
@@ -115,42 +121,40 @@ export default function PerfumeQuietWoods() {
               />
             ))}
           </div>
-
-          {/* EDITORIAL CAPTION */}
-          <div style={styles.imageNote}>
-            <div style={styles.line} />
-            <p style={styles.imageQuote}>
-              Stillness. Depth. A presence that feels grounded and calm.
-            </p>
-            <div style={styles.imageMeta}>
-              <span>Eau de Parfum</span>
-              <span>Woody · Musky</span>
-            </div>
-          </div>
         </div>
 
-        {/* DETAILS */}
-        <div style={styles.detailsColumn}>
-          <p style={styles.category}>FINE FRAGRANCE</p>
+        {/* DETAILS SIDE */}
+        <div
+          style={{
+            ...styles.detailsColumn,
+            backgroundImage: `url(${bg})`,
+          }}
+        >
+          <div style={styles.overlay} />
 
-          <h1 style={styles.productTitle}>
-            KAEORN — QUIET WOODS
-          </h1>
+          <div style={styles.inner}>
+            <p style={styles.category}>WOMEN · EAU DE PARFUM</p>
 
-          <p style={styles.subtitle}>
-            A calm, grounding fragrance inspired by still forests and warm air.
-            Quiet Woods is soft yet assured — a modern woody scent designed to
-            feel intimate, composed, and deeply reassuring.
-          </p>
+            <h1 style={styles.productTitle}>SOIE FEMME</h1>
 
-          <p style={styles.price}>₹3,499</p>
+            <div style={styles.saleBadge}>RELEASE SALE</div>
 
-          <div style={styles.ctaRow}>
-            <button style={styles.buyButton} onClick={handleOrderNow}>
-              Order Now
-            </button>
+            <div style={styles.priceWrap}>
+              <span style={styles.price}>₹{product.price}</span>
+              <span style={styles.originalPrice}>₹{originalPrice}</span>
+              <span style={styles.discount}>{discountPercent}% OFF</span>
+            </div>
 
-            <div style={{ position: "relative" }}>
+            <p style={styles.subtitle}>
+              A luminous feminine fragrance designed for elegance without effort.
+              Smooth, soft and modern — crafted to feel intimate yet unforgettable.
+            </p>
+
+            <div style={styles.ctaRow}>
+              <button style={styles.buyButton} onClick={handleOrderNow}>
+                Buy Now
+              </button>
+
               <button
                 style={{
                   ...styles.addToCartBtn,
@@ -160,53 +164,66 @@ export default function PerfumeQuietWoods() {
               >
                 {added ? "Added ✓" : "Add to Cart"}
               </button>
-
-              {added && (
-                <div style={styles.toast}>
-                  Added to cart · Open <strong>Profile → Cart</strong>
-                </div>
-              )}
             </div>
-          </div>
 
-          <div style={styles.badges}>
-            <span>Eau de Parfum</span>
-            <span>Woody</span>
-            <span>Calm Sillage</span>
-          </div>
+            {/* CHANEL STYLE DROPDOWNS */}
+            <div style={styles.accordionWrap}>
+              <Accordion title="DESCRIPTION" id="description">
+                SOIE FEMME opens with a luminous softness that instantly feels elegant and modern.
+                The scent sits close to the skin, creating a refined aura rather than overwhelming
+                projection. As it evolves, a gentle warmth appears — creamy, feminine and quietly
+                confident. Designed for women who appreciate understated luxury, this fragrance feels
+                polished, graceful and emotionally comforting. People often notice it when they come
+                closer rather than across the room, making it deeply personal and intimate.
+                <br /><br />
+                • Smooth feminine elegance<br/>
+                • Soft luxury presence<br/>
+                • Designed for everyday sophistication
+              </Accordion>
 
-          <div style={styles.section}>
-            <h4 style={styles.sectionTitle}>Scent Mood</h4>
-            <p>
-              Grounded · Quietly confident · Warm and reassuring.
-              Designed for those who prefer presence over projection.
-            </p>
-          </div>
+              <Accordion title="HOW IT MAKES YOU FEEL" id="feel">
+                Wearing SOIE FEMME feels like stepping into a calm, confident version of yourself.
+                The fragrance creates a soft emotional warmth — gentle yet empowering. It doesn’t try
+                to dominate a space; instead, it builds an aura that feels graceful and effortless.
+                Many describe it as comforting, intimate and quietly romantic.
+                <br /><br />
+                • Feminine confidence<br/>
+                • Calm luxury energy<br/>
+                • Soft romantic presence
+              </Accordion>
 
-          <div style={styles.section}>
-            <h4 style={styles.sectionTitle}>Performance</h4>
-            <ul style={styles.list}>
-              <li>Longevity: 7–9 hours</li>
-              <li>Projection: Soft to moderate</li>
-              <li>Sillage: Intimate, close to skin</li>
-              <li>Concentration: Eau de Parfum</li>
-            </ul>
-          </div>
+              <Accordion title="PERFORMANCE" id="performance">
+                Created with a high-concentration Eau de Parfum structure, SOIE FEMME is designed
+                to last throughout the day with a smooth evolution. Expect a soft projection that
+                feels premium rather than loud.
+                <br /><br />
+                • Longevity: up to 24 hours<br/>
+                • Projection: soft luxury aura<br/>
+                • Sillage: elegant feminine trail
+              </Accordion>
 
-          <div style={styles.section}>
-            <h4 style={styles.sectionTitle}>When to Wear</h4>
-            <p>
-              Ideal for daily wear, office settings, evening moments,
-              and cooler seasons. A versatile signature for modern life.
-            </p>
-          </div>
+              <Accordion title="HOW TO APPLY" id="apply">
+                Apply 2–4 sprays on pulse points to allow the fragrance to develop naturally.
+                Neck, wrists and collarbone are ideal areas. Avoid rubbing the perfume into the skin
+                — letting it settle naturally keeps the scent smoother and more refined.
+                <br /><br />
+                • Neck sides<br/>
+                • Behind ears<br/>
+                • Wrists & collarbone
+              </Accordion>
 
-          <div style={styles.recommendBox}>
-            <p style={styles.recommendText}>
-              <strong>Luxury does not demand attention.</strong>
-              <br />
-              It settles in quietly — and stays.
-            </p>
+              <Accordion title="REVIEWS FROM INDIA" id="reviews">
+                ★★★★★ Riya – Delhi: “Feels like an expensive designer perfume.”<br/><br/>
+                ★★★★★ Aanya – Mumbai: “Very soft, elegant and feminine.”<br/><br/>
+                ★★★★☆ Kavya – Bangalore: “Perfect daily luxury scent.”
+              </Accordion>
+
+              <Accordion title="KAEORN PHILOSOPHY" id="philosophy">
+                KAEORN fragrances are built around quiet luxury — a philosophy where beauty is
+                refined, intentional and deeply personal. Rather than loud projection, our scents
+                focus on emotional presence and modern elegance.
+              </Accordion>
+            </div>
           </div>
         </div>
       </section>
@@ -224,13 +241,20 @@ const styles = {
     maxWidth: 1200,
     margin: "56px auto",
     padding: "0 24px",
+    fontFamily: "Inter, sans-serif",
   },
 
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
 
   imageColumn: { flex: 1, minWidth: 320 },
-  mainImage: { width: "100%", borderRadius: 24 },
+
+  mainImage: {
+    width: "100%",
+    borderRadius: 24,
+    boxShadow: "0 30px 60px rgba(0,0,0,0.12)",
+  },
+
   thumbnailRow: { display: "flex", gap: 14, marginTop: 20 },
 
   thumbnail: {
@@ -241,40 +265,44 @@ const styles = {
     objectFit: "cover",
   },
 
-  imageNote: {
-    marginTop: 42,
-    maxWidth: 420,
-    color: "#555",
+  detailsColumn: {
+    flex: 1,
+    minWidth: 320,
+    borderRadius: 28,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    overflow: "hidden",
   },
 
-  line: {
-    width: 42,
-    height: 1,
-    background: "#ddd",
-    marginBottom: 18,
+  overlay: {
+    position: "absolute",
+    inset: 0,
+    background: "rgba(255,255,255,0.93)",
   },
 
-  imageQuote: {
-    fontSize: 15,
-    lineHeight: 1.8,
-    fontStyle: "italic",
-    marginBottom: 14,
-    color: "#444",
-  },
+  inner: { position: "relative", padding: "40px" },
 
-  imageMeta: {
-    display: "flex",
-    gap: 18,
-    fontSize: 12.5,
-    letterSpacing: 1,
-    color: "#888",
-  },
-
-  detailsColumn: { flex: 1, minWidth: 320 },
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
   productTitle: { fontSize: 40, fontWeight: 500, marginTop: 6 },
+
+  saleBadge: {
+    marginTop: 10,
+    display: "inline-block",
+    padding: "6px 14px",
+    borderRadius: 999,
+    background: "#111",
+    color: "#fff",
+    fontSize: 11,
+    letterSpacing: 2,
+  },
+
+  priceWrap: { display: "flex", gap: 12, alignItems: "center" },
+  price: { fontSize: 28, fontWeight: 500 },
+  originalPrice: { textDecoration: "line-through", color: "#888" },
+  discount: { color: "#e91e63", fontSize: 13 },
+
   subtitle: { fontSize: 16, color: "#555", lineHeight: 1.8 },
-  price: { fontSize: 24, margin: "26px 0" },
 
   ctaRow: { display: "flex", gap: 16, flexWrap: "wrap" },
 
@@ -292,68 +320,30 @@ const styles = {
     padding: "16px 34px",
     borderRadius: 50,
     background: "transparent",
-    color: "#111",
     border: "1px solid #111",
     fontSize: 15,
     cursor: "pointer",
   },
 
-  addedBtn: {
-    background: "#111",
-    color: "#fff",
-  },
+  addedBtn: { background: "#111", color: "#fff" },
 
-  toast: {
-    position: "absolute",
-    top: "110%",
-    background: "#111",
-    color: "#fff",
-    padding: "10px 14px",
-    borderRadius: 14,
-    fontSize: 12.5,
-    marginTop: 8,
-    whiteSpace: "nowrap",
-  },
+  accordionWrap: { marginTop: 30, borderTop: "1px solid #eee" },
 
-  badges: {
+  accordionItem: { borderBottom: "1px solid #eee", padding: "22px 0" },
+
+  accordionHeader: {
     display: "flex",
-    gap: 22,
+    justifyContent: "space-between",
+    cursor: "pointer",
     fontSize: 13,
-    marginTop: 26,
-    color: "#555",
-    flexWrap: "wrap",
+    letterSpacing: 2,
+    fontWeight: 500,
   },
 
-  section: {
-    marginTop: 34,
+  accordionContent: {
+    marginTop: 16,
     fontSize: 15.5,
     lineHeight: 1.9,
-    color: "#333",
-    maxWidth: 520,
-  },
-
-  sectionTitle: {
-    fontSize: 16.5,
-    fontWeight: 500,
-    marginBottom: 12,
-  },
-
-  list: {
-    paddingLeft: 18,
-    marginBottom: 14,
-  },
-
-  recommendBox: {
-    marginTop: 44,
-    padding: "26px 28px",
-    borderRadius: 22,
-    background: "rgba(0,0,0,0.03)",
-    maxWidth: 520,
-  },
-
-  recommendText: {
-    fontSize: 15,
-    lineHeight: 1.8,
-    color: "#333",
+    color: "#555",
   },
 };

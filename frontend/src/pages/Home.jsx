@@ -13,6 +13,10 @@ const morningVeilImg =
 const quietWoodsImg =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1769081520/ChatGPT_Image_Jan_22_2026_05_01_01_PM_nzxsqv.png";
 
+/* 🌫️ HERO BACKGROUND IMAGE (ONLY UNDER HERO AREA) */
+const heroBg =
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1770669629/dc9fb4aaf164ae5f44160471f5eb9a7b_hmhsw6.jpg";
+
 export default function Home() {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
@@ -51,62 +55,69 @@ export default function Home() {
         style={{
           ...styles.hero,
           minHeight: isMobile ? "88vh" : "92vh",
+          backgroundImage: `url(${heroBg})`,
         }}
       >
-        <div style={styles.brandBadge}>KAEORN</div>
+        {/* soft luxury overlay so text stays readable */}
+        <div style={styles.heroOverlay} />
 
-        <div style={styles.brandTagline}>
-          Because care deserves luxury
-        </div>
+        <div style={styles.heroInner}>
+          <div style={styles.brandBadge}>KAEORN</div>
 
-        <h1 style={styles.heroTitle}>
-          Where skincare meets the art of perfume
-          <br />
-          Crafted for modern skin, softly perfumed
-        </h1>
+          <div style={styles.brandTagline}>
+            Because care deserves luxury
+          </div>
 
-        <p style={styles.heroText}>
-          Thoughtfully crafted scents designed to linger softly and elevate your daily ritual
-        </p>
+          <h1 style={styles.heroTitle}>
+            Where skincare meets the art of perfume
+            <br />
+            Crafted for modern skin, softly perfumed
+          </h1>
 
-        {/* 🔒 COMING SOON BUTTONS */}
-        <div
-          style={{
-            ...styles.productButton,
-            flexDirection: isMobile ? "column" : "row",
-            width: isMobile ? "100%" : "auto",
-            alignItems: "center",
-          }}
-        >
-          <button
-            disabled
+          <p style={styles.heroText}>
+            Thoughtfully crafted scents designed to linger softly and elevate
+            your daily ritual
+          </p>
+
+          {/* 🔒 COMING SOON BUTTONS */}
+          <div
             style={{
-              ...styles.primaryBtn,
-              ...styles.disabledBtn,
+              ...styles.productButton,
+              flexDirection: isMobile ? "column" : "row",
               width: isMobile ? "100%" : "auto",
-              maxWidth: 360,
+              alignItems: "center",
             }}
           >
-            Discover Haetsal Veil™ Cream — Coming Soon
-          </button>
+            <button
+              disabled
+              style={{
+                ...styles.primaryBtn,
+                ...styles.disabledBtn,
+                width: isMobile ? "100%" : "auto",
+                maxWidth: 360,
+              }}
+            >
+              Discover Haetsal Veil™ Cream — Coming Soon
+            </button>
 
-          <button
-            disabled
-            style={{
-              ...styles.primaryBtnOutline,
-              ...styles.disabledBtnOutline,
-              width: isMobile ? "100%" : "auto",
-              maxWidth: 360,
-            }}
-          >
-            Discover Haetsal Veil™ Spray — Coming Soon
-          </button>
+            <button
+              disabled
+              style={{
+                ...styles.primaryBtnOutline,
+                ...styles.disabledBtnOutline,
+                width: isMobile ? "100%" : "auto",
+                maxWidth: 360,
+              }}
+            >
+              Discover Haetsal Veil™ Spray — Coming Soon
+            </button>
+          </div>
+
+          {/* 🖤 NEW LUXURY LINE */}
+          <p style={styles.fragranceLine}>
+            Freshly launched fragrance — explore now
+          </p>
         </div>
-
-        {/* 🖤 NEW LUXURY LINE */}
-        <p style={styles.fragranceLine}>
-          Freshly launched fragrance — explore now
-        </p>
       </section>
 
       {/* ---------------- PERFUME SECTION ---------------- */}
@@ -173,14 +184,28 @@ const styles = {
   },
 
   hero: {
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
     padding: "0 24px",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  },
+
+  heroOverlay: {
+    position: "absolute",
+    inset: 0,
     background:
-      "radial-gradient(1200px 600px at 50% -10%, #f2f2f2 0%, #ffffff 60%)",
+      "linear-gradient(to bottom, rgba(255,255,255,0.92), rgba(255,255,255,0.96))",
+  },
+
+  heroInner: {
+    position: "relative",
+    zIndex: 2,
+    maxWidth: 720,
   },
 
   brandBadge: {
@@ -188,7 +213,7 @@ const styles = {
     letterSpacing: 3,
     padding: "8px 18px",
     borderRadius: 999,
-    background: "rgba(0,0,0,0.04)",
+    background: "rgba(0,0,0,0.05)",
     marginBottom: 18,
   },
 
@@ -236,7 +261,6 @@ const styles = {
     fontSize: 15,
   },
 
-  /* 🔒 DISABLED LUXURY LOOK */
   disabledBtn: {
     opacity: 0.6,
     cursor: "not-allowed",
