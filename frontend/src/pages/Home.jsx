@@ -56,21 +56,20 @@ export default function Home() {
         <div style={styles.brandBadge}>KAEORN</div>
 
         <div style={styles.brandTagline}>
-          Because care should feel kind
+          Because care deserves luxury
         </div>
 
         <h1 style={styles.heroTitle}>
-          Quiet luxury skincare,
+          Where skincare meets the art of perfume
           <br />
-          crafted for modern skin.
+          Crafted for modern skin, softly perfumed
         </h1>
 
         <p style={styles.heroText}>
-          Thoughtfully formulated essentials designed to protect,
-          nourish, and elevate your daily ritual.
+          Thoughtfully crafted scents designed to linger softly and elevate your daily ritual
         </p>
 
-        {/* 🔧 FIXED BUTTON ALIGNMENT */}
+        {/* 🔒 COMING SOON BUTTONS */}
         <div
           style={{
             ...styles.productButton,
@@ -80,27 +79,34 @@ export default function Home() {
           }}
         >
           <button
+            disabled
             style={{
               ...styles.primaryBtn,
+              ...styles.disabledBtn,
               width: isMobile ? "100%" : "auto",
               maxWidth: 360,
             }}
-            onClick={() => navigate("/product")}
           >
-            Discover Haetsal Veil™ Cream
+            Discover Haetsal Veil™ Cream — Coming Soon
           </button>
 
           <button
+            disabled
             style={{
               ...styles.primaryBtnOutline,
+              ...styles.disabledBtnOutline,
               width: isMobile ? "100%" : "auto",
               maxWidth: 360,
             }}
-            onClick={() => navigate("/product/spray")}
           >
-            Discover Haetsal Veil™ Spray
+            Discover Haetsal Veil™ Spray — Coming Soon
           </button>
         </div>
+
+        {/* 🖤 NEW LUXURY LINE */}
+        <p style={styles.fragranceLine}>
+          Freshly launched fragrance — explore now
+        </p>
       </section>
 
       {/* ---------------- PERFUME SECTION ---------------- */}
@@ -117,7 +123,6 @@ export default function Home() {
         </div>
 
         <div style={styles.perfumeRow}>
-          {/* NO. 01 */}
           <div
             style={styles.perfumeCard}
             onClick={() => navigate("/perfume/soft-skin")}
@@ -128,7 +133,6 @@ export default function Home() {
             <p style={styles.mood}>Woody · Aromatic · Musky</p>
           </div>
 
-          {/* NO. 02 */}
           <div
             style={{ ...styles.perfumeCard, ...styles.offset }}
             onClick={() => navigate("/perfume/morning-veil")}
@@ -139,7 +143,6 @@ export default function Home() {
             <p style={styles.mood}>Clean · Airy · Luminous</p>
           </div>
 
-          {/* NO. 03 */}
           <div
             style={styles.perfumeCard}
             onClick={() => navigate("/perfume/quiet-woods")}
@@ -231,6 +234,24 @@ const styles = {
     background: "transparent",
     border: "1px solid #111",
     fontSize: 15,
+  },
+
+  /* 🔒 DISABLED LUXURY LOOK */
+  disabledBtn: {
+    opacity: 0.6,
+    cursor: "not-allowed",
+  },
+
+  disabledBtnOutline: {
+    opacity: 0.6,
+    cursor: "not-allowed",
+  },
+
+  fragranceLine: {
+    marginTop: 26,
+    fontSize: 14,
+    letterSpacing: 1,
+    color: "#888",
   },
 
   perfumeSection: {
