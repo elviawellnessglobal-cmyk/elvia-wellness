@@ -28,7 +28,7 @@ export default function Footer() {
         ...(visible ? styles.visible : styles.hidden),
       }}
     >
-      <p style={styles.brand}>© ELVIA WELLNESS</p>
+      <p style={styles.brand}>© KAEORN</p>
 
       <div style={styles.links}>
         {[

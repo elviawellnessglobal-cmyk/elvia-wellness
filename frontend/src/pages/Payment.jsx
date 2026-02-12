@@ -59,7 +59,7 @@ export default function Payment() {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID, // FRONTEND PUBLIC KEY
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
-        name: "Elvia",
+        name: "KAEORN",
         description: "Secure Luxury Checkout",
         order_id: razorpayOrder.id,
 
