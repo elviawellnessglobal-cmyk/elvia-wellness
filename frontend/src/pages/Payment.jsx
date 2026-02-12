@@ -27,54 +27,126 @@ export default function Payment() {
         return;
       }
 
-      // 🔐 Get JWT if user is logged in
       const token = localStorage.getItem("kaeorn_token");
 
-      const orderPayload = {
-        items: cartItems.map((item) => ({
-          productId: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image,
-        })),
-
-        address: {
-          fullName: address.name,
-          phone: address.phone,
-          street: address.address,
-          city: address.city,
-          state: address.state,
-          postalCode: address.pincode,
-          country: "India",
-        },
-
-        totalAmount: getCartTotal(),
-      };
-
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE}/api/orders`,
+      /* ===========================================
+         STEP 1 — CREATE RAZORPAY ORDER (BACKEND)
+      =========================================== */
+      const orderRes = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/payment/create-order`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(token && { Authorization: `Bearer ${token}` }),
           },
-          body: JSON.stringify(orderPayload),
+          body: JSON.stringify({
+            amount: getCartTotal(),
+          }),
         }
       );
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Order creation failed");
+      const razorpayOrder = await orderRes.json();
+
+      if (!orderRes.ok) {
+        throw new Error(razorpayOrder.message || "Payment init failed");
       }
 
-      clearCart();
-      localStorage.removeItem("deliveryAddress");
-      navigate("/order-success");
+      /* ===========================================
+         STEP 2 — OPEN RAZORPAY CHECKOUT
+      =========================================== */
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // FRONTEND PUBLIC KEY
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: "Elvia",
+        description: "Secure Luxury Checkout",
+        order_id: razorpayOrder.id,
+
+        handler: async function (response) {
+          try {
+            /* ===========================================
+               STEP 3 — AFTER PAYMENT SUCCESS
+               CREATE ORDER IN DATABASE
+            =========================================== */
+
+            const orderPayload = {
+              items: cartItems.map((item) => ({
+                productId: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image,
+              })),
+
+              address: {
+                fullName: address.name,
+                phone: address.phone,
+                street: address.address,
+                city: address.city,
+                state: address.state,
+                postalCode: address.pincode,
+                country: "India",
+              },
+
+              totalAmount: getCartTotal(),
+
+              payment: {
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              },
+            };
+
+            const saveOrder = await fetch(
+              `${import.meta.env.VITE_API_BASE}/api/orders`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...(token && { Authorization: `Bearer ${token}` }),
+                },
+                body: JSON.stringify(orderPayload),
+              }
+            );
+
+            const result = await saveOrder.json();
+
+            if (!saveOrder.ok) {
+              throw new Error(result.message || "Order save failed");
+            }
+
+            clearCart();
+            localStorage.removeItem("deliveryAddress");
+
+            navigate("/order-success");
+          } catch (err) {
+            console.error("Order Save Error:", err);
+            alert("Payment done but order save failed.");
+          }
+        },
+
+        prefill: {
+          name: address.name,
+          contact: address.phone,
+        },
+
+        theme: {
+          color: "#111111",
+        },
+
+        modal: {
+          ondismiss: function () {
+            console.log("Payment popup closed");
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
       console.error("Payment error:", err);
-      alert("Unable to place order. Please try again.");
+      alert("Unable to start payment. Try again.");
     }
   }
 
@@ -106,6 +178,8 @@ export default function Payment() {
     </div>
   );
 }
+
+/* ---------------- STYLES ---------------- */
 
 const styles = {
   page: { maxWidth: 520, margin: "auto", padding: 40 },
