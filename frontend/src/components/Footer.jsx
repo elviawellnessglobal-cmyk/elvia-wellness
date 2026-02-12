@@ -52,18 +52,18 @@ export default function Footer() {
             <div style={styles.popupOverlay} />
 
             <div style={styles.popupInner}>
-              <h3 style={styles.popupTitle}>ELVIA — {openPopup}</h3>
+              <h3 style={styles.popupTitle}>KAEORN — {openPopup}</h3>
 
               <p style={styles.popupText}>
-                ELVIA believes luxury should feel calm, refined and effortless.
+                KAEORN believes luxury should feel calm, refined and effortless.
                 Every policy exists to support a smooth and elevated customer
-                experience. From formulation to delivery, ELVIA focuses on
+                experience. From formulation to delivery, KAEORN focuses on
                 thoughtful craftsmanship and quiet confidence.
                 <br />
                 <br />
                 Orders are processed carefully, support remains respectful and
                 every interaction is designed to feel premium. Thank you for
-                choosing ELVIA — where modern beauty meets intentional luxury.
+                choosing KAEORN — where modern beauty meets intentional luxury.
               </p>
 
               <button
@@ -89,7 +89,7 @@ export default function Footer() {
         <div style={styles.footerOverlay} />
 
         <div style={styles.footerInner}>
-          <p style={styles.brand}>© ELVIA</p>
+          <p style={styles.brand}>© KAEORN</p>
 
           {/* LINKS */}
           <div style={styles.links}>
@@ -273,3 +273,4 @@ const styles = {
     fontSize: "14px",
   },
 };
+SS
