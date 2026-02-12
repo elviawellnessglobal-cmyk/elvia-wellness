@@ -213,7 +213,6 @@ const styles = {
     transform: "translateY(-2px)",
   },
 
-  /* 🌸 POPUP */
   popupWrapper: {
     position: "fixed",
     inset: 0,
@@ -235,7 +234,6 @@ const styles = {
     backgroundPosition: "center",
     overflow: "hidden",
     boxShadow: "0 30px 80px rgba(0,0,0,0.25)",
-    animation: "fadeUp 0.5s ease",
   },
 
   popupOverlay: {
@@ -273,4 +271,3 @@ const styles = {
     fontSize: "14px",
   },
 };
-SS
