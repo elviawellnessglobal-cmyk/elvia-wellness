@@ -142,7 +142,13 @@ export default function Payment() {
         },
       };
 
-      const rzp = new window.Razorpay(options);
+      if (!window.Razorpay) {
+  alert("Payment system failed to load. Refresh page.");
+  return;
+}
+
+const rzp = new window.Razorpay(options);
+
       rzp.open();
     } catch (err) {
       console.error("Payment error:", err);
