@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useEffect } from "react";
 
 export default function Payment() {
   const navigate = useNavigate();
@@ -7,6 +8,19 @@ export default function Payment() {
 
   const address =
     JSON.parse(localStorage.getItem("deliveryAddress")) || {};
+
+  /* ===========================================
+     LOAD RAZORPAY SCRIPT SAFELY
+  =========================================== */
+  useEffect(() => {
+    if (document.getElementById("razorpay-script")) return;
+
+    const script = document.createElement("script");
+    script.id = "razorpay-script";
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   async function handlePay() {
     try {
@@ -30,7 +44,7 @@ export default function Payment() {
       const token = localStorage.getItem("kaeorn_token");
 
       /* ===========================================
-         STEP 1 — CREATE RAZORPAY ORDER (BACKEND)
+         STEP 1 — CREATE RAZORPAY ORDER
       =========================================== */
       const orderRes = await fetch(
         `${import.meta.env.VITE_API_BASE}/api/payment/create-order`,
@@ -53,10 +67,18 @@ export default function Payment() {
       }
 
       /* ===========================================
-         STEP 2 — OPEN RAZORPAY CHECKOUT
+         SAFETY CHECK — RAZORPAY LOADED
+      =========================================== */
+      if (typeof window === "undefined" || !window.Razorpay) {
+        alert("Payment system failed to load. Please refresh page.");
+        return;
+      }
+
+      /* ===========================================
+         STEP 2 — OPEN CHECKOUT
       =========================================== */
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // FRONTEND PUBLIC KEY
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
         name: "KAEORN",
@@ -65,11 +87,6 @@ export default function Payment() {
 
         handler: async function (response) {
           try {
-            /* ===========================================
-               STEP 3 — AFTER PAYMENT SUCCESS
-               CREATE ORDER IN DATABASE
-            =========================================== */
-
             const orderPayload = {
               items: cartItems.map((item) => ({
                 productId: item.id,
@@ -118,11 +135,10 @@ export default function Payment() {
 
             clearCart();
             localStorage.removeItem("deliveryAddress");
-
             navigate("/order-success");
           } catch (err) {
             console.error("Order Save Error:", err);
-            alert("Payment done but order save failed.");
+            alert("Payment completed but order saving failed.");
           }
         },
 
@@ -142,14 +158,9 @@ export default function Payment() {
         },
       };
 
-      if (!window.Razorpay) {
-  alert("Payment system failed to load. Refresh page.");
-  return;
-}
-
-const rzp = new window.Razorpay(options);
-
+      const rzp = new window.Razorpay(options);
       rzp.open();
+
     } catch (err) {
       console.error("Payment error:", err);
       alert("Unable to start payment. Try again.");
