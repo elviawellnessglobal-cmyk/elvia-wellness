@@ -14,9 +14,12 @@ const addressRoutes = require("./routes/addressRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const adminEmailRoutes = require("./routes/adminEmailRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const adminAnalyticsRoutes = require("./routes/adminAnalyticsRoutes");
+
 
 /* ---------------- APP ---------------- */
 const app = express();
+
 
 /* ---------------- CORS ---------------- */
 const allowedOrigins = [
@@ -63,6 +66,7 @@ app.use("/api/addresses", addressRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminEmailRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/admin", adminAnalyticsRoutes);
 
 /* ---------------- DATABASE ---------------- */
 mongoose

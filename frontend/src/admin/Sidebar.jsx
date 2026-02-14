@@ -27,6 +27,10 @@ export default function Sidebar() {
           Orders
         </button>
 
+<button onClick={() => navigate("/admin/analytics")}>
+  Analytics
+</button>
+
         {/* ✅ SUPPORT CHATS */}
         <button
           style={styles.navBtn}

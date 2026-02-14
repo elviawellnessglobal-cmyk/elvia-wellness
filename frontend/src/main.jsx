@@ -53,6 +53,8 @@ import ChatDetail from "./admin/ChatDetail";
 import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
+import AdminAnalytics from "./pages/AdminAnalytics";
+
 
 /* ---------------- NAVBAR CONTROLLER ---------------- */
 
@@ -111,6 +113,8 @@ function AppRoot() {
         <Route path="/refund" element={<Refund />} />
         <Route path="/shipping" element={<Shipping />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/success" element={<Success />} />
+
 
         {/* ---------- CART ---------- */}
         <Route
@@ -151,6 +155,7 @@ function AppRoot() {
 
         {/* ---------- ADMIN ---------- */}
         <Route path="/admin/login" element={<AdminLogin />} />
+<Route path="/admin/analytics" element={<AdminAnalytics />} />
 
         <Route
           path="/admin/dashboard"

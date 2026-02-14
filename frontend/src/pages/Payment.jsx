@@ -12,30 +12,19 @@ export default function Payment() {
   const address =
     JSON.parse(localStorage.getItem("deliveryAddress")) || {};
 
-  /* ===========================================
-     LOAD RAZORPAY SCRIPT SAFELY
-  =========================================== */
+  /* ---------------- LOAD RAZORPAY ---------------- */
   useEffect(() => {
     if (window.Razorpay) {
       setRazorpayLoaded(true);
       return;
     }
 
-    const existingScript = document.getElementById("razorpay-script");
-    if (existingScript) {
-      existingScript.onload = () => setRazorpayLoaded(true);
-      return;
-    }
-
     const script = document.createElement("script");
-    script.id = "razorpay-script";
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
-
     script.onload = () => setRazorpayLoaded(true);
-    script.onerror = () => {
-      alert("Failed to load payment system. Please refresh.");
-    };
+    script.onerror = () =>
+      alert("Failed to load payment system.");
 
     document.body.appendChild(script);
   }, []);
@@ -45,11 +34,11 @@ export default function Payment() {
       if (loading) return;
 
       if (!razorpayLoaded) {
-        alert("Payment system loading. Please wait a moment.");
+        alert("Payment system loading. Please wait.");
         return;
       }
 
-      if (!cartItems || cartItems.length === 0) {
+      if (!cartItems.length) {
         alert("Cart is empty");
         return;
       }
@@ -70,9 +59,7 @@ export default function Payment() {
 
       const token = localStorage.getItem("kaeorn_token");
 
-      /* ===========================================
-         STEP 1 — CREATE RAZORPAY ORDER
-      =========================================== */
+      /* ---------------- CREATE RAZORPAY ORDER ---------------- */
       const orderRes = await fetch(
         `${import.meta.env.VITE_API_BASE}/api/payment/create-order`,
         {
@@ -83,6 +70,8 @@ export default function Payment() {
           },
           body: JSON.stringify({
             amount: getCartTotal(),
+            cartItems,
+            address,
           }),
         }
       );
@@ -95,35 +84,29 @@ export default function Payment() {
         );
       }
 
-      /* ===========================================
-         STEP 2 — OPEN RAZORPAY CHECKOUT
-      =========================================== */
+      /* ---------------- OPEN CHECKOUT ---------------- */
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
+        order_id: razorpayOrder.id,
         name: "KAEORN",
         description: "Secure Luxury Checkout",
-        order_id: razorpayOrder.id,
 
         handler: async function (response) {
           try {
-            /* ===========================================
-               STEP 3 — VERIFY PAYMENT
-            =========================================== */
+            /* -------- VERIFY PAYMENT -------- */
             const verifyRes = await fetch(
               `${import.meta.env.VITE_API_BASE}/api/payment/verify`,
               {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  ...(token && { Authorization: `Bearer ${token}` }),
+                  ...(token && {
+                    Authorization: `Bearer ${token}`,
+                  }),
                 },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
+                body: JSON.stringify(response),
               }
             );
 
@@ -133,35 +116,23 @@ export default function Payment() {
               throw new Error("Payment verification failed");
             }
 
-            /* ===========================================
-               STEP 4 — SAVE ORDER
-            =========================================== */
+            /* -------- CREATE ORDER IN DB -------- */
             const saveOrder = await fetch(
               `${import.meta.env.VITE_API_BASE}/api/orders`,
               {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  ...(token && { Authorization: `Bearer ${token}` }),
+                  ...(token && {
+                    Authorization: `Bearer ${token}`,
+                  }),
                 },
                 body: JSON.stringify({
-                  items: cartItems.map((item) => ({
-                    productId: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    image: item.image,
-                  })),
-                  address: {
-                    fullName: address.name,
-                    phone: address.phone,
-                    street: address.address,
-                    city: address.city,
-                    state: address.state,
-                    postalCode: address.pincode,
-                    country: "India",
-                  },
+                  items: cartItems,
+                  address,
                   totalAmount: getCartTotal(),
+                  paymentId:
+                    response.razorpay_payment_id,
                 }),
               }
             );
@@ -172,10 +143,10 @@ export default function Payment() {
 
             clearCart();
             localStorage.removeItem("deliveryAddress");
-            navigate("/order-success");
+
+            navigate("/success");
           } catch (err) {
-            console.error("Payment Success Error:", err);
-            alert("Payment succeeded but order failed. Contact support.");
+            alert("Payment succeeded but order failed.");
             setLoading(false);
           }
         },
@@ -185,9 +156,7 @@ export default function Payment() {
           contact: address.phone,
         },
 
-        theme: {
-          color: "#111111",
-        },
+        theme: { color: "#111111" },
 
         modal: {
           ondismiss: function () {
@@ -200,7 +169,7 @@ export default function Payment() {
       rzp.open();
     } catch (err) {
       console.error("Payment error:", err);
-      alert("Unable to start payment. Try again.");
+      alert("Payment failed.");
       setLoading(false);
     }
   }
@@ -210,50 +179,37 @@ export default function Payment() {
       <h1 style={styles.heading}>Confirm & Pay</h1>
 
       <div style={styles.card}>
-        <h3>Delivery Address</h3>
+        <p>{address.name}</p>
+        <p>{address.address}</p>
         <p>
-          {address.name}
-          <br />
-          {address.address}
-          <br />
-          {address.city}, {address.state} – {address.pincode}
-          <br />
-          Phone: {address.phone}
+          {address.city}, {address.state}
         </p>
+        <p>{address.phone}</p>
       </div>
 
-      <div style={styles.card}>
-        <h3>Total</h3>
-        <h2>₹{getCartTotal()}</h2>
-      </div>
+      <h2>Total ₹{getCartTotal()}</h2>
 
       <button
-        style={{
-          ...styles.payBtn,
-          opacity: loading ? 0.6 : 1,
-        }}
         onClick={handlePay}
         disabled={loading}
+        style={styles.button}
       >
-        {loading ? "Processing..." : `Pay ₹${getCartTotal()}`}
+        {loading ? "Processing..." : "Pay Securely"}
       </button>
     </div>
   );
 }
 
-/* ---------------- STYLES ---------------- */
-
 const styles = {
   page: { maxWidth: 520, margin: "auto", padding: 40 },
   heading: { marginBottom: 24 },
   card: {
-    background: "#fff",
     border: "1px solid #eee",
     borderRadius: 14,
     padding: 20,
     marginBottom: 20,
   },
-  payBtn: {
+  button: {
     width: "100%",
     padding: 18,
     borderRadius: 40,
@@ -261,6 +217,5 @@ const styles = {
     background: "#111",
     color: "#fff",
     cursor: "pointer",
-    fontSize: 15,
   },
 };
