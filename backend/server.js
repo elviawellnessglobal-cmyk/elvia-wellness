@@ -15,9 +15,6 @@ const chatRoutes = require("./routes/chatRoutes");
 const adminEmailRoutes = require("./routes/adminEmailRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 
-
-
-
 /* ---------------- APP ---------------- */
 const app = express();
 
@@ -33,21 +30,21 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow server-to-server & Postman
       if (!origin) return callback(null, true);
-
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-
       console.error("❌ CORS BLOCKED:", origin);
       return callback(new Error("Not allowed by CORS"), false);
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+/* ======================================
+   WEBHOOK MUST BE BEFORE express.json()
+====================================== */
+app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
 
 /* ---------------- BODY PARSER ---------------- */
 app.use(express.json());
@@ -66,7 +63,6 @@ app.use("/api/addresses", addressRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminEmailRoutes);
 app.use("/api/payment", paymentRoutes);
-
 
 /* ---------------- DATABASE ---------------- */
 mongoose

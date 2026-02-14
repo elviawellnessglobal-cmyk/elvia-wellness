@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Payment() {
   const navigate = useNavigate();
   const { cartItems, getCartTotal, clearCart } = useCart();
+
+  const [loading, setLoading] = useState(false);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
   const address =
     JSON.parse(localStorage.getItem("deliveryAddress")) || {};
@@ -13,17 +16,39 @@ export default function Payment() {
      LOAD RAZORPAY SCRIPT SAFELY
   =========================================== */
   useEffect(() => {
-    if (document.getElementById("razorpay-script")) return;
+    if (window.Razorpay) {
+      setRazorpayLoaded(true);
+      return;
+    }
+
+    const existingScript = document.getElementById("razorpay-script");
+    if (existingScript) {
+      existingScript.onload = () => setRazorpayLoaded(true);
+      return;
+    }
 
     const script = document.createElement("script");
     script.id = "razorpay-script";
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
+
+    script.onload = () => setRazorpayLoaded(true);
+    script.onerror = () => {
+      alert("Failed to load payment system. Please refresh.");
+    };
+
     document.body.appendChild(script);
   }, []);
 
   async function handlePay() {
     try {
+      if (loading) return;
+
+      if (!razorpayLoaded) {
+        alert("Payment system loading. Please wait a moment.");
+        return;
+      }
+
       if (!cartItems || cartItems.length === 0) {
         alert("Cart is empty");
         return;
@@ -40,6 +65,8 @@ export default function Payment() {
         alert("Delivery address missing");
         return;
       }
+
+      setLoading(true);
 
       const token = localStorage.getItem("kaeorn_token");
 
@@ -63,19 +90,13 @@ export default function Payment() {
       const razorpayOrder = await orderRes.json();
 
       if (!orderRes.ok) {
-        throw new Error(razorpayOrder.message || "Payment init failed");
+        throw new Error(
+          razorpayOrder.message || "Payment initialization failed"
+        );
       }
 
       /* ===========================================
-         SAFETY CHECK — RAZORPAY LOADED
-      =========================================== */
-      if (typeof window === "undefined" || !window.Razorpay) {
-        alert("Payment system failed to load. Please refresh page.");
-        return;
-      }
-
-      /* ===========================================
-         STEP 2 — OPEN CHECKOUT
+         STEP 2 — OPEN RAZORPAY CHECKOUT
       =========================================== */
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -87,34 +108,34 @@ export default function Payment() {
 
         handler: async function (response) {
           try {
-            const orderPayload = {
-              items: cartItems.map((item) => ({
-                productId: item.id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                image: item.image,
-              })),
+            /* ===========================================
+               STEP 3 — VERIFY PAYMENT
+            =========================================== */
+            const verifyRes = await fetch(
+              `${import.meta.env.VITE_API_BASE}/api/payment/verify`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...(token && { Authorization: `Bearer ${token}` }),
+                },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            );
 
-              address: {
-                fullName: address.name,
-                phone: address.phone,
-                street: address.address,
-                city: address.city,
-                state: address.state,
-                postalCode: address.pincode,
-                country: "India",
-              },
+            const verifyData = await verifyRes.json();
 
-              totalAmount: getCartTotal(),
+            if (!verifyRes.ok || !verifyData.success) {
+              throw new Error("Payment verification failed");
+            }
 
-              payment: {
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature,
-              },
-            };
-
+            /* ===========================================
+               STEP 4 — SAVE ORDER
+            =========================================== */
             const saveOrder = await fetch(
               `${import.meta.env.VITE_API_BASE}/api/orders`,
               {
@@ -123,22 +144,39 @@ export default function Payment() {
                   "Content-Type": "application/json",
                   ...(token && { Authorization: `Bearer ${token}` }),
                 },
-                body: JSON.stringify(orderPayload),
+                body: JSON.stringify({
+                  items: cartItems.map((item) => ({
+                    productId: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image,
+                  })),
+                  address: {
+                    fullName: address.name,
+                    phone: address.phone,
+                    street: address.address,
+                    city: address.city,
+                    state: address.state,
+                    postalCode: address.pincode,
+                    country: "India",
+                  },
+                  totalAmount: getCartTotal(),
+                }),
               }
             );
 
-            const result = await saveOrder.json();
-
             if (!saveOrder.ok) {
-              throw new Error(result.message || "Order save failed");
+              throw new Error("Order save failed");
             }
 
             clearCart();
             localStorage.removeItem("deliveryAddress");
             navigate("/order-success");
           } catch (err) {
-            console.error("Order Save Error:", err);
-            alert("Payment completed but order saving failed.");
+            console.error("Payment Success Error:", err);
+            alert("Payment succeeded but order failed. Contact support.");
+            setLoading(false);
           }
         },
 
@@ -153,17 +191,17 @@ export default function Payment() {
 
         modal: {
           ondismiss: function () {
-            console.log("Payment popup closed");
+            setLoading(false);
           },
         },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-
     } catch (err) {
       console.error("Payment error:", err);
       alert("Unable to start payment. Try again.");
+      setLoading(false);
     }
   }
 
@@ -189,8 +227,15 @@ export default function Payment() {
         <h2>₹{getCartTotal()}</h2>
       </div>
 
-      <button style={styles.payBtn} onClick={handlePay}>
-        Pay ₹{getCartTotal()}
+      <button
+        style={{
+          ...styles.payBtn,
+          opacity: loading ? 0.6 : 1,
+        }}
+        onClick={handlePay}
+        disabled={loading}
+      >
+        {loading ? "Processing..." : `Pay ₹${getCartTotal()}`}
       </button>
     </div>
   );
@@ -216,5 +261,6 @@ const styles = {
     background: "#111",
     color: "#fff",
     cursor: "pointer",
+    fontSize: 15,
   },
 };
