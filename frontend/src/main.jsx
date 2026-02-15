@@ -18,6 +18,7 @@ import Cart from "./pages/Cart";
 import Address from "./pages/Address";
 import Payment from "./pages/Payment";
 import OrderSuccess from "./pages/OrderSuccess";
+import Success from "./pages/Success";
 
 import About from "./pages/legal/About";
 import Contact from "./pages/legal/Contact";
