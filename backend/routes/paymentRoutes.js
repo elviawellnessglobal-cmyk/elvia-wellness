@@ -9,6 +9,13 @@ const userAuth = require("../middleware/userAuth");
 const router = express.Router();
 
 /* ======================================
+   VERIFY ENV VARIABLES
+====================================== */
+if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+  console.error("❌ Razorpay keys missing in environment variables");
+}
+
+/* ======================================
    RAZORPAY INSTANCE
 ====================================== */
 const razorpay = new Razorpay({
@@ -23,19 +30,23 @@ router.post("/create-order", userAuth, async (req, res) => {
   try {
     const { amount, cartItems, address } = req.body;
 
-    if (!amount || !cartItems || cartItems.length === 0) {
-      return res.status(400).json({ message: "Invalid cart" });
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+      return res.status(400).json({ message: "Invalid cart items" });
     }
 
     const options = {
-      amount: amount * 100,
+      amount: Math.round(amount * 100),
       currency: "INR",
       receipt: "kaeorn_" + Date.now(),
       notes: {
         userId: req.user._id.toString(),
         email: req.user.email,
         cart: JSON.stringify(cartItems),
-        address: JSON.stringify(address),
+        address: JSON.stringify(address || {}),
       },
     };
 
@@ -43,14 +54,16 @@ router.post("/create-order", userAuth, async (req, res) => {
 
     res.json(order);
   } catch (err) {
-    console.error("Razorpay create error:", err);
-    res.status(500).json({ message: "Razorpay order failed" });
+    console.error("🔥 Razorpay create error:", err.message);
+    res.status(500).json({
+      message: "Razorpay order failed",
+      error: err.message,
+    });
   }
 });
 
 /* ======================================
-   WEBHOOK — REAL ORDER CREATION
-   IMPORTANT: RAW BODY REQUIRED
+   WEBHOOK — ENTERPRISE ORDER CREATION
 ====================================== */
 router.post(
   "/webhook",
@@ -71,10 +84,23 @@ router.post(
 
       const event = JSON.parse(req.body.toString());
 
+      /* ======================================
+         PAYMENT CAPTURED
+      ======================================= */
       if (event.event === "payment.captured") {
         const payment = event.payload.payment.entity;
-        const notes = payment.notes || {};
 
+        // Prevent duplicate order creation
+        const existing = await Order.findOne({
+          "payment.razorpayPaymentId": payment.id,
+        });
+
+        if (existing) {
+          console.log("⚠️ Order already exists for payment:", payment.id);
+          return res.json({ status: "duplicate ignored" });
+        }
+
+        const notes = payment.notes || {};
         const cartItems = JSON.parse(notes.cart || "[]");
         const address = JSON.parse(notes.address || "{}");
 
@@ -114,16 +140,19 @@ router.post(
           status: "Paid",
         });
 
-        console.log("✅ ENTERPRISE ORDER CREATED VIA WEBHOOK");
+        console.log("✅ ORDER CREATED VIA WEBHOOK");
       }
 
+      /* ======================================
+         PAYMENT FAILED
+      ======================================= */
       if (event.event === "payment.failed") {
-        console.log("❌ Payment failed event received");
+        console.log("❌ Payment failed:", event.payload.payment.entity.id);
       }
 
       res.json({ status: "ok" });
     } catch (err) {
-      console.error("Webhook error:", err);
+      console.error("🔥 Webhook error:", err.message);
       res.status(500).send("Webhook failed");
     }
   }

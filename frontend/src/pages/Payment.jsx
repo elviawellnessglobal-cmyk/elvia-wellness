@@ -19,9 +19,17 @@ export default function Payment() {
       return;
     }
 
+    const existingScript = document.getElementById("razorpay-script");
+    if (existingScript) {
+      existingScript.onload = () => setRazorpayLoaded(true);
+      return;
+    }
+
     const script = document.createElement("script");
+    script.id = "razorpay-script";
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
+
     script.onload = () => setRazorpayLoaded(true);
     script.onerror = () =>
       alert("Failed to load payment system.");
@@ -38,7 +46,7 @@ export default function Payment() {
         return;
       }
 
-      if (!cartItems.length) {
+      if (!cartItems || cartItems.length === 0) {
         alert("Cart is empty");
         return;
       }
@@ -70,8 +78,22 @@ export default function Payment() {
           },
           body: JSON.stringify({
             amount: getCartTotal(),
-            cartItems,
-            address,
+            cartItems: cartItems.map((item) => ({
+              productId: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              image: item.image,
+            })),
+            address: {
+              fullName: address.name,
+              phone: address.phone,
+              street: address.address,
+              city: address.city,
+              state: address.state,
+              postalCode: address.pincode,
+              country: "India",
+            },
           }),
         }
       );
@@ -106,7 +128,14 @@ export default function Payment() {
                     Authorization: `Bearer ${token}`,
                   }),
                 },
-                body: JSON.stringify(response),
+                body: JSON.stringify({
+                  razorpay_order_id:
+                    response.razorpay_order_id,
+                  razorpay_payment_id:
+                    response.razorpay_payment_id,
+                  razorpay_signature:
+                    response.razorpay_signature,
+                }),
               }
             );
 
@@ -128,11 +157,29 @@ export default function Payment() {
                   }),
                 },
                 body: JSON.stringify({
-                  items: cartItems,
-                  address,
+                  items: cartItems.map((item) => ({
+                    productId: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image,
+                  })),
+                  address: {
+                    fullName: address.name,
+                    phone: address.phone,
+                    street: address.address,
+                    city: address.city,
+                    state: address.state,
+                    postalCode: address.pincode,
+                    country: "India",
+                  },
                   totalAmount: getCartTotal(),
-                  paymentId:
-                    response.razorpay_payment_id,
+                  payment: {
+                    razorpayOrderId:
+                      response.razorpay_order_id,
+                    razorpayPaymentId:
+                      response.razorpay_payment_id,
+                  },
                 }),
               }
             );
@@ -146,6 +193,7 @@ export default function Payment() {
 
             navigate("/success");
           } catch (err) {
+            console.error("Post-payment error:", err);
             alert("Payment succeeded but order failed.");
             setLoading(false);
           }
