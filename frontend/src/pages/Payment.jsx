@@ -12,7 +12,7 @@ export default function Payment() {
   const address =
     JSON.parse(localStorage.getItem("deliveryAddress")) || {};
 
-  /* ---------------- LOAD RAZORPAY ---------------- */
+  /* ---------------- LOAD RAZORPAY SAFELY ---------------- */
   useEffect(() => {
     if (window.Razorpay) {
       setRazorpayLoaded(true);
@@ -32,11 +32,12 @@ export default function Payment() {
 
     script.onload = () => setRazorpayLoaded(true);
     script.onerror = () =>
-      alert("Failed to load payment system.");
+      alert("Failed to load payment system. Please refresh.");
 
     document.body.appendChild(script);
   }, []);
 
+  /* ---------------- HANDLE PAYMENT ---------------- */
   async function handlePay() {
     try {
       if (loading) return;
@@ -63,9 +64,14 @@ export default function Payment() {
         return;
       }
 
-      setLoading(true);
-
       const token = localStorage.getItem("kaeorn_token");
+
+      if (!token) {
+        alert("Please login first.");
+        return;
+      }
+
+      setLoading(true);
 
       /* ---------------- CREATE RAZORPAY ORDER ---------------- */
       const orderRes = await fetch(
@@ -74,7 +80,7 @@ export default function Payment() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             amount: getCartTotal(),
@@ -87,6 +93,7 @@ export default function Payment() {
             })),
             address: {
               fullName: address.name,
+              email: address.email || "",
               phone: address.phone,
               street: address.address,
               city: address.city,
@@ -106,7 +113,7 @@ export default function Payment() {
         );
       }
 
-      /* ---------------- OPEN CHECKOUT ---------------- */
+      /* ---------------- OPEN RAZORPAY CHECKOUT ---------------- */
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: razorpayOrder.amount,
@@ -124,17 +131,12 @@ export default function Payment() {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  ...(token && {
-                    Authorization: `Bearer ${token}`,
-                  }),
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                  razorpay_order_id:
-                    response.razorpay_order_id,
-                  razorpay_payment_id:
-                    response.razorpay_payment_id,
-                  razorpay_signature:
-                    response.razorpay_signature,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
                 }),
               }
             );
@@ -145,16 +147,14 @@ export default function Payment() {
               throw new Error("Payment verification failed");
             }
 
-            /* -------- CREATE ORDER IN DB -------- */
+            /* -------- SAVE ORDER (ADMIN PANEL WILL SEE IT) -------- */
             const saveOrder = await fetch(
               `${import.meta.env.VITE_API_BASE}/api/orders`,
               {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  ...(token && {
-                    Authorization: `Bearer ${token}`,
-                  }),
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                   items: cartItems.map((item) => ({
@@ -166,6 +166,7 @@ export default function Payment() {
                   })),
                   address: {
                     fullName: address.name,
+                    email: address.email || "",
                     phone: address.phone,
                     street: address.address,
                     city: address.city,
@@ -175,11 +176,10 @@ export default function Payment() {
                   },
                   totalAmount: getCartTotal(),
                   payment: {
-                    razorpayOrderId:
-                      response.razorpay_order_id,
-                    razorpayPaymentId:
-                      response.razorpay_payment_id,
+                    razorpayOrderId: response.razorpay_order_id,
+                    razorpayPaymentId: response.razorpay_payment_id,
                   },
+                  status: "Paid",
                 }),
               }
             );
@@ -194,7 +194,9 @@ export default function Payment() {
             navigate("/success");
           } catch (err) {
             console.error("Post-payment error:", err);
-            alert("Payment succeeded but order failed.");
+            alert(
+              "Payment completed but order saving failed. Contact support."
+            );
             setLoading(false);
           }
         },
@@ -217,7 +219,7 @@ export default function Payment() {
       rzp.open();
     } catch (err) {
       console.error("Payment error:", err);
-      alert("Payment failed.");
+      alert(err.message || "Payment failed.");
       setLoading(false);
     }
   }
@@ -227,10 +229,10 @@ export default function Payment() {
       <h1 style={styles.heading}>Confirm & Pay</h1>
 
       <div style={styles.card}>
-        <p>{address.name}</p>
+        <p><strong>{address.name}</strong></p>
         <p>{address.address}</p>
         <p>
-          {address.city}, {address.state}
+          {address.city}, {address.state} - {address.pincode}
         </p>
         <p>{address.phone}</p>
       </div>
@@ -240,9 +242,12 @@ export default function Payment() {
       <button
         onClick={handlePay}
         disabled={loading}
-        style={styles.button}
+        style={{
+          ...styles.button,
+          opacity: loading ? 0.6 : 1,
+        }}
       >
-        {loading ? "Processing..." : "Pay Securely"}
+        {loading ? "Processing..." : `Pay ₹${getCartTotal()}`}
       </button>
     </div>
   );
@@ -265,5 +270,6 @@ const styles = {
     background: "#111",
     color: "#fff",
     cursor: "pointer",
+    fontSize: 15,
   },
 };
