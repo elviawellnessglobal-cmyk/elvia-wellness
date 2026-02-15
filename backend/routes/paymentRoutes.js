@@ -43,8 +43,8 @@ router.post("/create-order", userAuth, async (req, res) => {
       currency: "INR",
       receipt: "kaeorn_" + Date.now(),
       notes: {
-        userId: req.user._id.toString(),
-        email: req.user.email,
+        userId: req.user || "guest",
+        email: req.userEmail || "guest",
         cart: JSON.stringify(cartItems),
         address: JSON.stringify(address || {}),
       },
@@ -54,7 +54,7 @@ router.post("/create-order", userAuth, async (req, res) => {
 
     res.json(order);
   } catch (err) {
-    console.error("🔥 Razorpay create error:", err.message);
+    console.error("🔥 Razorpay create error:", err);
     res.status(500).json({
       message: "Razorpay order failed",
       error: err.message,
@@ -84,19 +84,15 @@ router.post(
 
       const event = JSON.parse(req.body.toString());
 
-      /* ======================================
-         PAYMENT CAPTURED
-      ======================================= */
       if (event.event === "payment.captured") {
         const payment = event.payload.payment.entity;
 
-        // Prevent duplicate order creation
         const existing = await Order.findOne({
           "payment.razorpayPaymentId": payment.id,
         });
 
         if (existing) {
-          console.log("⚠️ Order already exists for payment:", payment.id);
+          console.log("⚠️ Duplicate payment ignored:", payment.id);
           return res.json({ status: "duplicate ignored" });
         }
 
@@ -143,16 +139,13 @@ router.post(
         console.log("✅ ORDER CREATED VIA WEBHOOK");
       }
 
-      /* ======================================
-         PAYMENT FAILED
-      ======================================= */
       if (event.event === "payment.failed") {
         console.log("❌ Payment failed:", event.payload.payment.entity.id);
       }
 
       res.json({ status: "ok" });
     } catch (err) {
-      console.error("🔥 Webhook error:", err.message);
+      console.error("🔥 Webhook error:", err);
       res.status(500).send("Webhook failed");
     }
   }
