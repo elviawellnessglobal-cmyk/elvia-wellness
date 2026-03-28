@@ -41,7 +41,7 @@ export default function PerfumeMorningVeil() {
   const product = {
     id: "perfume-veil-unisex",
     name: "KAEORN — VEIL",
-    price: 3129,
+    price: 10,
   };
 
   const originalPrice = 11240;
