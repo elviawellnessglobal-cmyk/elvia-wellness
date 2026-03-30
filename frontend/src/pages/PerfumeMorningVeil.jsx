@@ -41,10 +41,10 @@ export default function PerfumeMorningVeil() {
   const product = {
     id: "perfume-veil-unisex",
     name: "KAEORN — VEIL",
-    price: 10,
+    price: 2699,
   };
 
-  const originalPrice = 11240;
+  const originalPrice = 5640;
   const discountPercent = Math.round(
     ((originalPrice - product.price) / originalPrice) * 100
   );
