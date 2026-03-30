@@ -33,7 +33,7 @@ export default function PerfumeSoftSkin() {
     id: "the-noir-men",
     name: "KAEORN — THÉ NOIR MEN",
     price: 2499,
-    originalPrice: 6799,
+    originalPrice: 4599,
   };
 
   const discount = Math.round(
