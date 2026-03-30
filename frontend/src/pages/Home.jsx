@@ -262,7 +262,7 @@ const addReveal = (el) => {
               name: "THÉ NOIR",
               mood: "Woody · Aromatic · Musky",
               price: "₹2,499",
-              mrp: "₹6,799",
+              mrp: "₹4,599",
             },
             {
               to: "/perfume/morning-veil",
@@ -271,7 +271,7 @@ const addReveal = (el) => {
               name: "MORNING VEIL",
               mood: "Clean · Airy · Luminous",
               price: "₹2,699",
-              mrp: "₹7,499",
+              mrp: "₹5,640",
             },
             {
               to: "/perfume/quiet-woods",
@@ -279,8 +279,8 @@ const addReveal = (el) => {
               gender: "WOMEN",
               name: "SOIE FEMME",
               mood: "Luxury · Feminine",
-              price: "₹2,899",
-              mrp: "₹8,799",
+              price: "₹2,499",
+              mrp: "₹4,599",
             },
           ].map((p) => (
              <PerfumeCard
