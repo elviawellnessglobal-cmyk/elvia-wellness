@@ -41,10 +41,10 @@ export default function PerfumeQuietWoods() {
   const product = {
     id: "perfume-soie-femme",
     name: "KAEORN — SOIE FEMME",
-    price: 2899,
+    price: 2499,
   };
 
-  const originalPrice = 8799;
+  const originalPrice = 4599;
   const discountPercent = Math.round(
     ((originalPrice - product.price) / originalPrice) * 100
   );
