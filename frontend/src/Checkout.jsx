@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -34,6 +35,15 @@ export default function Checkout() {
   }
 
   return (
+    <>
+    <Helmet>
+  <title>Checkout | KAEORN</title>
+  <meta
+    name="description"
+    content="Complete your purchase of KAEORN luxury fragrances with secure checkout and fast delivery."
+  />
+</Helmet>
+    
     <div style={styles.container}>
       <h2 style={styles.heading}>Delivery Details</h2>
 
@@ -97,6 +107,7 @@ export default function Checkout() {
         Continue to Secure Payment
       </button>
     </div>
+    </>
   );
 }
 

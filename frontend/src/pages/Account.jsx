@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { useAuth } from "../context/AuthContext";
 
 export default function Account() {
@@ -11,6 +12,14 @@ export default function Account() {
   }
 
   return (
+    <>
+    <Helmet>
+  <title>Your Account | KAEORN</title>
+  <meta
+    name="description"
+    content="Manage your KAEORN account, orders, and personal details."
+  />
+</Helmet>
     <div style={styles.page}>
       <h2 style={styles.heading}>Account</h2>
 
@@ -42,6 +51,7 @@ export default function Account() {
         Logout
       </button>
     </div>
+    </>
   );
 }
 

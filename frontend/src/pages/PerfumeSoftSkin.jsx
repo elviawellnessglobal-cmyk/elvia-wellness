@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
@@ -71,6 +72,13 @@ export default function PerfumeSoftSkin() {
 
   return (
     <>
+    <Helmet>
+  <title>THÉ NOIR Perfume | KAEORN</title>
+  <meta
+    name="description"
+    content="Shop THÉ NOIR by KAEORN — a woody, aromatic fragrance for men. Long-lasting, refined, and crafted for everyday luxury."
+  />
+</Helmet>
       {authType && (
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}

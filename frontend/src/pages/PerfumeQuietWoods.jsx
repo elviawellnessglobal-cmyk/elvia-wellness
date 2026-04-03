@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
@@ -86,6 +87,13 @@ export default function PerfumeQuietWoods() {
 
   return (
     <>
+    <Helmet>
+  <title>Soie Femme Perfume | KAEORN</title>
+  <meta
+    name="description"
+    content="Experience Soie Femme by KAEORN — a luxurious feminine fragrance crafted with elegance and softness."
+  />
+</Helmet>
       {authType && (
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
