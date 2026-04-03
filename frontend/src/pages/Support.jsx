@@ -196,6 +196,7 @@ const styles = {
     padding: 24,
     marginBottom: 28,
     background: "#fafafa",
+    marginTop: 70,
   },
   note: { fontSize: 13.5, color: "#555", lineHeight: 1.6 },
   statusBadge: {
