@@ -1,29 +1,26 @@
 import { useNavigate } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 
 export default function Success() {
   const navigate = useNavigate();
 
   return (
     <>
-    <Helmet>
-  <title>Order Confirmed | KAEORN</title>
-  <meta
-    name="description"
-    content="Your KAEORN order has been placed successfully. Thank you for choosing luxury wellness."
-  />
-</Helmet>
-    <div style={styles.page}>
-      <h1>Payment Successful 🤍</h1>
-      <p>Your order has been placed successfully.</p>
+      <Helmet>
+        <title>Order Confirmed | KAEORN</title>
+        <meta
+          name="description"
+          content="Your KAEORN order has been placed successfully. Thank you for choosing luxury wellness."
+        />
+      </Helmet>
+      <div style={styles.page}>
+        <h1>Payment Successful 🤍</h1>
+        <p>Your order has been placed successfully.</p>
 
-      <button
-        style={styles.button}
-        onClick={() => navigate("/")}
-      >
-        Continue Shopping
-      </button>
-    </div>
+        <button style={styles.button} onClick={() => navigate("/")}>
+          Continue Shopping
+        </button>
+      </div>
     </>
   );
 }

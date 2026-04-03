@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 import { useCart } from "../context/CartContext";
 
 
