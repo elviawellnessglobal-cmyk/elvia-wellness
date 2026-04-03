@@ -8,6 +8,7 @@ export default function Address() {
   const [addresses, setAddresses] = useState([]);
   const [selected, setSelected] = useState(null);
   const [manual, setManual] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState({
     name: "",
@@ -19,8 +20,14 @@ export default function Address() {
     pincode: "",
   });
 
-  /* -------- LOAD SAVED ADDRESSES -------- */
   useEffect(() => {
+    if (!token) {
+      // Not logged in — skip the fetch entirely
+      setManual(true);
+      setLoading(false);
+      return;
+    }
+
     fetch(`${import.meta.env.VITE_API_BASE}/api/addresses`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -31,7 +38,8 @@ export default function Address() {
         if (def) setSelected(def);
         if (!data || data.length === 0) setManual(true);
       })
-      .catch(() => setManual(true));
+      .catch(() => setManual(true))
+      .finally(() => setLoading(false)); // ← always unblocks UI
   }, []);
 
   function handleChange(e) {
@@ -39,24 +47,16 @@ export default function Address() {
   }
 
   function continueWithSaved() {
-    if (!selected) {
-      alert("Please select an address");
-      return;
-    }
-
-    localStorage.setItem(
-      "deliveryAddress",
-      JSON.stringify({
-        name: selected.fullName,
-        phone: selected.phone,
-        email: "",
-        address: selected.street,
-        city: selected.city,
-        state: selected.state,
-        pincode: selected.postalCode,
-      })
-    );
-
+    if (!selected) { alert("Please select an address"); return; }
+    localStorage.setItem("deliveryAddress", JSON.stringify({
+      name: selected.fullName,
+      phone: selected.phone,
+      email: "",
+      address: selected.street,
+      city: selected.city,
+      state: selected.state,
+      pincode: selected.postalCode,
+    }));
     navigate("/checkout/payment");
   }
 
@@ -64,6 +64,18 @@ export default function Address() {
     e.preventDefault();
     localStorage.setItem("deliveryAddress", JSON.stringify(form));
     navigate("/checkout/payment");
+  }
+
+  // ── SKELETON while fetching ──────────────────────────────
+  if (loading) {
+    return (
+      <div style={styles.page}>
+        <div style={styles.skeletonHeading} />
+        <div style={styles.skeletonLine} />
+        <div style={styles.skeletonLine} />
+        <div style={{ ...styles.skeletonLine, width: "60%" }} />
+      </div>
+    );
   }
 
   return (

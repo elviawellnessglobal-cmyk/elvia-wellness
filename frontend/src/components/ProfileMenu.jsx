@@ -48,7 +48,7 @@ export default function ProfileMenu() {
             Account
           </button>
 
-          <button
+          {/* <button
             style={styles.item}
             onClick={() => {
               navigate("/addresses");
@@ -56,7 +56,7 @@ export default function ProfileMenu() {
             }}
           >
             Addresses
-          </button>
+          </button> */}
 
           {/* NEW: CART */}
           <button
