@@ -91,7 +91,7 @@ export default function Navbar() {
           </button> */}
 
           {!user ? (
-            <button className="nav-signin" onClick={() => setShowAuth(true)}>
+            <button name="signIn" className="nav-signin" onClick={() => setShowAuth(true)}>
               Sign in
             </button>
           ) : (

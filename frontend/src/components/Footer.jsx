@@ -4,8 +4,7 @@ import "../styles/Footer/Footer.css";
 
 export default function Footer() {
   const navigate = useNavigate();
-  const [visible, setVisible] = useState(false);
-  const [hovered, setHovered] = useState(null);
+ 
   
 
   /* ── SCROLL REVEAL ── */
