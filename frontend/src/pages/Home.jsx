@@ -111,7 +111,7 @@ export default function Home() {
   /* ── SCROLL REVEAL ── */
  const observerRef = useRef(null);
 
- useEffect(() => {
+useEffect(() => {
   observerRef.current = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (e.isIntersecting) {
@@ -119,18 +119,29 @@ export default function Home() {
         observerRef.current.unobserve(e.target);
       }
     });
-  });
- }, []);
+  }, { threshold: 0.1 });
 
-const addReveal = useCallback((el) => {
-  if (el && observerRef.current) {
-    observerRef.current.observe(el);
+  // After observer is ready, force-check all already-registered reveal elements
+  document.querySelectorAll('.reveal').forEach(el => {
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight) {
-      el.classList.add("visible");
+      el.classList.add('visible');
+    } else {
+      observerRef.current.observe(el);
     }
+  });
+
+}, []);
+
+const addReveal = useCallback((el) => {
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  if (rect.top < window.innerHeight) {
+    el.classList.add('visible');
+  } else if (observerRef.current) {
+    observerRef.current.observe(el);
   }
-}, []); // stable reference, never recreated
+}, []);
 
   return (
     <>
