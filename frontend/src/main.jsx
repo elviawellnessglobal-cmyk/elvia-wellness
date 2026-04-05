@@ -6,6 +6,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+import { useEffect } from "react";
 
 import { HelmetProvider } from "react-helmet-async";
 
@@ -77,8 +78,78 @@ function Layout({ children }) {
 /* ---------------- APP ROOT ---------------- */
 
 function AppRoot() {
+useEffect(() => {
+  const cr   = document.getElementById('cr');
+  const cdot = document.getElementById('cd');
+  if (!cr || !cdot) return;
+
+  let mx = 0, my = 0, cx = 0, cy = 0;  // ← this was missing
+
+  cr.style.setProperty('border-color', '#0d0c0b');
+  cdot.style.setProperty('background', '#0d0c0b');
+
+  const checkDark = () => {
+    let el = document.elementFromPoint(mx, my);
+    while (el) {
+      const bg = getComputedStyle(el).backgroundColor;
+      if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+        const match = bg.match(/\d+/g);
+        if (match) {
+          const [r, g, b] = match.map(Number);
+          const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+          const isDark = brightness < 80;
+          cr.style.setProperty('border-color', isDark ? 'white' : '#0d0c0b');
+          cdot.style.setProperty('background', isDark ? 'white' : '#0d0c0b');
+          return;
+        }
+      }
+      el = el.parentElement;
+    }
+    cr.style.setProperty('border-color', '#0d0c0b');
+    cdot.style.setProperty('background', '#0d0c0b');
+  };
+
+  const onMove = e => {
+    mx = e.clientX; my = e.clientY;
+    cdot.style.left = mx + 'px';
+    cdot.style.top  = my + 'px';
+    cr.classList.add('visible');
+    cdot.classList.add('visible');
+    checkDark();
+  };
+
+  let raf;
+  const animCursor = () => {
+    cx += (mx - cx) * .12;
+    cy += (my - cy) * .12;
+    cr.style.left = cx + 'px';
+    cr.style.top  = cy + 'px';
+    raf = requestAnimationFrame(animCursor);
+  };
+  raf = requestAnimationFrame(animCursor);
+
+  const onEnter = e => { if (e.target.closest('a, button, .prod-card')) cr.classList.add('grow'); };
+  const onLeave = e => { if (e.target.closest('a, button, .prod-card')) cr.classList.remove('grow'); };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseover', onEnter);
+  document.addEventListener('mouseout', onLeave);
+
+  return () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseover', onEnter);
+    document.removeEventListener('mouseout', onLeave);
+    cancelAnimationFrame(raf);
+  };
+}, []);
+
   return (
     <HelmetProvider>
+       {/* Cursor lives here globally */}
+      <div className="cursor" id="cursorRing">
+        <div className="cursor-ring" id="cr"></div>
+      </div>
+      <div className="cursor-dot" id="cd"></div>
     <Layout>
       <ScrollToTop />
       <Loader/>
