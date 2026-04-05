@@ -9,6 +9,7 @@ import "../styles/Home/PerfumeSection.css";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
+import { useCallback } from "react";
 
 
 
@@ -30,121 +31,26 @@ const MARQUEE_ITEMS = [
   "MADE IN INDIA", "·", "BECAUSE CARE DESERVES LUXURY", "·",
 ];
 
-export default function Home() {
-  const navigate = useNavigate();
-  const { user } = useAuth();  
-  const [visible, setVisible] = useState(false);
-  const revealRefs = useRef([]);
-  const { addToCart } = useCart();
-  const [added, setAdded] = useState(false);
-   const [showAuth, setShowAuth] = useState(false);
-
-  /* ── CURSOR ── */
- useEffect(() => {
-  const cr   = document.getElementById('cr');
-  const cdot = document.getElementById('cd');
-  if (!cr || !cdot) return;
-
-  let mx = 0, my = 0, cx = 0, cy = 0;
-
-  const onMove = e => {
-    mx = e.clientX; my = e.clientY;
-    cdot.style.left = mx + 'px';
-    cdot.style.top  = my + 'px';
-    cr.classList.add('visible');
-    cdot.classList.add('visible');
-  };
-
-  let raf;
-  const animCursor = () => {
-    cx += (mx - cx) * .12;
-    cy += (my - cy) * .12;
-    // position the RING itself, not its parent wrapper
-    cr.style.left = cx + 'px';
-    cr.style.top  = cy + 'px';
-    raf = requestAnimationFrame(animCursor);
-  };
-  raf = requestAnimationFrame(animCursor);
-
-  document.addEventListener('mousemove', onMove);
-
-  const hoverEls = document.querySelectorAll('a, button, .prod-card');
-  hoverEls.forEach(el => {
-    el.addEventListener('mouseenter', () => cr.classList.add('grow'));
-    el.addEventListener('mouseleave', () => cr.classList.remove('grow'));
-  });
-
-  return () => {
-    document.removeEventListener('mousemove', onMove);
-    cancelAnimationFrame(raf);
-  };
- }, []);
-
-
-  /* ── PAGE ENTER ── */
-  useEffect(() => {
-    document.title = "KAEORN | Luxury Wellness Perfumes in India";
-    let meta = document.querySelector("meta[name='description']");
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.name = "description";
-      document.head.appendChild(meta);
-    }
-    meta.content =
-      "Kaeorn Wellness is a luxury fragrance brand offering premium perfumes for men, women, and unisex wear. Discover refined scents crafted for everyday elegance.";
-    const t = setTimeout(() => setVisible(true), 120);
-    return () => clearTimeout(t);
-  }, []);
-
-  /* ── SCROLL REVEAL ── */
- const observerRef = useRef(null);
-
- useEffect(() => {
-  observerRef.current = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        observerRef.current.unobserve(e.target);
-      }
-    });
-  });
- }, []);
-
-const addReveal = (el) => {
-  if (el && observerRef.current) {
-    observerRef.current.observe(el);
-
-    // fallback if already visible
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight) {
-      el.classList.add("visible");
-    }
-  }
-};
 
  function PerfumeCard({ to, img, gender, name, mood, price, mrp, navigate, addToCart, user, setShowAuth, addReveal }) {
   const [added, setAdded] = useState(false);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (cardRef.current) addReveal(cardRef.current);
+  }, []);
 
 
   function handleAdd(e) {
-    e.stopPropagation(); // prevent card navigate
-    if (!user) 
-      { setShowAuth(true);
-         return; 
-        }
-        const success = addToCart(to);
-
-        if(success){
-          setAdded("success");
-        }else{
-          setAdded("error");
-        }
-
-        setTimeout(() => setAdded(null), 2000);
+    e.stopPropagation();
+    if (!user) { setShowAuth(true); return; }
+    const success = addToCart(to);
+    setAdded(success ? "success" : "error");
+    setTimeout(() => setAdded(null), 2000);
   }
 
   return (
-    <div ref={addReveal} className="reveal" style={styles.perfumeCard} onClick={() => navigate(to)}>
+    <div ref={cardRef} className="reveal" style={styles.perfumeCard} onClick={() => navigate(to)}>
       <div style={styles.perfumeImageWrap}>
         <img src={img} alt={name} style={styles.perfumeImage} />
         <div style={styles.perfumeOverlay}>
@@ -180,7 +86,51 @@ const addReveal = (el) => {
   );
  }
 
+export default function Home() {
+  const navigate = useNavigate();
+  const { user } = useAuth();  
+  const [visible, setVisible] = useState(false);
+  const { addToCart } = useCart();
+   const [showAuth, setShowAuth] = useState(false);
 
+  /* ── PAGE ENTER ── */
+  useEffect(() => {
+    document.title = "KAEORN | Luxury Wellness Perfumes in India";
+    let meta = document.querySelector("meta[name='description']");
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "description";
+      document.head.appendChild(meta);
+    }
+    meta.content =
+      "Kaeorn Wellness is a luxury fragrance brand offering premium perfumes for men, women, and unisex wear. Discover refined scents crafted for everyday elegance.";
+    const t = setTimeout(() => setVisible(true), 120);
+    return () => clearTimeout(t);
+  }, []);
+
+  /* ── SCROLL REVEAL ── */
+ const observerRef = useRef(null);
+
+ useEffect(() => {
+  observerRef.current = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        observerRef.current.unobserve(e.target);
+      }
+    });
+  });
+ }, []);
+
+const addReveal = useCallback((el) => {
+  if (el && observerRef.current) {
+    observerRef.current.observe(el);
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) {
+      el.classList.add("visible");
+    }
+  }
+}, []); // stable reference, never recreated
 
   return (
     <>
@@ -192,13 +142,7 @@ const addReveal = (el) => {
   />
 </Helmet>
      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-    
-    {/* -- CURSOR ------ */}
-      <div className="cursor" id="cursorRing">
-        <div className="cursor-ring" id="cr"></div>
-      </div>
-      
-      <div className="cursor-dot" id="cd"></div>
+  
 
     <main
       style={{
@@ -221,8 +165,17 @@ const addReveal = (el) => {
             Crafted to sit close to skin — intimate, understated, and deeply personal.
           </p>
           <div className="hero-actions">
-            <a href="#collection" className="btn-primary">Explore Collection</a>
-            <a href="#about" className="btn-outline">Our Story</a>
+           <button onClick={() => {
+  document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" });
+}} className="btn-primary">
+  Explore Collection
+</button>
+
+<button onClick={() => {
+  document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+}} className="btn-outline">
+  Our Story
+</button>
           </div>
         </div>
         <div className="hero-scroll">
@@ -310,9 +263,6 @@ const addReveal = (el) => {
             ))}
           </div>
           
-        {/* <button style={styles.viewAll} onClick={() => navigate("/perfume")}>
-          Explore Full Collection
-        </button> */}
       </section>
 
 
@@ -378,7 +328,7 @@ const addReveal = (el) => {
         </p>
         <div className="coming-notify">
           <input type="email" className="coming-email" placeholder="Enter your email" id="emailCream"/>
-          <button className="coming-submit" onClick={()=>"notifyMe('cream')"}>Notify Me</button>
+          <button className="coming-submit" onClick={()=> notifyMe('cream')}>Notify Me</button>
         </div>
       </div>
       <div ref={addReveal} className="coming-card coming-spray reveal reveal-delay-1">
@@ -391,7 +341,7 @@ const addReveal = (el) => {
         </p>
         <div className="coming-notify">
           <input type="email" className="coming-email" placeholder="Enter your email" id="emailSpray"/>
-          <button className="coming-submit" onClick={()=>"notifyMe('spray')"}>Notify Me</button>
+          <button className="coming-submit" onClick={()=> notifyMe('spray')}>Notify Me</button>
         </div>
       </div>
     </div>

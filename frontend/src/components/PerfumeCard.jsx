@@ -14,9 +14,6 @@ function PerfumeCard({ to, img, gender, name, mood, price, mrp, navigate, addToC
     <div className="reveal" onClick={() => navigate(to)}>
       <div >
         <img src={img} alt={name} />
-        <div>
-          <span>Discover →</span>
-        </div>
       </div>
       <div >
         <span >{gender} · EAU DE PARFUM</span>
