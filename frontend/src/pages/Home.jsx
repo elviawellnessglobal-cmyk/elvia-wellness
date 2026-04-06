@@ -21,7 +21,7 @@ const softSkinImg =
 const morningVeilImg =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1775280305/ChatGPT_Image_Apr_4_2026_10_54_03_AM_fjvuq2.png";
 const quietWoodsImg =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1769081520/ChatGPT_Image_Jan_22_2026_05_01_01_PM_nzxsqv.png";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1775490015/ChatGPT_Image_Apr_6_2026_09_09_54_PM_olzzof.png";
 
 
 /* ── MARQUEE ITEMS ── */
