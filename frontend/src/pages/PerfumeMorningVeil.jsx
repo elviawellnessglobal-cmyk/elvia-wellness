@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
 
+
 /* ---------------- IMAGES ---------------- */
 const images = [
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775383691/Apr_5_2026_03_37_30_PM_e7nqb0.png",
@@ -124,6 +125,7 @@ export default function PerfumeMorningVeil() {
           <div style={styles.inner}>
             <p style={styles.category}>UNISEX · EAU DE PARFUM</p>
             <h1 style={styles.productTitle}>VEIL</h1>
+            <span style={styles.volume}>100ml</span>
 
             <div style={styles.priceWrap}>
               <span style={styles.price}>₹{product.price}</span>
@@ -282,6 +284,15 @@ const styles = {
 
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
   productTitle: { fontSize: 40, fontWeight: 500 },
+
+  volume: { 
+  fontSize: 11, 
+  color: "#9a9089", 
+  letterSpacing: "0.1em", 
+  fontFamily: "'DM Mono', monospace",
+  display: "block",      
+  marginBottom: "16px",  
+},
 
   priceWrap: { display: "flex", gap: 12, alignItems: "center" },
   price: { fontSize: 28, fontWeight: 500 },

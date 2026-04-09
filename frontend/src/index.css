@@ -20,6 +20,7 @@ html, body {
   --accent-u: #7a9b8a;
   --accent-u-light: rgba(122,155,138,0.12);
   --border: rgba(13,12,11,0.08);
+  --marquee-border: #8b7355;
   --nav-h: 68px;
   --ease: cubic-bezier(0.25,0.46,0.45,0.94);
   --ease-out: cubic-bezier(0,0,0.2,1);
@@ -241,5 +242,18 @@ select {
 
   .mobile-links {
     display: flex;
+  }
+}
+
+
+.admin-mobile-header { display: flex; }
+.admin-sidebar-wrap  { transform: translateX(-100%); }
+
+@media (min-width: 768px) {
+  .admin-mobile-header { display: none !important; }
+  .admin-sidebar-wrap  { 
+    transform: translateX(0) !important; 
+    position: relative !important;
+    flex-shrink: 0;
   }
 }

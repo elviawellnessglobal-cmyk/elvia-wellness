@@ -35,7 +35,7 @@ export default function AdminLogin() {
       localStorage.setItem("adminToken", data.token);
 
       // ✅ REDIRECT
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     } catch (err) {
       console.error("Admin login error:", err);
       setError("Unable to connect to server");

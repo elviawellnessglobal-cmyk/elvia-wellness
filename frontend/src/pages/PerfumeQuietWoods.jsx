@@ -124,6 +124,7 @@ export default function PerfumeQuietWoods() {
           <div style={styles.inner}>
             <p style={styles.category}>WOMEN · EAU DE PARFUM</p>
             <h1 style={styles.productTitle}>SOIE FEMME</h1>
+             <span style={styles.volume}>100ml</span>
 
             <div style={styles.saleBadge}>RELEASE SALE</div>
 
@@ -258,7 +259,14 @@ const styles = {
 
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
   productTitle: { fontSize: 40, fontWeight: 500 },
-
+  volume: { 
+  fontSize: 11, 
+  color: "#9a9089", 
+  letterSpacing: "0.1em", 
+  fontFamily: "'DM Mono', monospace",
+  display: "block",      
+  marginBottom: "16px",  
+},
   saleBadge: {
     marginTop: 10,
     display: "inline-block",

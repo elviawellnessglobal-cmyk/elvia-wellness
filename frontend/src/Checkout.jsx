@@ -89,7 +89,7 @@ export default function Checkout() {
           onChange={(e) => setForm({ ...form, pincode: e.target.value })}
         />
 
-        <button onClick={handleContinue} style={styles.button}>
+        <button name="continue-to-payment" onClick={handleContinue} style={styles.button}>
           Continue to Secure Payment
         </button>
       </div>

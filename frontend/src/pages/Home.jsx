@@ -61,6 +61,7 @@ const MARQUEE_ITEMS = [
         <span style={styles.gender}>{gender} · EAU DE PARFUM</span>
         <h4 style={styles.name}>{name}</h4>
         <p style={styles.mood}>{mood}</p>
+        <span style={styles.volume}>100 ml</span>
         <div style={styles.priceRow}>
           <span style={styles.price}>{price}</span>
           <span style={styles.mrp}>{mrp}</span>
@@ -310,7 +311,7 @@ const addReveal = useCallback((el) => {
         <div className="stat-l">Fragrances Crafted</div>
       </div>
       <div ref={addReveal} className="stat reveal reveal-delay-1">
-        <div className="stat-n">500+</div>
+        <div className="stat-n">20+</div>
         <div className="stat-l">Happy Wearers</div>
       </div>
       <div ref={addReveal} className="stat reveal reveal-delay-2">
@@ -456,6 +457,15 @@ const styles = {
     color: "var(--muted)",
     marginBottom: "1rem",
   },
+  volume: {
+  fontFamily: "'DM Mono', monospace",
+  fontSize: ".6rem",
+  letterSpacing: ".15em",
+  color: "var(--muted)",
+  textTransform: "uppercase",
+  display: "block",
+  marginBottom: "1rem",
+},
   priceRow: {
     display: "flex",
     alignItems: "baseline",
