@@ -10,43 +10,51 @@ export default function Sidebar() {
 
   return (
     <aside style={styles.sidebar}>
-      <h2 style={styles.brand}>KAEORN</h2>
+      <div>
+        <h2 style={styles.brand}>KAEORN</h2>
 
-      <nav style={styles.nav}>
-        <button
-          style={styles.navBtn}
-          onClick={() => navigate("/admin/dashboard")}
-        >
-          Dashboard
-        </button>
+        <nav style={styles.nav}>
+          <button
+            style={styles.navBtn}
+            onClick={() => navigate("/admin/dashboard")}
+          >
+            Dashboard
+          </button>
 
-        <button
-          style={styles.navBtn}
-          onClick={() => navigate("/admin/orders")}
-        >
-          Orders
-        </button>
+          <button
+            style={styles.navBtn}
+            onClick={() => navigate("/admin/orders")}
+          >
+            Orders
+          </button>
 
-<button onClick={() => navigate("/admin/analytics")}>
-  Analytics
-</button>
+          <button
+            style={styles.navBtn}
+            onClick={() => navigate("/admin/analytics")}
+          >
+            Analytics
+          </button>
 
-        {/* ✅ SUPPORT CHATS */}
-        <button
-          style={styles.navBtn}
-          onClick={() => navigate("/admin/chats")}
-        >
-          Support Chats
-        </button>
+          {/* ✅ SUPPORT CHATS */}
+          <button
+            style={styles.navBtn}
+            onClick={() => navigate("/admin/chats")}
+          >
+            Support Chats
+          </button>
 
-        {/* 🖤 NEW — EMAIL ANALYTICS */}
-        <button
-          style={styles.navBtn}
-          onClick={() => navigate("/admin/emails")}
-        >
-          Email Analytics
-        </button>
-      </nav>
+          {/* 🖤 NEW — EMAIL ANALYTICS */}
+          <button
+            style={styles.navBtn}
+            onClick={() => navigate("/admin/emails")}
+          >
+            Email Analytics
+          </button>
+
+          {/* Blogs */}
+          <button style={styles.navBtn} onClick={() => navigate("/admin/blogs")}>Blogs</button>
+        </nav>
+      </div>
 
       <button style={styles.logout} onClick={logout}>
         Logout
@@ -68,16 +76,24 @@ const styles = {
     justifyContent: "space-between",
   },
 
+  nav: {
+    position: "static", // ← overrides position: fixed
+    top: "auto",
+    left: "auto",
+    right: "auto",
+    height: "auto",
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+    padding: 0,
+    border: "none",
+    zIndex: "auto",
+  },
+
   brand: {
     letterSpacing: "3px",
     fontWeight: "500",
     marginBottom: 40,
-  },
-
-  nav: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
   },
 
   navBtn: {

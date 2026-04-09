@@ -81,8 +81,8 @@
 
 /* ── MARQUEE ── */
 .marquee-wrap {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--marquee-border);
+  border-bottom: 1px solid var(--marquee-border);
   overflow: hidden; padding: 1rem 0;
   background: var(--paper);
 }
@@ -94,7 +94,7 @@
 .marquee-item {
   font-family: 'DM Mono', monospace;
   font-size: .65rem; letter-spacing: .2em;
-  color: var(--muted); text-transform: uppercase;
+  color: var(--accent-m); text-transform: uppercase;
   padding: 0 2.5rem; white-space: nowrap;
 }
 .marquee-sep { color: var(--faint); }

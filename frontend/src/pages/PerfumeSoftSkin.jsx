@@ -111,6 +111,7 @@ export default function PerfumeSoftSkin() {
             <p style={styles.category}>MEN · EAU DE PARFUM</p>
 
             <h1 style={styles.title}>THÉ NOIR MEN</h1>
+             <span style={styles.volume}>100ml</span>
 
             <button style={styles.readMore} onClick={scrollToDesc}>
               Read more about this fragrance
@@ -296,7 +297,14 @@ const styles = {
 
   category: { fontSize: 12, letterSpacing: 2.5, color: "#888" },
   title: { fontSize: 42, fontWeight: 500 },
-
+  volume: { 
+  fontSize: 11, 
+  color: "#9a9089", 
+  letterSpacing: "0.1em", 
+  fontFamily: "'DM Mono', monospace",
+  display: "block",      
+  marginBottom: "16px",  
+},
   readMore: {
     border: "none",
     background: "transparent",

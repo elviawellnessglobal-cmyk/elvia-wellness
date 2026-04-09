@@ -1,5 +1,3 @@
-console.log("SERVER FILE LOADED");
-
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -15,6 +13,7 @@ const chatRoutes = require("./routes/chatRoutes");
 const adminEmailRoutes = require("./routes/adminEmailRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const adminAnalyticsRoutes = require("./routes/adminAnalyticsRoutes");
+const blogRoutes = require("./routes/blogRoutes");
 
 
 /* ---------------- APP ---------------- */
@@ -67,6 +66,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminEmailRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/admin", adminAnalyticsRoutes);
+app.use("/api/blogs", blogRoutes);
 
 /* ---------------- DATABASE ---------------- */
 mongoose
@@ -77,8 +77,12 @@ mongoose
     process.exit(1);
   });
 
+
+
 /* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+
