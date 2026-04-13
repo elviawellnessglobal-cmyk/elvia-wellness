@@ -219,6 +219,40 @@ export default function PerfumeSoftSkin() {
                 and crafted for modern rituals where subtlety defines
                 sophistication.
               </Accordion>
+              <Accordion title="NOTES" id="notes">
+  <div style={styles.notesWrap}>
+    
+    <div style={styles.noteItem}>
+      <img 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776063550/33f1fa71-31da-480d-b0fb-a7873bba7a42.png" 
+        alt="Apple"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Apple</div>
+      <div style={styles.noteDesc}>Crisp Allure</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776063583/28d899ef-0fa4-4253-8b93-c9574c3b570a.png" 
+        alt="Lavender"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Lavender</div>
+      <div style={styles.noteDesc}>Refined Calm</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776063501/b97dc82a-ac51-42e7-81e6-44c504e1ad6f.png" 
+        alt="Tonka Beans"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Tonka Beans</div>
+      <div style={styles.noteDesc}>Warm Sensuality</div>
+    </div>
+
+  </div>
             </div>
           </div>
         </div>
