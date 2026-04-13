@@ -251,7 +251,7 @@ export default function PerfumeSoftSkin() {
       <div style={styles.noteTitle}>Tonka Beans</div>
       <div style={styles.noteDesc}>Warm Sensuality</div>
     </div>
-
+ </Accordion>
   </div>
             </div>
           </div>
