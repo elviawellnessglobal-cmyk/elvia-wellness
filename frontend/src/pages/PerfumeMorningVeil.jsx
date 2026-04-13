@@ -218,6 +218,43 @@ export default function PerfumeMorningVeil() {
                 elegance. VEIL represents this philosophy fully: a fragrance
                 that enhances who you are, without ever overshadowing you.
               </Accordion>
+              // 🔽 ONLY THIS PART ADDED inside accordionWrap (AFTER philosophy or wherever you want)
+
+<Accordion title="NOTES" id="notes">
+  <div style={styles.notesWrap}>
+    
+    <div style={styles.noteItem}>
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/590/590685.png" 
+        alt="Bergamot"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Bergamot</div>
+      <div style={styles.noteDesc}>Fresh luxury</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/415/415733.png" 
+        alt="Pink Pepper"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Pink Pepper</div>
+      <div style={styles.noteDesc}>Expensive spicy twist</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" 
+        alt="Sandalwood"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Sandalwood</div>
+      <div style={styles.noteDesc}>Smooth skin finish</div>
+    </div>
+
+  </div>
+</Accordion>
             </div>
           </div>
         </div>
@@ -342,4 +379,40 @@ const styles = {
     lineHeight: 1.9,
     color: "#555",
   },
+notesWrap: {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 30,
+  marginTop: 10,
+  flexWrap: "wrap",
+},
+
+noteItem: {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 6,
+  minWidth: 90,
+},
+
+noteImage: {
+  width: 42,
+  height: 42,
+  objectFit: "contain",
+  marginBottom: 6,
+},
+
+noteTitle: {
+  fontSize: 14,
+  letterSpacing: 1.2,
+  fontWeight: 500,
+},
+
+noteDesc: {
+  fontSize: 12.5,
+  color: "#777",
+  fontStyle: "italic",
+  textAlign: "center",
+},
+  
 };
