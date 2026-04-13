@@ -219,10 +219,10 @@ export default function PerfumeSoftSkin() {
                 and crafted for modern rituals where subtlety defines
                 sophistication.
               </Accordion>
-             <Accordion 
-  title="NOTES" 
-  open={active === "notes"} 
-  onClick={() => setActive(active === "notes" ? null : "notes")}
+           <Accordion
+  title="NOTES"
+  open={open === "notes"}
+  onClick={() => setOpen("notes")}
 >
   <div style={styles.notesWrap}>
     
