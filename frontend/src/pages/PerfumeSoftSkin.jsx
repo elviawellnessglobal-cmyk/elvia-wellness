@@ -415,4 +415,39 @@ const styles = {
     lineHeight: 1.9,
     color: "#555",
   },
+  notesWrap: {
+  display: "flex",
+  gap: 24,
+  marginTop: 8,
+  flexWrap: "wrap",
+},
+
+noteItem: {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  width: 80, // 👈 controls spacing consistency
+},
+
+noteImage: {
+  width: 28,   // 👈 SMALL (luxury look)
+  height: 28,
+  objectFit: "contain",
+  marginBottom: 6,
+  opacity: 0.9, // 👈 soft premium feel
+},
+
+noteTitle: {
+  fontSize: 12.5,
+  letterSpacing: 1,
+  fontWeight: 500,
+  textAlign: "center",
+},
+
+noteDesc: {
+  fontSize: 11.5,
+  color: "#888",
+  fontStyle: "italic",
+  textAlign: "center",
+},
 };
