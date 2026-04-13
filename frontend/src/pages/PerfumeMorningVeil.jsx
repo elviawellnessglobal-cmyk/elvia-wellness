@@ -218,14 +218,14 @@ export default function PerfumeMorningVeil() {
                 elegance. VEIL represents this philosophy fully: a fragrance
                 that enhances who you are, without ever overshadowing you.
               </Accordion>
-              // 🔽 ONLY THIS PART ADDED inside accordionWrap (AFTER philosophy or wherever you want)
+            
 
 <Accordion title="NOTES" id="notes">
   <div style={styles.notesWrap}>
     
     <div style={styles.noteItem}>
       <img 
-        src="https://cdn-icons-png.flaticon.com/512/590/590685.png" 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776062935/5f639544-7bea-4d4f-8886-9844f88585a2.png" 
         alt="Bergamot"
         style={styles.noteImage}
       />
@@ -235,7 +235,7 @@ export default function PerfumeMorningVeil() {
 
     <div style={styles.noteItem}>
       <img 
-        src="https://cdn-icons-png.flaticon.com/512/415/415733.png" 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776062958/248c4f5d-8577-44a8-8a0c-12220e091383.png" 
         alt="Pink Pepper"
         style={styles.noteImage}
       />
@@ -245,7 +245,7 @@ export default function PerfumeMorningVeil() {
 
     <div style={styles.noteItem}>
       <img 
-        src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776063027/e846d0e7-23c7-4be9-a243-c4fa498cb07b.png" 
         alt="Sandalwood"
         style={styles.noteImage}
       />
