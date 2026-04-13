@@ -193,6 +193,45 @@ export default function PerfumeQuietWoods() {
                 intentional and intimate. Beauty that doesn’t shout, but stays
                 remembered.
               </Accordion>
+              <Accordion
+  title="NOTES"
+  open={open === "notes"}
+  onClick={() => setOpen("notes")}
+>
+  <div style={styles.notesWrap}>
+
+    <div style={styles.noteItem}>
+      <img
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776065610/81af0db4-d647-416d-9862-480f7f001535.png"
+        alt="Coffee"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Coffee</div>
+      <div style={styles.noteDesc}>Addictive Depth</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776065678/0109617c-4707-40ae-b364-a05abb8a7f6b.png"
+        alt="Jasmine"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Jasmine</div>
+      <div style={styles.noteDesc}>Floral Elegance</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776065745/23e6e349-01f2-4d3b-89ad-37ba7375f429.png"
+        alt="Vanilla"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Vanilla</div>
+      <div style={styles.noteDesc}>Soft Sensuality</div>
+    </div>
+
+  </div>
+</Accordion>
             </div>
           </div>
         </div>
@@ -323,4 +362,41 @@ const styles = {
     lineHeight: 1.9,
     color: "#555",
   },
+  notesWrap: {
+  display: "flex",
+  gap: 28,
+  marginTop: 8,
+  flexWrap: "wrap",
+},
+
+noteItem: {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  minWidth: 110,
+},
+
+noteImage: {
+  width: 28,
+  height: 28,
+  objectFit: "contain",
+  marginBottom: 6,
+  opacity: 0.9,
+},
+
+noteTitle: {
+  fontSize: 12.5,
+  letterSpacing: 1,
+  fontWeight: 500,
+  textAlign: "center",
+  whiteSpace: "nowrap",
+},
+
+noteDesc: {
+  fontSize: 11.5,
+  color: "#888",
+  fontStyle: "italic",
+  textAlign: "center",
+  whiteSpace: "nowrap",
+},
 };
