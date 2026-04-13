@@ -219,7 +219,11 @@ export default function PerfumeSoftSkin() {
                 and crafted for modern rituals where subtlety defines
                 sophistication.
               </Accordion>
-              <Accordion title="NOTES" id="notes">
+             <Accordion 
+  title="NOTES" 
+  open={active === "notes"} 
+  onClick={() => setActive(active === "notes" ? null : "notes")}
+>
   <div style={styles.notesWrap}>
     
     <div style={styles.noteItem}>
@@ -253,7 +257,7 @@ export default function PerfumeSoftSkin() {
     </div>
 
   </div>
-                 </Accordion>
+</Accordion>
             </div>
           </div>
         </div>
