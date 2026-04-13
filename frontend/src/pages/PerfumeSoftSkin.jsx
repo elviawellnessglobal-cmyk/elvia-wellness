@@ -426,7 +426,7 @@ noteItem: {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  width: 80, // 👈 controls spacing consistency
+  minWidth: 110, // 👈 increased so text doesn't break
 },
 
 noteImage: {
@@ -442,6 +442,7 @@ noteTitle: {
   letterSpacing: 1,
   fontWeight: 500,
   textAlign: "center",
+  whiteSpace: "nowrap", // 👈 FORCE single line
 },
 
 noteDesc: {
@@ -449,5 +450,6 @@ noteDesc: {
   color: "#888",
   fontStyle: "italic",
   textAlign: "center",
+  whiteSpace: "nowrap", // 👈 FORCE single line
 },
 };
