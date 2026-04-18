@@ -13,7 +13,7 @@ export default function Terms() {
         <h1 style={styles.heading}>Terms & Conditions</h1>
 
         <p style={styles.text}>
-          By accessing and using the KAEORN Wellness website, you agree to
+          By accessing and using the KAEORN website, you agree to
           comply with and be bound by the terms and conditions outlined on this
           page.
         </p>
@@ -24,7 +24,7 @@ export default function Terms() {
         </p>
 
         <p style={styles.text}>
-          KAEORN Wellness reserves the right to refuse service, cancel orders,
+          KAEORN reserves the right to refuse service, cancel orders,
           or limit quantities at its discretion.
         </p>
 
