@@ -11,10 +11,6 @@ import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
 import { useCallback } from "react";
 
-
-
-
-
 /* ── PRODUCT IMAGES ── */
 const softSkinImg =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1775275614/ChatGPT_Image_Apr_4_2026_09_35_50_AM_pkb6za.png";
@@ -23,16 +19,56 @@ const morningVeilImg =
 const quietWoodsImg =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1775490015/ChatGPT_Image_Apr_6_2026_09_09_54_PM_olzzof.png";
 
-
 /* ── MARQUEE ITEMS ── */
 const MARQUEE_ITEMS = [
-  "KAEORN", "·", "QUIET LUXURY", "·", "THÉ NOIR MEN", "·",
-  "SOIÉ FEMME", "·", "VEIL", "·", "EAU DE PARFUM", "·",
-  "MADE IN INDIA", "·", "BECAUSE CARE DESERVES LUXURY", "·",
+  "KAEORN",
+  "·",
+  "QUIET LUXURY",
+  "·",
+  "THÉ NOIR",
+  "·",
+  "SOIE FEMME",
+  "·",
+  "MORNING VEIL",
+  "·",
+  "EAU DE PARFUM",
+  "·",
+  "MADE IN INDIA",
+  "·",
+  "BECAUSE CARE DESERVES LUXURY",
+  "·",
 ];
 
+/* ── SCHEMA ── */
+const ORGANIZATION_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Kaeorn",
+  url: "https://www.kaeorn.com",
+  logo: "https://www.kaeorn.com/logo.png",
+  description:
+    "Kaeorn is a luxury perfume brand offering premium Eau de Parfum for men, women, and unisex wear. Made in India.",
+  foundingLocation: {
+    "@type": "Country",
+    name: "India",
+  },
+  sameAs: ["https://instagram.com/kaeorn", "https://facebook.com/kaeorn"],
+};
 
- function PerfumeCard({ to, img, gender, name, mood, price, mrp, navigate, addToCart, user, setShowAuth, addReveal }) {
+function PerfumeCard({
+  to,
+  img,
+  gender,
+  name,
+  mood,
+  price,
+  mrp,
+  navigate,
+  addToCart,
+  user,
+  setShowAuth,
+  addReveal,
+}) {
   const [added, setAdded] = useState(false);
   const cardRef = useRef(null);
 
@@ -40,19 +76,30 @@ const MARQUEE_ITEMS = [
     if (cardRef.current) addReveal(cardRef.current);
   }, []);
 
-
   function handleAdd(e) {
     e.stopPropagation();
-    if (!user) { setShowAuth(true); return; }
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
     const success = addToCart(to);
     setAdded(success ? "success" : "error");
     setTimeout(() => setAdded(null), 2000);
   }
 
   return (
-    <div ref={cardRef} className="reveal" style={styles.perfumeCard} onClick={() => navigate(to)}>
+    <div
+      ref={cardRef}
+      className="reveal"
+      style={styles.perfumeCard}
+      onClick={() => navigate(to)}
+    >
       <div style={styles.perfumeImageWrap}>
-        <img src={img} alt={name} style={styles.perfumeImage} />
+        <img
+          src={img}
+          alt={`${name} – ${gender} Eau de Parfum by Kaeorn`}
+          style={styles.perfumeImage}
+        />
         <div style={styles.perfumeOverlay}>
           <span style={styles.overlayText}>Discover →</span>
         </div>
@@ -67,203 +114,264 @@ const MARQUEE_ITEMS = [
           <span style={styles.mrp}>{mrp}</span>
         </div>
         <div className="prod-actions">
-          <button className="prod-explore" onClick={(e) => { e.stopPropagation(); navigate(to); }}>
+          <button
+            className="prod-explore"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(to);
+            }}
+          >
             Explore
           </button>
           <button
             className="prod-add"
             onClick={handleAdd}
-            style={added ? { background: "var(--ink)", color: "var(--paper)" } : {}}
+            style={
+              added ? { background: "var(--ink)", color: "var(--paper)" } : {}
+            }
           >
             {added === "success"
-            ? "Added ✓"
-             : added === "error"
-             ? "Couldn't add" 
-             : "+ Cart"}
+              ? "Added ✓"
+              : added === "error"
+                ? "Couldn't add"
+                : "+ Cart"}
           </button>
         </div>
       </div>
     </div>
   );
- }
+}
 
 export default function Home() {
   const navigate = useNavigate();
-  const { user } = useAuth();  
+  const { user } = useAuth();
   const [visible, setVisible] = useState(false);
   const { addToCart } = useCart();
-   const [showAuth, setShowAuth] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
 
   /* ── PAGE ENTER ── */
   useEffect(() => {
-    document.title = "KAEORN | Luxury Wellness Perfumes in India";
-    let meta = document.querySelector("meta[name='description']");
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.name = "description";
-      document.head.appendChild(meta);
-    }
-    meta.content =
-      "Kaeorn Wellness is a luxury fragrance brand offering premium perfumes for men, women, and unisex wear. Discover refined scents crafted for everyday elegance.";
     const t = setTimeout(() => setVisible(true), 120);
     return () => clearTimeout(t);
   }, []);
 
-  /* ── SCROLL REVEAL ── */
- const observerRef = useRef(null);
+  /* ── NOTIFY ME ── */
+  function notifyMe(product) {
+    const id = product === "cream" ? "emailCream" : "emailSpray";
+    const input = document.getElementById(id);
+    const email = input?.value?.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    // TODO: connect to your backend or email service (e.g. Mailchimp, Resend)
+    alert(
+      `Thank you. We'll reach you at ${email} when ${
+        product === "cream" ? "Haetsal Veil™ Cream" : "Haetsal Veil™ Spray"
+      } arrives.`,
+    );
+    if (input) input.value = "";
+  }
 
-useEffect(() => {
-  observerRef.current = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        observerRef.current.unobserve(e.target);
+  /* ── SCROLL REVEAL ── */
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            observerRef.current.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.1 },
+    );
+
+    document.querySelectorAll(".reveal").forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        el.classList.add("visible");
+      } else {
+        observerRef.current.observe(el);
       }
     });
-  }, { threshold: 0.1 });
+  }, []);
 
-  // After observer is ready, force-check all already-registered reveal elements
-  document.querySelectorAll('.reveal').forEach(el => {
+  const addReveal = useCallback((el) => {
+    if (!el) return;
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight) {
-      el.classList.add('visible');
-    } else {
+      el.classList.add("visible");
+    } else if (observerRef.current) {
       observerRef.current.observe(el);
     }
-  });
-
-}, []);
-
-const addReveal = useCallback((el) => {
-  if (!el) return;
-  const rect = el.getBoundingClientRect();
-  if (rect.top < window.innerHeight) {
-    el.classList.add('visible');
-  } else if (observerRef.current) {
-    observerRef.current.observe(el);
-  }
-}, []);
+  }, []);
 
   return (
     <>
-     <Helmet>
-  <title>KAEORN | Luxury Wellness Perfumes in India</title>
-  <meta
-    name="description"
-    content="Kaeorn Wellness is a luxury fragrance brand offering premium perfumes for men, women, and unisex wear. Discover refined scents crafted for everyday elegance."
-  />
-</Helmet>
-     {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-  
+      <Helmet>
+        <title>KAEORN | Luxury Perfumes</title>
+        <meta
+          name="description"
+          content="Kaeorn is a luxury perfume brand offering premium Eau de Parfum for men, women, and unisex wear. Discover THÉ NOIR, MORNING VEIL & SOIE FEMME. Made in India."
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.kaeorn.com/" />
 
-    <main
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(12px)",
-        transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
-      }}
-    >
-      
+        <meta property="og:title" content="KAEORN | Luxury Perfumes" />
+        <meta
+          property="og:description"
+          content="Premium Eau de Parfum crafted for everyday elegance. Discover the world of Kaeorn."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.kaeorn.com/" />
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dvmntn6vf/image/upload/v1775275614/ChatGPT_Image_Apr_4_2026_09_35_50_AM_pkb6za.png"
+        />
+        <meta property="og:site_name" content="Kaeorn" />
 
-      {/* ── HERO ── */}
-      <section className="hero" id="hero">
-        <div className="hero-ambient" />
-        <div className="hero-content">
-          <p className="hero-eyebrow">KAEORN FRAGRANCE</p>
-          <h1 className="hero-title">
-            A quiet<br /><em>expression</em><br />of scent
-          </h1>
-          <p className="hero-sub">
-            Crafted to sit close to skin — intimate, understated, and deeply personal.
-          </p>
-          <div className="hero-actions">
-           <button onClick={() => {
-  document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" });
-}} className="btn-primary">
-  Explore Collection
-</button>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="KAEORN | Luxury Perfumes" />
+        <meta
+          name="twitter:description"
+          content="Premium Eau de Parfum crafted for everyday elegance. Discover the world of Kaeorn."
+        />
+        <meta
+          name="twitter:image"
+          content="https://res.cloudinary.com/dvmntn6vf/image/upload/v1775275614/ChatGPT_Image_Apr_4_2026_09_35_50_AM_pkb6za.png"
+        />
 
-<button onClick={() => {
-  document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
-}} className="btn-outline">
-  Our Story
-</button>
-          </div>
-        </div>
-        <div className="hero-scroll">
-          <span>Scroll</span>
-          <div className="scroll-track">
-            <div className="scroll-thumb" />
-          </div>
-        </div>
-      </section>
+        <script type="application/ld+json">
+          {JSON.stringify(ORGANIZATION_SCHEMA)}
+        </script>
+      </Helmet>
 
-      {/* ── MARQUEE ── */}
-      <div className="marquee-wrap">
-        <div className="marquee-track">
-          {/* Duplicated for seamless loop */}
-          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
-            <span
-              key={i}
-              className={`marquee-item${item === "·" ? " marquee-sep" : ""}`}
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
-      {/* ── PERFUME SECTION ── */}
-      <section style={styles.perfumeSection} id="collection">
-        <div ref={addReveal} className="reveal">
-          <div className="collection-header">
-            <div>
-              <p className="section-eyebrow">THE COLLECTION</p>
-              <h2 className="section-title" ref={addReveal}>
-                Three moods.<br /><em>One world.</em>
-              </h2>
+      <main
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(12px)",
+          transition: "all 0.9s cubic-bezier(0.22,1,0.36,1)",
+        }}
+      >
+        {/* ── HERO ── */}
+        <section className="hero" id="hero">
+          <div className="hero-ambient" />
+          <div className="hero-content">
+            {/* eyebrow: brand · product type */}
+            <p className="hero-eyebrow">KAEORN · EAU DE PARFUM</p>
+            <h1 className="hero-title">
+              Scent that
+              <br />
+              <em>stays with</em>
+              <br />
+              you.
+            </h1>
+            <p className="hero-sub">
+              Not a statement. Not a performance.
+              <br />A quiet presence — intimate, lasting, entirely your own.
+            </p>
+            <div className="hero-actions">
+              <button
+                onClick={() => {
+                  document
+                    .getElementById("collection")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="btn-primary"
+              >
+                Explore Collection
+              </button>
+              <button
+                onClick={() => {
+                  document
+                    .getElementById("about")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="btn-outline"
+              >
+                Our Story
+              </button>
             </div>
-            <div>
-              <p className="collection-intro">
-                Where skincare meets the art of perfume. Crafted for modern skin,
-                softly perfumed — each scent a quiet statement.
-              </p>
+          </div>
+          <div className="hero-scroll">
+            <span>Scroll</span>
+            <div className="scroll-track">
+              <div className="scroll-thumb" />
             </div>
+          </div>
+        </section>
+
+        {/* ── MARQUEE ── */}
+        <div className="marquee-wrap">
+          <div className="marquee-track">
+            {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+              <span
+                key={i}
+                className={`marquee-item${item === "·" ? " marquee-sep" : ""}`}
+              >
+                {item}
+              </span>
+            ))}
           </div>
         </div>
 
+        {/* ── COLLECTION ── */}
+        <section style={styles.perfumeSection} id="collection">
+          <div ref={addReveal} className="reveal">
+            <div className="collection-header">
+              <div>
+                <p className="section-eyebrow">THE COLLECTION</p>
+                <h2 className="section-title">
+                  Three moods.
+                  <br />
+                  <em>One skin.</em>
+                </h2>
+              </div>
+              <div>
+                <p className="collection-intro">
+                  Each Kaeorn scent is built around a feeling — not a trend.
+                  Wear the one that finds you.
+                </p>
+              </div>
+            </div>
+          </div>
 
-        <div style={styles.perfumeRow}>
-          {[
-            {
-              to: "/perfume/soft-skin",
-              img: softSkinImg,
-              gender: "MEN",
-              name: "THÉ NOIR",
-              mood: "Woody · Aromatic · Musky",
-              price: "₹1,199",
-              mrp: "₹1,499",
-            },
-            {
-              to: "/perfume/morning-veil",
-              img: morningVeilImg,
-              gender: "UNISEX",
-              name: "MORNING VEIL",
-              mood: "Clean · Airy · Luminous",
-              price: "₹1,199",
-              mrp: "₹1,499",
-            },
-            {
-              to: "/perfume/quiet-woods",
-              img: quietWoodsImg,
-              gender: "WOMEN",
-              name: "SOIE FEMME",
-              mood: "Luxury · Feminine",
-              price: "₹1,199",
-              mrp: "₹1,499",
-            },
-          ].map((p) => (
-             <PerfumeCard
+          <div style={styles.perfumeRow}>
+            {[
+              {
+                to: "/perfume/soft-skin",
+                img: softSkinImg,
+                gender: "MEN",
+                name: "THÉ NOIR",
+                mood: "Fruity · Aromatic · Gourmand",
+                price: "₹1,199",
+                mrp: "₹1,499",
+              },
+              {
+                to: "/perfume/morning-veil",
+                img: morningVeilImg,
+                gender: "UNISEX",
+                name: "MORNING VEIL",
+                mood: "Citrus · Spicy · Woody",
+                price: "₹1,199",
+                mrp: "₹1,499",
+              },
+              {
+                to: "/perfume/quiet-woods",
+                img: quietWoodsImg,
+                gender: "WOMEN",
+                name: "SOIE FEMME",
+                mood: "Floral · Roasted · Gourmand",
+                price: "₹1,199",
+                mrp: "₹1,499",
+              },
+            ].map((p) => (
+              <PerfumeCard
                 key={p.name}
                 {...p}
                 navigate={navigate}
@@ -274,95 +382,144 @@ const addReveal = useCallback((el) => {
               />
             ))}
           </div>
-          
-      </section>
+        </section>
 
+        {/* ── ABOUT ── */}
+        <section className="about" id="about">
+          <div className="about-inner">
+            <div className="about-top">
+              <div>
+                <p
+                  ref={addReveal}
+                  className="section-eyebrow about-eyebrow reveal"
+                >
+                  THE PHILOSOPHY
+                </p>
+                <h2
+                  ref={addReveal}
+                  className="about-title reveal reveal-delay-1"
+                >
+                  Luxury that
+                  <br />
+                  lives close
+                  <br />
+                  to <em>skin.</em>
+                </h2>
+              </div>
+              <div ref={addReveal} className="about-body reveal reveal-delay-2">
+                <p>
+                  Kaeorn was built on one belief — that luxury should feel
+                  effortless, not loud. We make perfumes for people who don't
+                  need to announce themselves. Scents that settle into your skin
+                  and become indistinguishable from you.
+                </p>
+                <p>
+                  Every bottle is the result of careful work — layered notes,
+                  considered compositions, and ingredients chosen for how they
+                  feel on real skin. Not just how they smell in the air.
+                </p>
+                <p>
+                  KAEORN means to endure and to radiate. That's the standard we
+                  hold every fragrance to. Made in India, for the world.
+                </p>
+                <div className="about-quote">
+                  <blockquote>"Because care deserves luxury."</blockquote>
+                  <cite>— KAEORN</cite>
+                </div>
+              </div>
+            </div>
+            <div className="about-stats">
+              <div ref={addReveal} className="stat reveal">
+                <div className="stat-n">3</div>
+                <div className="stat-l">Fragrances Crafted</div>
+              </div>
+              <div ref={addReveal} className="stat reveal reveal-delay-1">
+                <div className="stat-n">50+</div>
+                <div className="stat-l">Happy Wearers</div>
+              </div>
+              <div ref={addReveal} className="stat reveal reveal-delay-2">
+                <div className="stat-n">100%</div>
+                <div className="stat-l">Cruelty Free</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      
-      {/*-- ABOUT --*/}
-      <section className="about" id="about">
-        <div className="about-inner">
-        <div className="about-top">
-        <div>
-        <p ref={addReveal} className="section-eyebrow about-eyebrow reveal">THE PHILOSOPHY</p>
-        <h2 ref={addReveal} className="about-title reveal reveal-delay-1">
-          Where skincare<br/>meets the art<br/>of <em>perfume.</em>
-        </h2>
-      </div>
-      <div ref={addReveal} className="about-body reveal reveal-delay-2">
-        <p>
-          KAEORN was born from a single conviction: that fragrance should feel like a second skin, not a statement. We craft scents designed to linger softly and elevate your daily ritual.
-        </p>
-        <p>
-          Each KAEORN fragrance is built around a human truth — a feeling worth preserving. Our perfumers work with the finest raw materials to create olfactory signatures that are intimate, understated, and deeply personal.
-        </p>
-        <p>
-          The name KAEORN brings together two ideas — to endure, and to radiate. We make things that stay with you.
-        </p>
-        <div className="about-quote">
-          <blockquote>"Because care deserves luxury."</blockquote>
-          <cite>— KAEORN Brand Philosophy</cite>
-        </div>
-      </div>
-    </div>
-    <div className="about-stats">
-      <div ref={addReveal} className="stat reveal">
-        <div className="stat-n">3</div>
-        <div className="stat-l">Fragrances Crafted</div>
-      </div>
-      <div ref={addReveal} className="stat reveal reveal-delay-1">
-        <div className="stat-n">20+</div>
-        <div className="stat-l">Happy Wearers</div>
-      </div>
-      <div ref={addReveal} className="stat reveal reveal-delay-2">
-        <div className="stat-n">100%</div>
-        <div className="stat-l">Cruelty Free</div>
-      </div>
-    </div>
-    </div>
-    </section>
-
-      {/*-- COMING SOON --*/}
-      <section className="coming" id="coming">
-      <div className="coming-inner">
-    <div className="coming-header">
-      <p ref={addReveal} className="section-eyebrow reveal">WHAT'S NEXT</p>
-      <h2 ref={addReveal} className="section-title reveal reveal-delay-1">The world of<br/>KAEORN <em>expands.</em></h2>
-    </div>
-    <div className="coming-grid">
-      <div ref={addReveal} className="coming-card coming-cream reveal">
-        <div className="coming-soon-badge">Coming Soon</div>
-        <div className="coming-icon">☀</div>
-        <h3 className="coming-name">Haetsal Veil™ Cream</h3>
-        <p className="coming-sub">Skincare Line</p>
-        <p className="coming-desc">
-          Protection that feels like skin, not armor. Luxurious, softly scented skincare crafted for faces that refuse to hide. The first intersection of KAEORN fragrance and skincare.
-        </p>
-        <div className="coming-notify">
-          <input type="email" className="coming-email" placeholder="Enter your email" id="emailCream"/>
-          <button className="coming-submit" onClick={()=> notifyMe('cream')}>Notify Me</button>
-        </div>
-      </div>
-      <div ref={addReveal} className="coming-card coming-spray reveal reveal-delay-1">
-        <div className="coming-soon-badge">Coming Soon</div>
-        <div className="coming-icon">◈</div>
-        <h3 className="coming-name">Haetsal Veil™ Spray</h3>
-        <p className="coming-sub">Body Spray Line</p>
-        <p className="coming-desc">
-          The scent that moves with you. Everyday body sprays with the same depth as our perfumes — lighter, breezier, and built for every moment of your day.
-        </p>
-        <div className="coming-notify">
-          <input type="email" className="coming-email" placeholder="Enter your email" id="emailSpray"/>
-          <button className="coming-submit" onClick={()=> notifyMe('spray')}>Notify Me</button>
-        </div>
-      </div>
-    </div>
-     </div>
-    </section>
-
-    </main>
+        {/* ── COMING SOON ── */}
+        <section className="coming" id="coming">
+          <div className="coming-inner">
+            <div className="coming-header">
+              <p ref={addReveal} className="section-eyebrow reveal">
+                WHAT'S NEXT
+              </p>
+              <h2
+                ref={addReveal}
+                className="section-title reveal reveal-delay-1"
+              >
+                Kaeorn
+                <br />
+                <em>beyond scent.</em>
+              </h2>
+            </div>
+            <div className="coming-grid">
+              <div ref={addReveal} className="coming-card coming-cream reveal">
+                <div className="coming-soon-badge">Coming Soon</div>
+                <div className="coming-icon">☀</div>
+                <h3 className="coming-name">Haetsal Veil™ Cream</h3>
+                <p className="coming-sub">Sunscream · Face</p>
+                <p className="coming-desc">
+                  Daily sun protection with a lightweight, skin-friendly finish.
+                  Designed to shield against UV damage while keeping your skin
+                  hydrated, smooth, and comfortable throughout the day.
+                </p>
+                <div className="coming-notify">
+                  <input
+                    type="email"
+                    className="coming-email"
+                    placeholder="Your email"
+                    id="emailCream"
+                  />
+                  <button
+                    className="coming-submit"
+                    onClick={() => notifyMe("cream")}
+                  >
+                    Notify Me
+                  </button>
+                </div>
+              </div>
+              <div
+                ref={addReveal}
+                className="coming-card coming-spray reveal reveal-delay-1"
+              >
+                <div className="coming-soon-badge">Coming Soon</div>
+                <div className="coming-icon">◈</div>
+                <h3 className="coming-name">Haetsal Veil™ Spray</h3>
+                <p className="coming-sub">Sunscreen · Body</p>
+                <p className="coming-desc">
+                  Easy, even sun protection for everyday use. A quick-apply body
+                  spray that protects against UV exposure without heaviness,
+                  leaving the skin feeling light and non-sticky.
+                </p>
+                <div className="coming-notify">
+                  <input
+                    type="email"
+                    className="coming-email"
+                    placeholder="Your email"
+                    id="emailSpray"
+                  />
+                  <button
+                    className="coming-submit"
+                    onClick={() => notifyMe("spray")}
+                  >
+                    Notify Me
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </>
-
   );
 }
 
@@ -415,7 +572,8 @@ const styles = {
   perfumeOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(to top, rgba(13,12,11,.6) 0%, transparent 50%)",
+    background:
+      "linear-gradient(to top, rgba(13,12,11,.6) 0%, transparent 50%)",
     opacity: 0,
     transition: "opacity .4s",
     display: "flex",
@@ -458,14 +616,14 @@ const styles = {
     marginBottom: "1rem",
   },
   volume: {
-  fontFamily: "'DM Mono', monospace",
-  fontSize: ".6rem",
-  letterSpacing: ".15em",
-  color: "var(--muted)",
-  textTransform: "uppercase",
-  display: "block",
-  marginBottom: "1rem",
-},
+    fontFamily: "'DM Mono', monospace",
+    fontSize: ".6rem",
+    letterSpacing: ".15em",
+    color: "var(--muted)",
+    textTransform: "uppercase",
+    display: "block",
+    marginBottom: "1rem",
+  },
   priceRow: {
     display: "flex",
     alignItems: "baseline",

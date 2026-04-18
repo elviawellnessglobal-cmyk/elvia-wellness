@@ -13,7 +13,7 @@ export default function Shipping() {
         <h1 style={styles.heading}>Shipping Policy</h1>
 
         <p style={styles.text}>
-          Orders placed with KAEORN Wellness are processed within 1–3 business
+          Orders placed with KAEORN are processed within 1–3 business
           days, excluding weekends and public holidays.
         </p>
 

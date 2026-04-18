@@ -13,7 +13,7 @@ export default function Privacy() {
         <h1 style={styles.heading}>Privacy Policy</h1>
 
         <p style={styles.text}>
-          KAEORN Wellness respects your privacy and is committed to protecting
+          KAEORN respects your privacy and is committed to protecting
           your personal information. We collect customer data only when
           necessary to process orders, provide support, and improve our
           services.
@@ -27,7 +27,7 @@ export default function Privacy() {
 
         <p style={styles.text}>
           All payments are securely processed through authorized third-party
-          payment gateways. KAEORN Wellness does not store or have access to
+          payment gateways. KAEORN does not store or have access to
           your card, UPI, or banking information.
         </p>
 

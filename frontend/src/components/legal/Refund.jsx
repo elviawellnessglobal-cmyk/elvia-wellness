@@ -13,7 +13,7 @@ export default function Refund() {
         <h1 style={styles.heading}>Refund & Cancellation Policy</h1>
 
         <p style={styles.text}>
-          At KAEORN Wellness, we take great care in packaging and quality
+          At KAEORN , we take great care in packaging and quality
           checks. Refunds or replacements are applicable only in cases where
           products are damaged, defective, or incorrect upon delivery.
         </p>
