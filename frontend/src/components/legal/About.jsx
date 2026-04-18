@@ -14,7 +14,7 @@ export default function About() {
         <h1 style={styles.heading}>About KAEORN Wellness</h1>
 
         <p style={styles.text}>
-          KAEORN Wellness is a premium skincare and wellness brand rooted in
+          KAEORN is a premium skincare and wellness brand rooted in
           simplicity, precision, and long-term skin health. We believe luxury is
           not excess — it is intention, formulation integrity, and trust.
         </p>
@@ -34,7 +34,7 @@ export default function About() {
         </p>
 
         <p style={styles.text}>
-          KAEORN Wellness is for those who prefer clarity over clutter, and care
+          KAEORN is for those who prefer clarity over clutter, and care
           over claims.
         </p>
       </div>
