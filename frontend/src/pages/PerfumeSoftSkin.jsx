@@ -219,6 +219,45 @@ export default function PerfumeSoftSkin() {
                 and crafted for modern rituals where subtlety defines
                 sophistication.
               </Accordion>
+           <Accordion
+  title="NOTES"
+  open={open === "notes"}
+  onClick={() => setOpen("notes")}
+>
+  <div style={styles.notesWrap}>
+    
+    <div style={styles.noteItem}>
+      <img 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776063550/33f1fa71-31da-480d-b0fb-a7873bba7a42.png" 
+        alt="Apple"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Apple</div>
+      <div style={styles.noteDesc}>Crisp Allure</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776063583/28d899ef-0fa4-4253-8b93-c9574c3b570a.png" 
+        alt="Lavender"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Lavender</div>
+      <div style={styles.noteDesc}>Refined Calm</div>
+    </div>
+
+    <div style={styles.noteItem}>
+      <img 
+        src="https://res.cloudinary.com/dvmntn6vf/image/upload/v1776063501/b97dc82a-ac51-42e7-81e6-44c504e1ad6f.png" 
+        alt="Tonka Beans"
+        style={styles.noteImage}
+      />
+      <div style={styles.noteTitle}>Tonka Beans</div>
+      <div style={styles.noteDesc}>Warm Sensuality</div>
+    </div>
+
+  </div>
+</Accordion>
             </div>
           </div>
         </div>
@@ -376,4 +415,41 @@ const styles = {
     lineHeight: 1.9,
     color: "#555",
   },
+  notesWrap: {
+  display: "flex",
+  gap: 24,
+  marginTop: 8,
+  flexWrap: "wrap",
+},
+
+noteItem: {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  minWidth: 110, // 👈 increased so text doesn't break
+},
+
+noteImage: {
+  width: 28,   // 👈 SMALL (luxury look)
+  height: 28,
+  objectFit: "contain",
+  marginBottom: 6,
+  opacity: 0.9, // 👈 soft premium feel
+},
+
+noteTitle: {
+  fontSize: 12.5,
+  letterSpacing: 1,
+  fontWeight: 500,
+  textAlign: "center",
+  whiteSpace: "nowrap", // 👈 FORCE single line
+},
+
+noteDesc: {
+  fontSize: 11.5,
+  color: "#888",
+  fontStyle: "italic",
+  textAlign: "center",
+  whiteSpace: "nowrap", // 👈 FORCE single line
+},
 };
