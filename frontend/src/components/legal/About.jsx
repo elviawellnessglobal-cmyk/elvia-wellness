@@ -11,7 +11,7 @@ export default function About() {
       </Helmet>
 
       <div style={styles.page}>
-        <h1 style={styles.heading}>About KAEORN Wellness</h1>
+        <h1 style={styles.heading}>About KAEORN</h1>
 
         <p style={styles.text}>
           KAEORN is a premium skincare and wellness brand rooted in
