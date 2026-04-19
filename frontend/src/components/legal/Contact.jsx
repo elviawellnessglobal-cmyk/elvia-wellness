@@ -1,66 +1,41 @@
 import { Helmet } from "react-helmet-async";
+import PolicyLayout from "../legal/PolicyLayout"; // adjust path as needed
+
 export default function Contact() {
   return (
     <>
       <Helmet>
-        <title>Contact KAEORN</title>
+        <title>Contact KAEORN | Get in Touch</title>
         <meta
           name="description"
-          content="Get in touch with KAEORN for support, inquiries, or collaborations."
+          content="Reach out to Kaeorn for order support, fragrance questions, or collaboration inquiries. We respond within 24–48 business hours."
         />
+        <link rel="canonical" href="https://www.kaeorn.com/contact" />
       </Helmet>
-      <div style={styles.page}>
-        <h1 style={styles.heading}>Contact Us</h1>
 
-       
-        <p style={styles.text}>
-  For any questions about your orders, our fragrances, or general assistance,
-  feel free to reach out. You can also connect with us instantly through our
-  support chat available in your profile for a quicker, more seamless experience.
-  Our team ensures a thoughtful response within 24–48 business hours.
-</p>
-        
+      <PolicyLayout eyebrow="REACH US" title="Contact">
+        <p>
+          Whether it's a question about your order, a fragrance you'd like to
+          know more about, or something else entirely — we're here. Reach us
+          over email or use the support chat in your profile for a faster
+          response. We'll get back to you within 24–48 business hours.
+        </p>
 
-        <div style={styles.infoBlock}>
+        <div className="policy-info-block">
           <p>
-            <strong>Brand:</strong> KAEORN
+            <span className="policy-label">Brand</span>
+            KAEORN
           </p>
           <p>
-            <strong>Email:</strong> kaeornwellness@gmail.com
+            <span className="policy-label">Email</span>
+            <a href="mailto:kaeornwellness@gmail.com">kaeornwellness@gmail.com</a>
           </p>
-          {/* <p>
-            <strong>Phone:</strong> +91 9053140500
-          </p> */}
           <p>
-            <strong>Operating Region:</strong> India
+            <span className="policy-label">Region</span>
+            India
           </p>
         </div>
-      </div>
+      </PolicyLayout>
     </>
   );
 }
-
-const styles = {
-  page: {
-    maxWidth: "880px",
-    margin: "80px auto",
-    padding: "0 24px",
-    lineHeight: 1.9,
-    fontFamily: "Inter, sans-serif",
-  },
-  heading: {
-    fontSize: "34px",
-    fontWeight: "500",
-    marginBottom: "28px",
-  },
-  text: {
-    fontSize: "16px",
-    color: "#333",
-    marginBottom: "24px",
-  },
-  infoBlock: {
-    marginTop: "24px",
-    fontSize: "15px",
-    color: "#444",
-  },
-};
