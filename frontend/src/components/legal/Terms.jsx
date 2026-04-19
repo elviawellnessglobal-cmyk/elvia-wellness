@@ -1,4 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import PolicyLayout from "../legal/PolicyLayout"; // adjust path as needed
+
 export default function Terms() {
   return (
     <>
@@ -6,52 +8,36 @@ export default function Terms() {
         <title>Terms & Conditions | KAEORN</title>
         <meta
           name="description"
-          content="Review the terms and conditions for using KAEORN's website and services."
+          content="Terms and conditions for using the Kaeorn website and purchasing our products."
         />
+        <link rel="canonical" href="https://www.kaeorn.com/terms" />
       </Helmet>
-      <div style={styles.page}>
-        <h1 style={styles.heading}>Terms & Conditions</h1>
 
-        <p style={styles.text}>
-          By accessing and using the KAEORN website, you agree to
-          comply with and be bound by the terms and conditions outlined on this
-          page.
+      <PolicyLayout eyebrow="LEGAL" title="Terms & Conditions">
+        <p>
+          By visiting and using the Kaeorn website, you agree to the terms
+          outlined on this page. Please take a moment to read them — they're
+          straightforward.
         </p>
 
-        <p style={styles.text}>
-          All product descriptions, pricing, availability, and policies are
-          subject to change at any time without prior notice.
+        <p>
+          Product descriptions, pricing, and availability are subject to change
+          without prior notice. We do our best to keep everything accurate and
+          up to date.
         </p>
 
-        <p style={styles.text}>
-          KAEORN reserves the right to refuse service, cancel orders,
-          or limit quantities at its discretion.
+        <p>
+          Kaeorn reserves the right to refuse service, cancel orders, or
+          limit purchase quantities where necessary — for example, in cases of
+          suspected fraud or policy violations.
         </p>
 
-        <p style={styles.text}>
-          Continued use of the website constitutes acceptance of these terms.
+        <p>
+          Continued use of this website means you accept these terms as they
+          stand. If anything changes significantly, we'll make sure it's
+          clearly communicated.
         </p>
-      </div>
+      </PolicyLayout>
     </>
   );
 }
-
-const styles = {
-  page: {
-    maxWidth: "880px",
-    margin: "80px auto",
-    padding: "0 24px",
-    lineHeight: 1.9,
-    fontFamily: "Inter, sans-serif",
-  },
-  heading: {
-    fontSize: "34px",
-    fontWeight: "500",
-    marginBottom: "28px",
-  },
-  text: {
-    fontSize: "16px",
-    color: "#333",
-    marginBottom: "22px",
-  },
-};

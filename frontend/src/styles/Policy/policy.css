@@ -1,7 +1,7 @@
 .policy-container {
   min-height: 100vh;
   padding: 80px 20px;
-  background: linear-gradient(to bottom, #0a0a0a, #111);
+  background: var(--ink);
   color: #eaeaea;
   display: flex;
   justify-content: center;
@@ -45,4 +45,30 @@
 
 .footer-links span:hover {
   color: #fff;
+}
+
+.policy-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.policy-info-block {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.policy-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 0.2rem;
 }

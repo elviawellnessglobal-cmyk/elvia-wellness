@@ -45,7 +45,6 @@ const ORGANIZATION_SCHEMA = {
   "@type": "Organization",
   name: "Kaeorn",
   url: "https://www.kaeorn.com",
-  logo: "https://www.kaeorn.com/logo.png",
   description:
     "Kaeorn is a luxury perfume brand offering premium Eau de Parfum for men, women, and unisex wear. Made in India.",
   foundingLocation: {
@@ -232,17 +231,6 @@ export default function Home() {
           content="https://res.cloudinary.com/dvmntn6vf/image/upload/v1775275614/ChatGPT_Image_Apr_4_2026_09_35_50_AM_pkb6za.png"
         />
         <meta property="og:site_name" content="Kaeorn" />
-
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="KAEORN | Luxury Perfumes" />
-        <meta
-          name="twitter:description"
-          content="Premium Eau de Parfum crafted for everyday elegance. Discover the world of Kaeorn."
-        />
-        <meta
-          name="twitter:image"
-          content="https://res.cloudinary.com/dvmntn6vf/image/upload/v1775275614/ChatGPT_Image_Apr_4_2026_09_35_50_AM_pkb6za.png"
-        />
 
         <script type="application/ld+json">
           {JSON.stringify(ORGANIZATION_SCHEMA)}

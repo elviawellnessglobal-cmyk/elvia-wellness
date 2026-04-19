@@ -1,58 +1,43 @@
 import { Helmet } from "react-helmet-async";
+import PolicyLayout from "../legal/PolicyLayout"; // adjust path as needed
+
 export default function Refund() {
   return (
     <>
       <Helmet>
-        <title>Refund Policy | KAEORN</title>
+        <title>Refund & Cancellation Policy | KAEORN</title>
         <meta
           name="description"
-          content="Understand KAEORN's refund and return policies for purchases."
+          content="Kaeorn's refund and cancellation policy — what qualifies, how to report an issue, and how refunds are processed."
         />
+        <link rel="canonical" href="https://www.kaeorn.com/refund" />
       </Helmet>
-      <div style={styles.page}>
-        <h1 style={styles.heading}>Refund & Cancellation Policy</h1>
 
-        <p style={styles.text}>
-          At KAEORN , we take great care in packaging and quality
-          checks. Refunds or replacements are applicable only in cases where
-          products are damaged, defective, or incorrect upon delivery.
+      <PolicyLayout eyebrow="RETURNS & REFUNDS" title="Refund & Cancellation Policy">
+        <p>
+          Every Kaeorn order goes through careful quality checks before it
+          leaves us. In the rare event that your product arrives damaged,
+          defective, or incorrect, we'll make it right.
         </p>
 
-        <p style={styles.text}>
-          Any such issue must be reported within 48 hours of receiving the
-          order, along with clear images and order details for verification.
+        <p>
+          To raise a concern, contact us within 48 hours of receiving your
+          order with clear photos and unboxing video along with your order details. Once verified, we'll
+          arrange a replacement or process a refund — whichever works best
+          for you.
         </p>
 
-        <p style={styles.text}>
-          Once approved, refunds will be processed to the original payment
-          method within 7–10 business days. Shipping charges, if applicable, are
-          non-refundable.
+        <p>
+          Approved refunds are returned to your original payment method within
+          7–10 business days. Shipping charges, if any, are non-refundable.
         </p>
 
-        <p style={styles.text}>
-          Orders once placed cannot be cancelled after they have been shipped.
+        <p>
+          Orders that have already been shipped cannot be cancelled. If you
+          need to make any changes, please reach out to us as early as
+          possible after placing your order.
         </p>
-      </div>
+      </PolicyLayout>
     </>
   );
 }
-
-const styles = {
-  page: {
-    maxWidth: "880px",
-    margin: "80px auto",
-    padding: "0 24px",
-    lineHeight: 1.9,
-    fontFamily: "Inter, sans-serif",
-  },
-  heading: {
-    fontSize: "34px",
-    fontWeight: "500",
-    marginBottom: "28px",
-  },
-  text: {
-    fontSize: "16px",
-    color: "#333",
-    marginBottom: "22px",
-  },
-};

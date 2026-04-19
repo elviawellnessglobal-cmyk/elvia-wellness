@@ -1,4 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import PolicyLayout from "../legal/PolicyLayout"; // adjust path as needed
+
 export default function Shipping() {
   return (
     <>
@@ -6,48 +8,30 @@ export default function Shipping() {
         <title>Shipping Policy | KAEORN</title>
         <meta
           name="description"
-          content="Learn about KAEORN shipping timelines, delivery process, and policies."
+          content="Kaeorn shipping policy — order processing times, delivery timelines, and tracking details for India-wide delivery."
         />
+        <link rel="canonical" href="https://www.kaeorn.com/shipping" />
       </Helmet>
-      <div style={styles.page}>
-        <h1 style={styles.heading}>Shipping Policy</h1>
 
-        <p style={styles.text}>
-          Orders placed with KAEORN are processed within 1–3 business
-          days, excluding weekends and public holidays.
+      <PolicyLayout eyebrow="DELIVERY" title="Shipping Policy">
+        <p>
+          Orders are processed within 1–3 business days of being placed,
+          excluding weekends and public holidays. We take the time to package
+          every order with care before it goes out.
         </p>
 
-        <p style={styles.text}>
-          Delivery timelines typically range between 5–10 business days,
-          depending on the shipping location and courier partner.
+        <p>
+          Delivery typically takes 5–10 business days depending on your
+          location and the courier partner handling your shipment. Once your
+          order is on its way, you'll receive tracking details via email or SMS.
         </p>
 
-        <p style={styles.text}>
-          Once shipped, tracking details will be shared via email or SMS. Delays
-          caused by courier partners, weather conditions, or regional
-          restrictions are beyond our control.
+        <p>
+          Delays caused by courier partners, weather, or regional restrictions
+          are outside our control. If something seems off with your delivery,
+          reach out — we'll help figure it out.
         </p>
-      </div>
+      </PolicyLayout>
     </>
   );
 }
-
-const styles = {
-  page: {
-    maxWidth: "880px",
-    margin: "80px auto",
-    padding: "0 24px",
-    lineHeight: 1.9,
-    fontFamily: "Inter, sans-serif",
-  },
-  heading: {
-    fontSize: "34px",
-    fontWeight: "500",
-    marginBottom: "28px",
-  },
-  text: {
-    fontSize: "16px",
-    color: "#333",
-    marginBottom: "22px",
-  },
-};

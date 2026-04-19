@@ -37,7 +37,7 @@ footer {
 .footer-copy { font-family: 'DM Mono', monospace; font-size: .6rem; letter-spacing: .1em; color: rgba(247,244,240,.54); }
 .footer-social { display: flex; gap: 1.5rem; }
 .footer-social .link, .footer-social a { font-family: 'DM Mono', monospace; font-size: .6rem; letter-spacing: .1em; color: rgba(247, 244, 240, 0.54); text-decoration: none; transition: color .2s; }
-.footer-social .link:hover, .footer-social a:hover { color: var(--paper); }
+.footer-social .link:hover, .footer-social a:hover { color: var(--paper); cursor: "pointer";}
 
 
 @media(max-width:500px){

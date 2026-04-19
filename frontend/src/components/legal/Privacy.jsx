@@ -1,4 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import PolicyLayout from "../legal/PolicyLayout"; // adjust path as needed
+
 export default function Privacy() {
   return (
     <>
@@ -6,57 +8,36 @@ export default function Privacy() {
         <title>Privacy Policy | KAEORN</title>
         <meta
           name="description"
-          content="Read KAEORN's privacy policy to understand how we handle your data securely."
+          content="Kaeorn's privacy policy — how we collect, use, and protect your personal information when you shop with us."
         />
+        <link rel="canonical" href="https://www.kaeorn.com/privacy" />
       </Helmet>
-      <div style={styles.page}>
-        <h1 style={styles.heading}>Privacy Policy</h1>
 
-        <p style={styles.text}>
-          KAEORN respects your privacy and is committed to protecting
-          your personal information. We collect customer data only when
-          necessary to process orders, provide support, and improve our
-          services.
+      <PolicyLayout eyebrow="YOUR DATA" title="Privacy Policy">
+        <p>
+          Kaeorn collects only the information needed to process your orders
+          and provide you with proper support. We don't collect anything we
+          don't use, and we don't use anything without your knowledge.
         </p>
 
-        <p style={styles.text}>
-          Information collected may include name, email address, phone number,
-          shipping address, and order details. This data is used strictly for
-          fulfillment, communication, and customer service purposes.
+        <p>
+          Information we may collect includes your name, email address, phone
+          number, shipping address, and order details. This is used solely for
+          fulfillment, delivery updates, and customer support.
         </p>
 
-        <p style={styles.text}>
-          All payments are securely processed through authorized third-party
-          payment gateways. KAEORN does not store or have access to
-          your card, UPI, or banking information.
+        <p>
+          All payments are processed through secure, authorized third-party
+          payment gateways. Kaeorn does not store or have access to your card,
+          UPI, or banking information at any point.
         </p>
 
-        <p style={styles.text}>
-          We do not sell, rent, or share your personal information with third
-          parties except where required to fulfill your order or comply with
-          legal obligations.
+        <p>
+          We do not sell, rent, or share your personal information with any
+          third party, except where necessary to deliver your order or meet a
+          legal obligation.
         </p>
-      </div>
+      </PolicyLayout>
     </>
   );
 }
-
-const styles = {
-  page: {
-    maxWidth: "880px",
-    margin: "80px auto",
-    padding: "0 24px",
-    lineHeight: 1.9,
-    fontFamily: "Inter, sans-serif",
-  },
-  heading: {
-    fontSize: "34px",
-    fontWeight: "500",
-    marginBottom: "28px",
-  },
-  text: {
-    fontSize: "16px",
-    color: "#333",
-    marginBottom: "22px",
-  },
-};
