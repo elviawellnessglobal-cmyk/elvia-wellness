@@ -78,7 +78,7 @@ export default function PerfumeQuietWoods() {
   }, []);
 
   const originalPrice = 1499;
-  const price = 1199;
+  const price = 1399;
   const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
 
   function handleOrderNow() {
@@ -148,12 +148,12 @@ export default function PerfumeQuietWoods() {
             <h1 style={styles.productTitle}>SOIE FEMME</h1>
             <span style={styles.volume}>100 ml</span>
 
-            <div style={styles.saleBadge}>RELEASE SALE</div>
+            {/* <div style={styles.saleBadge}>RELEASE SALE</div> */}
 
             <div style={styles.priceWrap}>
               <span style={styles.price}>₹{price}</span>
-              <span style={styles.originalPrice}>₹{originalPrice}</span>
-              <span style={styles.discount}>{discountPercent}% OFF</span>
+              {/* <span style={styles.originalPrice}>₹{originalPrice}</span>
+              <span style={styles.discount}>{discountPercent}% OFF</span> */}
             </div>
 
             <p style={styles.subtitle}>
