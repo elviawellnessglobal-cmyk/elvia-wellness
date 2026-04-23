@@ -43,7 +43,7 @@ function PerfumeCard({
         <span className="prod-volume">100 ml</span>
         <div>
           <span>{price}</span>
-          <span>{mrp}</span>
+          {/* <span>{mrp}</span> */}
         </div>
         <div className="prod-actions">
           <button

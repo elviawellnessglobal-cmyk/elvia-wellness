@@ -68,7 +68,7 @@ export default function PerfumeSoftSkin() {
   const [open, setOpen] = useState("description");
 
   const originalPrice = 1499;
-  const price = 1199;
+  const price = 1399;
   const discount = Math.round(((originalPrice - price) / originalPrice) * 100);
 
   useEffect(() => {
@@ -156,13 +156,13 @@ export default function PerfumeSoftSkin() {
             <button style={styles.readMore} onClick={scrollToDesc}>
               Read more about this fragrance
             </button>
-
-            <div style={styles.sale}>LAUNCH SALE</div>
+{/* 
+            <div style={styles.sale}>LAUNCH SALE</div> */}
 
             <div style={styles.priceRow}>
               <span style={styles.price}>₹{price}</span>
-              <span style={styles.strike}>₹{originalPrice}</span>
-              <span style={styles.off}>{discount}% OFF</span>
+              {/* <span style={styles.strike}>₹{originalPrice}</span>
+              <span style={styles.off}>{discount}% OFF</span> */}
             </div>
 
             <p style={styles.shortDesc}>

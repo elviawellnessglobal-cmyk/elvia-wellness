@@ -337,8 +337,8 @@ export default function Home() {
                 gender: "MEN",
                 name: "THÉ NOIR",
                 mood: "Fruity · Aromatic · Gourmand",
-                price: "₹1,199",
-                mrp: "₹1,499",
+                price: "₹1,399",
+                // mrp: "₹1,499",
               },
               {
                 to: "/perfume/morning-veil",
@@ -346,8 +346,8 @@ export default function Home() {
                 gender: "UNISEX",
                 name: "MORNING VEIL",
                 mood: "Citrus · Spicy · Woody",
-                price: "₹1,199",
-                mrp: "₹1,499",
+                price: "₹1,399",
+                // mrp: "₹1,499",
               },
               {
                 to: "/perfume/quiet-woods",
@@ -355,8 +355,8 @@ export default function Home() {
                 gender: "WOMEN",
                 name: "SOIE FEMME",
                 mood: "Floral · Roasted · Gourmand",
-                price: "₹1,199",
-                mrp: "₹1,499",
+                price: "₹1,399",
+                // mrp: "₹1,499",
               },
             ].map((p) => (
               <PerfumeCard
@@ -422,7 +422,7 @@ export default function Home() {
                 <div className="stat-l">Fragrances Crafted</div>
               </div>
               <div ref={addReveal} className="stat reveal reveal-delay-1">
-                <div className="stat-n">50+</div>
+                <div className="stat-n">21</div>
                 <div className="stat-l">Happy Wearers</div>
               </div>
               <div ref={addReveal} className="stat reveal reveal-delay-2">
