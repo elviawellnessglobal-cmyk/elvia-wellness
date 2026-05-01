@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PageLoader from "../components/PageLoader";
 
 export default function Address() {
   const navigate = useNavigate();
@@ -9,6 +10,8 @@ export default function Address() {
   const [selected, setSelected] = useState(null);
   const [manual, setManual] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [navigating, setNavigating] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -47,24 +50,34 @@ export default function Address() {
   }
 
   function continueWithSaved() {
-    if (!selected) { alert("Please select an address"); return; }
-    localStorage.setItem("deliveryAddress", JSON.stringify({
-      name: selected.fullName,
-      phone: selected.phone,
-      email: "",
-      address: selected.street,
-      city: selected.city,
-      state: selected.state,
-      pincode: selected.postalCode,
-    }));
-    navigate("/checkout/payment");
+    if (!selected) {
+      alert("Please select an address");
+      return;
+    }
+    setNavigating(true);
+    localStorage.setItem(
+      "deliveryAddress",
+      JSON.stringify({
+        name: selected.fullName,
+        phone: selected.phone,
+        email: "",
+        address: selected.street,
+        city: selected.city,
+        state: selected.state,
+        pincode: selected.postalCode,
+      }),
+    );
+    setTimeout(() => navigate("/checkout/payment"), 300);
   }
 
   function continueManual(e) {
     e.preventDefault();
+    setNavigating(true);
     localStorage.setItem("deliveryAddress", JSON.stringify(form));
-    navigate("/checkout/payment");
+    setTimeout(() => navigate("/checkout/payment"), 300);
   }
+
+  if (navigating) return <PageLoader />;
 
   // ── SKELETON while fetching ──────────────────────────────
   if (loading) {
@@ -82,7 +95,8 @@ export default function Address() {
     <div style={styles.page}>
       <h1 style={styles.heading}>Delivery Address</h1>
       <p style={styles.subtext}>
-        Please select or enter the address where you’d like your order delivered.
+        Please select or enter the address where you’d like your order
+        delivered.
       </p>
 
       {/* TRUST STRIP */}
@@ -103,13 +117,12 @@ export default function Address() {
               onClick={() => setSelected(a)}
               style={{
                 ...styles.addressCard,
-                border:
-                  selected === a
-                    ? "2px solid #111"
-                    : "1px solid #eee",
+                border: selected === a ? "2px solid #111" : "1px solid #eee",
               }}
             >
-              <p><b>{a.fullName}</b></p>
+              <p>
+                <b>{a.fullName}</b>
+              </p>
               <p>{a.street}</p>
               <p>
                 {a.city}, {a.state} – {a.postalCode}
@@ -122,10 +135,7 @@ export default function Address() {
             Continue to Payment
           </button>
 
-          <p
-            style={styles.link}
-            onClick={() => setManual(true)}
-          >
+          <p style={styles.link} onClick={() => setManual(true)}>
             + Add new address
           </p>
         </>

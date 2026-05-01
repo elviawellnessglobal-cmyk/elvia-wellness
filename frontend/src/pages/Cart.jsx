@@ -1,17 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useCart } from "../context/CartContext";
-
+import PageLoader from "../components/PageLoader";
 
 export default function Cart() {
   const navigate = useNavigate();
-  const {
-    cartItems,
-    increaseQty,
-    decreaseQty,
-    removeFromCart,
-    getCartTotal,
-  } = useCart();
+  const { cartItems, increaseQty, decreaseQty, removeFromCart, getCartTotal } =
+    useCart();
+
+  const [navigating, setNavigating] = useState(false);
+
+  if (navigating) return <PageLoader />;
 
   /* ---------------- EMPTY CART ---------------- */
   if (!cartItems || cartItems.length === 0) {
@@ -21,10 +20,7 @@ export default function Cart() {
         <p style={styles.emptyText}>
           Discover refined skincare crafted for modern elegance.
         </p>
-        <button
-          style={styles.backBtn}
-          onClick={() => navigate("/")}
-        >
+        <button style={styles.backBtn} onClick={() => navigate("/")}>
           Continue Shopping
         </button>
       </div>
@@ -34,104 +30,98 @@ export default function Cart() {
   /* ---------------- CART UI ---------------- */
   return (
     <>
-    <Helmet>
-  <title>Your Cart | KAEORN</title>
-  <meta
-    name="description"
-    content="Review your selected KAEORN perfumes and proceed to checkout securely."
-  />
-</Helmet>
-    <div style={styles.page}>
-      <h1 style={styles.heading}>Your Cart</h1>
+      <Helmet>
+        <title>Your Cart | KAEORN</title>
+        <meta
+          name="description"
+          content="Review your selected KAEORN perfumes and proceed to checkout securely."
+        />
+      </Helmet>
+      <div style={styles.page}>
+        <h1 style={styles.heading}>Your Cart</h1>
 
-      {/* ITEMS */}
-      <div style={styles.itemsWrap}>
-        {cartItems.map((item) => (
-          <div key={item.id} style={styles.card}>
-            <img
-              src={item.image}
-              alt={item.name}
-              style={styles.image}
-            />
+        {/* ITEMS */}
+        <div style={styles.itemsWrap}>
+          {cartItems.map((item) => (
+            <div key={item.id} style={styles.card}>
+              <img src={item.image} alt={item.name} style={styles.image} />
 
-            <div style={styles.details}>
-              <p style={styles.category}>SUN PROTECTION</p>
-              <h2 style={styles.title}>{item.name}</h2>
-              <p style={styles.price}>₹{item.price}</p>
+              <div style={styles.details}>
+                <p style={styles.category}>SUN PROTECTION</p>
+                <h2 style={styles.title}>{item.name}</h2>
+                <p style={styles.price}>₹{item.price}</p>
 
-              {/* QUANTITY */}
-              <div style={styles.qtyRow}>
+                {/* QUANTITY */}
+                <div style={styles.qtyRow}>
+                  <button
+                    style={styles.qtyBtn}
+                    onClick={() => decreaseQty(item.id)}
+                  >
+                    −
+                  </button>
+
+                  <span style={styles.qty}>{item.quantity}</span>
+
+                  <button
+                    style={styles.qtyBtn}
+                    onClick={() => increaseQty(item.id)}
+                  >
+                    +
+                  </button>
+                </div>
+
                 <button
-                  style={styles.qtyBtn}
-                  onClick={() => decreaseQty(item.id)}
+                  style={styles.removeBtn}
+                  onClick={() => removeFromCart(item.id)}
                 >
-                  −
-                </button>
-
-                <span style={styles.qty}>{item.quantity}</span>
-
-                <button
-                  style={styles.qtyBtn}
-                  onClick={() => increaseQty(item.id)}
-                >
-                  +
+                  Remove
                 </button>
               </div>
 
-              <button
-                style={styles.removeBtn}
-                onClick={() => removeFromCart(item.id)}
-              >
-                Remove
-              </button>
+              <p style={styles.itemTotal}>₹{item.price * item.quantity}</p>
             </div>
+          ))}
+        </div>
 
-            <p style={styles.itemTotal}>
-              ₹{item.price * item.quantity}
-            </p>
+        {/* OFFER CODE */}
+        <div style={styles.offerBox}>
+          <input placeholder="Enter offer code" style={styles.offerInput} />
+          <button style={styles.applyBtn}>Apply</button>
+        </div>
+
+        {/* SUMMARY */}
+        <div style={styles.summary}>
+          <div style={styles.row}>
+            <span>Subtotal</span>
+            <span>₹{getCartTotal()}</span>
           </div>
-        ))}
-      </div>
 
-      {/* OFFER CODE */}
-      <div style={styles.offerBox}>
-        <input
-          placeholder="Enter offer code"
-          style={styles.offerInput}
-        />
-        <button style={styles.applyBtn}>Apply</button>
-      </div>
+          <div style={styles.row}>
+            <span>Delivery</span>
+            <span>Free</span>
+          </div>
 
-      {/* SUMMARY */}
-      <div style={styles.summary}>
-        <div style={styles.row}>
-          <span>Subtotal</span>
-          <span>₹{getCartTotal()}</span>
+          <div style={styles.totalRow}>
+            <span>Total</span>
+            <span>₹{getCartTotal()}</span>
+          </div>
         </div>
 
-        <div style={styles.row}>
-          <span>Delivery</span>
-          <span>Free</span>
-        </div>
+        {/* CHECKOUT */}
+        <button
+          style={styles.checkoutBtn}
+          onClick={() => {
+            setNavigating(true);
+            setTimeout(() => navigate("/checkout/address"), 300);
+          }}
+        >
+          Proceed to Checkout
+        </button>
 
-        <div style={styles.totalRow}>
-          <span>Total</span>
-          <span>₹{getCartTotal()}</span>
-        </div>
+        <p style={styles.checkoutNote}>
+          Free shipping · Secure checkout · Easy returns
+        </p>
       </div>
-
-      {/* CHECKOUT */}
-      <button
-        style={styles.checkoutBtn}
-        onClick={() => navigate("/checkout/address")}
-      >
-        Proceed to Checkout
-      </button>
-
-      <p style={styles.checkoutNote}>
-        Free shipping · Secure checkout · Easy returns
-      </p>
-    </div>
     </>
   );
 }
