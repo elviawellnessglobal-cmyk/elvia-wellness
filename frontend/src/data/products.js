@@ -20,4 +20,18 @@ export const PRODUCTS = {
     image: "https://res.cloudinary.com/dvmntn6vf/image/upload/v1769081520/ChatGPT_Image_Jan_22_2026_05_01_01_PM_nzxsqv.png",
     category: "WOMEN · EAU DE PARFUM",
   },
+"/perfume/nox": {
+  id: "/perfume/nox",
+  name: "NOX",
+  price: 349,
+  image: "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777184309/ChatGPT_Image_Apr_26_2026_11_47_58_AM_dycgoa.png",
+  category: "UNISEX · PERFUME BALM",
+},
+"/perfume/velion": {
+  id: "/perfume/velion",
+  name: "VELION",
+  price: 349,
+  image: "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777636662/velion_home_xpbqlc.png",
+  category: "UNISEX · PERFUME BALM",
+},
 };
