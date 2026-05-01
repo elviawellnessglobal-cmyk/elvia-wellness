@@ -22,28 +22,24 @@ function signToken(user) {
    SEND OTP (LOGIN)
    POST /api/auth/forgot-password
 ===================================================== */
-router.post("/forgot-password", async (req, res) => {
+router.post("/request-otp", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ message: "Email required" });
-    }
+    if (!email) return res.status(400).json({ message: "Email required" });
 
     const otp = generateOTP();
     const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
-    let user = await User.findOne({ email });
-    if (!user) {
-      user = await User.create({ email });
-    }
+    await User.findOneAndUpdate(
+      { email },
+      { otp, otpExpiry: expiry },
+      { upsert: true }
+    );
 
-    user.otp = otp;
-    user.otpExpiry = expiry;
-    await user.save();
-
-    await sendOTPEmail(email, otp);
-
+    // ✅ Respond instantly, send email in background
     res.json({ success: true });
+    sendOTPEmail(email, otp).catch((err) => console.error("Email failed:", err));
+
   } catch (err) {
     console.error("Send OTP error:", err);
     res.status(500).json({ message: "Unable to send code" });
@@ -58,29 +54,19 @@ router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    const user = await User.findOne({ email });
-    if (
-      !user ||
-      user.otp !== otp ||
-      !user.otpExpiry ||
-      user.otpExpiry < new Date()
-    ) {
-      return res.status(400).json({ message: "Invalid or expired code" });
-    }
+    const user = await User.findOneAndUpdate(
+      { email, otp, otpExpiry: { $gt: new Date() } },
+      { $set: { otp: null, otpExpiry: null } },
+      { new: true }
+    );
 
-    user.otp = null;
-    user.otpExpiry = null;
-    await user.save();
-
-    const token = signToken(user);
+    if (!user) return res.status(400).json({ message: "Invalid or expired code" });
 
     res.json({
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-      },
+      token: signToken(user),
+      user: { id: user._id, email: user.email },
     });
+
   } catch (err) {
     console.error("Verify OTP error:", err);
     res.status(500).json({ message: "Verification failed" });
