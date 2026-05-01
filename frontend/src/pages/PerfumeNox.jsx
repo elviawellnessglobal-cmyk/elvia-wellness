@@ -7,7 +7,7 @@ import AuthModal from "../components/AuthModal";
 
 /* ── IMAGES ── */
 const images = [
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,c_fill,w_600,h_800/v1777185696/ChatGPT_Image_Apr_26_2026_12_11_20_PM_uecc1c.png",
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777184309/ChatGPT_Image_Apr_26_2026_11_47_58_AM_dycgoa.png",
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,c_fill,w_600,h_800/v1777185626/ChatGPT_Image_Apr_26_2026_12_09_25_PM_bymqrv.png",
   "https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,c_fill,w_600,h_800/v1777185033/ChatGPT_Image_Apr_26_2026_12_00_12_PM_m6olby.png",
   "https://res.cloudinary.com/dhh2i1soo/image/upload/v1777625787/nox_how_to_use_bfd291.png",
