@@ -37,7 +37,11 @@ const NOTES = [
 const REVIEWS = [
   { stars: 5, name: "Arjun, Delhi", text: "Feels expensive and composed." },
   { stars: 5, name: "Karan, Mumbai", text: "People asked what I was wearing." },
-  { stars: 4, name: "Raghav, Bangalore", text: "Perfect for office and evenings." },
+  {
+    stars: 4,
+    name: "Raghav, Bangalore",
+    text: "Perfect for office and evenings.",
+  },
 ];
 
 /* ── ACCORDION — unified API: id / open / setOpen ── */
@@ -67,6 +71,18 @@ export default function PerfumeSoftSkin() {
   const [added, setAdded] = useState(false);
   const [open, setOpen] = useState("description");
 
+  const galleryRef = useRef(null);
+  const [currentImage, setCurrentImage] = useState(0);
+
+  function goTo(n) {
+    const idx = (n + galleryImages.length) % galleryImages.length;
+    setCurrentImage(idx);
+    galleryRef.current?.scrollTo({
+      left: idx * galleryRef.current.offsetWidth,
+      behavior: "smooth",
+    });
+  }
+
   const originalPrice = 1499;
   const price = 1399;
   const discount = Math.round(((originalPrice - price) / originalPrice) * 100);
@@ -74,7 +90,7 @@ export default function PerfumeSoftSkin() {
   useEffect(() => {
     const io = new IntersectionObserver(
       ([e]) => e.isIntersecting && setVisible(true),
-      { threshold: 0.25 }
+      { threshold: 0.25 },
     );
     if (sectionRef.current) io.observe(sectionRef.current);
     return () => io.disconnect();
@@ -107,16 +123,32 @@ export default function PerfumeSoftSkin() {
           content="THÉ NOIR by Kaeorn — a woody, aromatic men's Eau de Parfum with notes of Apple, Lavender, and Tonka Bean. Quiet luxury, made in India. ₹1,199."
         />
         <link rel="canonical" href="https://www.kaeorn.com/perfume/soft-skin" />
-        <meta property="og:title" content="THÉ NOIR — Men's Eau de Parfum | KAEORN" />
-        <meta property="og:description" content="A woody, aromatic fragrance with Apple, Lavender & Tonka Bean. Refined, intimate, made in India. ₹1,199." />
-        <meta property="og:image" content="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775277347/ChatGPT_Image_Apr_4_2026_10_05_23_AM_heqntp.png" />
-        <meta property="og:url" content="https://www.kaeorn.com/perfume/soft-skin" />
+        <meta
+          property="og:title"
+          content="THÉ NOIR — Men's Eau de Parfum | KAEORN"
+        />
+        <meta
+          property="og:description"
+          content="A woody, aromatic fragrance with Apple, Lavender & Tonka Bean. Refined, intimate, made in India. ₹1,199."
+        />
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775277347/ChatGPT_Image_Apr_4_2026_10_05_23_AM_heqntp.png"
+        />
+        <meta
+          property="og:url"
+          content="https://www.kaeorn.com/perfume/soft-skin"
+        />
         <meta property="og:type" content="product" />
       </Helmet>
 
       {authType && (
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
+
+      <style>{`
+  .gallery-scroll::-webkit-scrollbar { display: none; }
+`}</style>
 
       <section
         ref={sectionRef}
@@ -127,16 +159,69 @@ export default function PerfumeSoftSkin() {
         }}
       >
         {/* ── GALLERY ── */}
-        <div style={styles.gallery}>
-          {galleryImages.map((img, i) => (
-            <div key={i} style={styles.imageSlide}>
-              <img
-                src={img}
-                alt={`KAEORN THÉ NOIR Men Eau de Parfum — view ${i + 1}`}
-                style={styles.galleryImage}
+        <div style={styles.galleryWrap}>
+          <div
+            ref={galleryRef}
+            className="gallery-scroll"
+            style={styles.gallery}
+            onScroll={(e) => {
+              const idx = Math.round(
+                e.target.scrollLeft / e.target.offsetWidth,
+              );
+              setCurrentImage(idx);
+            }}
+          >
+            {galleryImages.map((img, i) => (
+              <div key={i} style={styles.imageSlide}>
+                <img
+                  src={img}
+                  alt={`THÉ NOIR Men Eau de Parfum by KAEORN — view ${i + 1}`}
+                  style={styles.galleryImage}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button style={styles.navBtn} onClick={() => goTo(currentImage - 1)}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M9 2L4 7L9 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-            </div>
-          ))}
+            </svg>
+          </button>
+
+          <button
+            style={{ ...styles.navBtn, left: "auto", right: 16 }}
+            onClick={() => goTo(currentImage + 1)}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M5 2L10 7L5 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <div style={styles.dots}>
+            {galleryImages.map((_, i) => (
+              <div
+                key={i}
+                onClick={() => goTo(i)}
+                style={{
+                  ...styles.dot,
+                  width: i === currentImage ? 20 : 6,
+                  background: i === currentImage ? "#111" : "rgba(0,0,0,0.25)",
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* ── DETAILS ── */}
@@ -148,7 +233,6 @@ export default function PerfumeSoftSkin() {
         >
           <div style={styles.overlay} />
           <div style={styles.content}>
-
             <p style={styles.category}>MEN · EAU DE PARFUM</p>
             <h1 style={styles.title}>THÉ NOIR</h1>
             <span style={styles.volume}>100 ml</span>
@@ -156,7 +240,7 @@ export default function PerfumeSoftSkin() {
             <button style={styles.readMore} onClick={scrollToDesc}>
               Read more about this fragrance
             </button>
-{/* 
+            {/* 
             <div style={styles.sale}>LAUNCH SALE</div> */}
 
             <div style={styles.priceRow}>
@@ -166,9 +250,9 @@ export default function PerfumeSoftSkin() {
             </div>
 
             <p style={styles.shortDesc}>
-              Presence without announcement. THÉ NOIR is a woody, aromatic
-              men's scent built to stay close to skin — composed, modern,
-              and quietly unforgettable.
+              Presence without announcement. THÉ NOIR is a woody, aromatic men's
+              scent built to stay close to skin — composed, modern, and quietly
+              unforgettable.
             </p>
 
             <div style={styles.cta}>
@@ -185,18 +269,27 @@ export default function PerfumeSoftSkin() {
 
             {/* ── ACCORDIONS ── */}
             <div ref={descRef} style={styles.accordions}>
-
-              <Accordion title="DESCRIPTION" id="description" open={open} setOpen={setOpen}>
+              <Accordion
+                title="DESCRIPTION"
+                id="description"
+                open={open}
+                setOpen={setOpen}
+              >
                 THÉ NOIR opens with a crisp, clean clarity — Apple cutting
                 through with a freshness that's refined, not playful. Lavender
                 brings a composed, almost architectural calm to the heart. Then
                 Tonka Bean settles everything into a smooth, warm finish that
-                sits close to the skin. This is a scent discovered up close.
-                It doesn't project — it lingers. Masculine without trying,
-                modern without effort.
+                sits close to the skin. This is a scent discovered up close. It
+                doesn't project — it lingers. Masculine without trying, modern
+                without effort.
               </Accordion>
 
-              <Accordion title="HOW IT MAKES YOU FEEL" id="feel" open={open} setOpen={setOpen}>
+              <Accordion
+                title="HOW IT MAKES YOU FEEL"
+                id="feel"
+                open={open}
+                setOpen={setOpen}
+              >
                 Calm confidence. The kind that doesn't need a room to notice.
                 THÉ NOIR makes you feel grounded and put together — not because
                 of what it says, but because of what it doesn't. Quiet control.
@@ -215,27 +308,43 @@ export default function PerfumeSoftSkin() {
                 </div>
               </Accordion>
 
-              <Accordion title="PERFORMANCE" id="performance" open={open} setOpen={setOpen}>
-                THÉ NOIR is an Eau de Parfum built for intimacy, not
-                projection. On skin, it lasts 8–10 hours with a refined,
-                skin-close sillage. The kind of scent that makes people lean in,
-                not step back. It evolves slowly through the day — fresh at
-                first, warm by evening.
+              <Accordion
+                title="PERFORMANCE"
+                id="performance"
+                open={open}
+                setOpen={setOpen}
+              >
+                THÉ NOIR is an Eau de Parfum built for intimacy, not projection.
+                On skin, it lasts 8–10 hours with a refined, skin-close sillage.
+                The kind of scent that makes people lean in, not step back. It
+                evolves slowly through the day — fresh at first, warm by
+                evening.
               </Accordion>
 
-              <Accordion title="HOW TO APPLY" id="apply" open={open} setOpen={setOpen}>
+              <Accordion
+                title="HOW TO APPLY"
+                id="apply"
+                open={open}
+                setOpen={setOpen}
+              >
                 Apply 2–4 sprays to clean, moisturized skin. Focus on pulse
-                points — neck, wrists, collarbone. Don't rub after spraying.
-                Let it settle and develop with your body heat for the smoothest,
+                points — neck, wrists, collarbone. Don't rub after spraying. Let
+                it settle and develop with your body heat for the smoothest,
                 longest-lasting result.
               </Accordion>
 
-              <Accordion title="REVIEWS" id="reviews" open={open} setOpen={setOpen}>
+              <Accordion
+                title="REVIEWS"
+                id="reviews"
+                open={open}
+                setOpen={setOpen}
+              >
                 <div style={styles.reviewsWrap}>
                   {REVIEWS.map((r, i) => (
                     <div key={i} style={styles.reviewItem}>
                       <div style={styles.reviewStars}>
-                        {"★".repeat(r.stars)}{"☆".repeat(5 - r.stars)}
+                        {"★".repeat(r.stars)}
+                        {"☆".repeat(5 - r.stars)}
                       </div>
                       <p style={styles.reviewText}>"{r.text}"</p>
                       <span style={styles.reviewName}>— {r.name}</span>
@@ -244,13 +353,17 @@ export default function PerfumeSoftSkin() {
                 </div>
               </Accordion>
 
-              <Accordion title="KAEORN PHILOSOPHY" id="brand" open={open} setOpen={setOpen}>
+              <Accordion
+                title="KAEORN PHILOSOPHY"
+                id="brand"
+                open={open}
+                setOpen={setOpen}
+              >
                 Kaeorn was built on the belief that luxury should feel
-                effortless, not loud. Every fragrance is designed to enhance
-                who you already are — not to make a statement, but to leave
-                an impression. Quiet. Intentional. Made in India, for the world.
+                effortless, not loud. Every fragrance is designed to enhance who
+                you already are — not to make a statement, but to leave an
+                impression. Quiet. Intentional. Made in India, for the world.
               </Accordion>
-
             </div>
           </div>
         </div>
@@ -271,13 +384,51 @@ const styles = {
     fontFamily: "Inter, sans-serif",
     transition: "all .8s ease",
   },
+  // REPLACE gallery with:
   gallery: {
-    flex: 1,
-    minWidth: 320,
     display: "flex",
     overflowX: "auto",
-    gap: 20,
     scrollSnapType: "x mandatory",
+    scrollbarWidth: "none",
+  },
+
+  // ADD these four:
+  galleryWrap: {
+    flex: 1,
+    minWidth: 320,
+    position: "relative",
+    borderRadius: 26,
+    overflow: "hidden",
+  },
+  navBtn: {
+    position: "absolute",
+    left: 16,
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 40,
+    height: 40,
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.85)",
+    border: "0.5px solid rgba(0,0,0,0.1)",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2,
+  },
+  dots: {
+    position: "absolute",
+    bottom: 18,
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    gap: 6,
+  },
+  dot: {
+    height: 6,
+    borderRadius: 3,
+    cursor: "pointer",
+    transition: "all 0.3s ease",
   },
   imageSlide: { minWidth: "100%", scrollSnapAlign: "center" },
   galleryImage: {
@@ -331,7 +482,12 @@ const styles = {
     letterSpacing: 2,
     marginBottom: 14,
   },
-  priceRow: { display: "flex", gap: 14, margin: "0 0 16px", alignItems: "center" },
+  priceRow: {
+    display: "flex",
+    gap: 14,
+    margin: "0 0 16px",
+    alignItems: "center",
+  },
   price: { fontSize: 28, fontWeight: 500 },
   strike: { textDecoration: "line-through", color: "#888" },
   off: { color: "#c62828", fontSize: 13 },
@@ -398,9 +554,19 @@ const styles = {
     fontStyle: "italic",
     textAlign: "center",
   },
-  reviewsWrap: { display: "flex", flexDirection: "column", gap: 20, marginTop: 4 },
+  reviewsWrap: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 20,
+    marginTop: 4,
+  },
   reviewItem: { borderLeft: "2px solid #eee", paddingLeft: 14 },
-  reviewStars: { color: "#c9a96e", fontSize: 13, letterSpacing: 2, marginBottom: 4 },
+  reviewStars: {
+    color: "#c9a96e",
+    fontSize: 13,
+    letterSpacing: 2,
+    marginBottom: 4,
+  },
   reviewText: {
     fontSize: 14.5,
     color: "#444",

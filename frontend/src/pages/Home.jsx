@@ -428,7 +428,7 @@ export default function Home() {
             </div>
             <div className="about-stats">
               <div ref={addReveal} className="stat reveal">
-                <div className="stat-n">3</div>
+                <div className="stat-n">5</div>
                 <div className="stat-l">Fragrances Crafted</div>
               </div>
               <div ref={addReveal} className="stat reveal reveal-delay-1">
