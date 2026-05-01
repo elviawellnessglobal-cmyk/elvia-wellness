@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
 import { useCallback } from "react";
+import NewArrivals from "../components/NewArrivals";
 
 /* ── PRODUCT IMAGES ── */
 const softSkinImg =
@@ -308,6 +309,15 @@ export default function Home() {
           </div>
         </div>
 
+        {/*-- NEW COLLECTION --*/}
+        <NewArrivals
+          navigate={navigate}
+          addReveal={addReveal}
+          user={user}
+          addToCart={addToCart}
+          setShowAuth={setShowAuth}
+        />
+
         {/* ── COLLECTION ── */}
         <section style={styles.perfumeSection} id="collection">
           <div ref={addReveal} className="reveal">
@@ -422,7 +432,7 @@ export default function Home() {
                 <div className="stat-l">Fragrances Crafted</div>
               </div>
               <div ref={addReveal} className="stat reveal reveal-delay-1">
-                <div className="stat-n">21</div>
+                <div className="stat-n">30</div>
                 <div className="stat-l">Happy Wearers</div>
               </div>
               <div ref={addReveal} className="stat reveal reveal-delay-2">
