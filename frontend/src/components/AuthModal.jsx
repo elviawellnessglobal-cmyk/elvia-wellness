@@ -13,15 +13,16 @@ export default function AuthModal({ onClose }) {
 
   async function handleSendOTP(e) {
     e.preventDefault();
+    setStep("otp");
+    startTimer();
     setLoading(true);
     setError("");
 
     try {
       await requestOTP(email);
-      setStep("otp");
-      startTimer();
     } catch {
       setError("Unable to send code");
+      setStep("email");
     } finally {
       setLoading(false);
     }
@@ -58,7 +59,9 @@ export default function AuthModal({ onClose }) {
   return (
     <div style={styles.overlay}>
       <div style={styles.card}>
-        <button onClick={onClose} style={styles.close}>×</button>
+        <button onClick={onClose} style={styles.close}>
+          ×
+        </button>
 
         <h2 style={styles.title}>
           {step === "email" ? "Welcome to KAEORN" : "Enter verification code"}
@@ -82,7 +85,7 @@ export default function AuthModal({ onClose }) {
             />
             {error && <p style={styles.error}>{error}</p>}
             <button style={styles.button} disabled={loading}>
-              {loading ? "Sending…" : "Continue"}
+              {loading ? "Sending… ✉️" : "Continue"}
             </button>
           </form>
         ) : (
@@ -105,7 +108,11 @@ export default function AuthModal({ onClose }) {
               {timer > 0 ? (
                 <span>Resend in {timer}s</span>
               ) : (
-                <button type="button" onClick={handleSendOTP} style={styles.resendBtn}>
+                <button
+                  type="button"
+                  onClick={handleSendOTP}
+                  style={styles.resendBtn}
+                >
                   Resend code
                 </button>
               )}

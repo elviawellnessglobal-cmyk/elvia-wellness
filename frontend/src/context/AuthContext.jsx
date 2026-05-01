@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
   /* SEND OTP */
   async function requestOTP(email) {
     const res = await fetch(
-      `${import.meta.env.VITE_API_BASE}/api/auth/forgot-password`,
+      `${import.meta.env.VITE_API_BASE}/api/auth/request-otp`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -20,7 +20,6 @@ import OrderDetail from "./pages/OrderDetail";
 import Account from "./pages/Account";
 import AddressBook from "./pages/AddressBook";
 import Support from "./pages/Support";
-import ResetPassword from "./pages/ResetPassword";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
@@ -179,7 +178,6 @@ function AppRoot() {
           <Route path="/shipping" element={<Shipping />} />
 
           {/* ── AUTH ── */}
-          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/success" element={<Success />} />
 
           {/* ── USER (protected) ── */}
