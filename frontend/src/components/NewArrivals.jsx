@@ -53,17 +53,28 @@ const PRODUCTS = [
   },
 ];
 
-function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index, addReveal }) {
+function ArrivalCard({
+  product,
+  navigate,
+  addToCart,
+  user,
+  setShowAuth,
+  index,
+  addReveal,
+}) {
   const [added, setAdded] = useState(false);
   const cardRef = useRef(null);
 
   useEffect(() => {
-    if (cardRef.current && addReveal) addReveal(cardRef.current);
+    if (cardRef.current) addReveal(cardRef.current);
   }, []);
 
   function handleAdd(e) {
     e.stopPropagation();
-    if (!user) { setShowAuth(true); return; }
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
     addToCart(product.route);
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
@@ -79,7 +90,7 @@ function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index, a
         flexDirection: isRight ? "row-reverse" : "row",
         animationDelay: `${index * 0.15}s`,
       }}
-      className="na-card"
+      className="na-card reveal"
     >
       {/* ── IMAGE ── */}
       <div style={cardStyles.imageCol}>
@@ -103,21 +114,36 @@ function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index, a
           <div style={cardStyles.imgOverlay} className="na-img-overlay" />
 
           {/* floating info chip */}
-          <div style={{ ...cardStyles.chip, borderColor: product.accent + "55" }}>
+          <div
+            style={{ ...cardStyles.chip, borderColor: product.accent + "55" }}
+          >
             <span style={cardStyles.chipLabel}>{product.gender}</span>
-            <span style={{ ...cardStyles.chipDot, background: product.accent }} />
+            <span
+              style={{ ...cardStyles.chipDot, background: product.accent }}
+            />
             <span style={cardStyles.chipLabel}>{product.size}</span>
           </div>
 
           {/* new badge */}
-          <div style={{ ...cardStyles.newBadge, background: product.accent, color: product.accentText }}>
+          <div
+            style={{
+              ...cardStyles.newBadge,
+              background: product.accent,
+              color: product.accentText,
+            }}
+          >
             {product.tag}
           </div>
         </div>
       </div>
 
       {/* ── COPY ── */}
-      <div style={{ ...cardStyles.copyCol, alignItems: isRight ? "flex-end" : "flex-start" }}>
+      <div
+        style={{
+          ...cardStyles.copyCol,
+          alignItems: isRight ? "flex-end" : "flex-start",
+        }}
+      >
         <p style={cardStyles.eyebrow}>Solid Balm · New Arrival</p>
 
         <h2 style={cardStyles.name}>{product.name}</h2>
@@ -126,12 +152,19 @@ function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index, a
           {product.character}
         </p>
 
-        <p style={{ ...cardStyles.desc, textAlign: isRight ? "right" : "left" }}>
+        <p
+          style={{ ...cardStyles.desc, textAlign: isRight ? "right" : "left" }}
+        >
           {product.desc}
         </p>
 
         {/* notes */}
-        <div style={{ ...cardStyles.notes, justifyContent: isRight ? "flex-end" : "flex-start" }}>
+        <div
+          style={{
+            ...cardStyles.notes,
+            justifyContent: isRight ? "flex-end" : "flex-start",
+          }}
+        >
           {product.notes.map((n) => (
             <span key={n} style={cardStyles.notePill}>
               {n}
@@ -168,14 +201,19 @@ function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index, a
   );
 }
 
-export default function NewArrivals({ navigate, addReveal, user, addToCart, setShowAuth }) {
+export default function NewArrivals({
+  navigate,
+  addReveal,
+  user,
+  addToCart,
+  setShowAuth,
+}) {
   const sectionRef = useRef(null);
 
   return (
     <>
       <style>{css}</style>
       <section style={sectionStyles.section} ref={sectionRef} id="new-arrivals">
-
         {/* ── HEADER ── */}
         <div style={sectionStyles.header}>
           <div style={sectionStyles.headerLeft}>
@@ -218,7 +256,6 @@ export default function NewArrivals({ navigate, addReveal, user, addToCart, setS
             />
           ))}
         </div>
-
       </section>
     </>
   );
@@ -321,10 +358,10 @@ const cardStyles = {
   imageFrame: {
     position: "relative",
     width: "100%",
-    paddingBottom: "133.33%",   /* 4/3 = 133.33% → enforces 3:4 ratio */
+    paddingBottom: "133.33%" /* 4/3 = 133.33% → enforces 3:4 ratio */,
     overflow: "hidden",
     cursor: "pointer",
-    backgroundColor: "#f5f0eb", /* neutral placeholder while image loads */
+    backgroundColor: "#f5f0eb" /* neutral placeholder while image loads */,
   },
   img: {
     position: "absolute",
@@ -334,13 +371,15 @@ const cardStyles = {
     height: "100%",
     objectFit: "cover",
     display: "block",
-    transition: "transform 1.1s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.5s ease",
+    transition:
+      "transform 1.1s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.5s ease",
     filter: "saturate(0.9) contrast(1.03)",
   },
   imgOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(to top, rgba(13,12,11,0.45) 0%, transparent 50%)",
+    background:
+      "linear-gradient(to top, rgba(13,12,11,0.45) 0%, transparent 50%)",
     opacity: 0,
     transition: "opacity 0.4s",
     zIndex: 1,
@@ -493,16 +532,6 @@ const cardStyles = {
 
 /* ── SCOPED CSS ── */
 const css = `
-  .na-card {
-    opacity: 0;
-    transform: translateY(32px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  .na-card.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
   /* FIX: corrected class selectors to match actual className props */
   .na-img-frame:hover .na-img {
     transform: scale(1.05);
