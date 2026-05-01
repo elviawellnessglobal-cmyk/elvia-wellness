@@ -14,7 +14,7 @@ const images = [
 ];
 
 const bg =
-  "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=60";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1770669629/dc9fb4aaf164ae5f44160471f5eb9a7b_hmhsw6.jpg";
 
 const NOTES = [
   {
