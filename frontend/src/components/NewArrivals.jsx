@@ -53,9 +53,13 @@ const PRODUCTS = [
   },
 ];
 
-function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index }) {
+function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index, addReveal }) {
   const [added, setAdded] = useState(false);
   const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (cardRef.current && addReveal) addReveal(cardRef.current);
+  }, []);
 
   function handleAdd(e) {
     e.stopPropagation();
@@ -167,14 +171,6 @@ function ArrivalCard({ product, navigate, addToCart, user, setShowAuth, index })
 export default function NewArrivals({ navigate, addReveal, user, addToCart, setShowAuth }) {
   const sectionRef = useRef(null);
 
-  useEffect(() => {
-    if (!sectionRef.current) return;
-    const els = sectionRef.current.querySelectorAll(".na-card");
-    if (addReveal) {
-      els.forEach((el) => addReveal(el));
-    }
-  }, [addReveal]);
-
   return (
     <>
       <style>{css}</style>
@@ -218,6 +214,7 @@ export default function NewArrivals({ navigate, addReveal, user, addToCart, setS
               addToCart={addToCart}
               user={user}
               setShowAuth={setShowAuth}
+              addReveal={addReveal}
             />
           ))}
         </div>
