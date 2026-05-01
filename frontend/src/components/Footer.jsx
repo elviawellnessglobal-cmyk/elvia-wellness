@@ -60,6 +60,8 @@ export default function Footer() {
               <span className="link" onClick={() => navigate("/perfume/soft-skin")}>Thé Noir Men</span>
               <span className="link" onClick={() => navigate("/perfume/quiet-woods")}>Soié Femme</span>
               <span className="link" onClick={() => navigate("/perfume/morning-veil")}>Veil</span>
+              <span className="link" onClick={() => navigate("/perfume/nox")}>Nox</span>
+              <span className="link" onClick={() => navigate("/perfume/velion")}>Velion</span>
             </div>
             <div className="footer-col reveal">
               <h4>Brand</h4>

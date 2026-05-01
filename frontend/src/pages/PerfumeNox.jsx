@@ -79,6 +79,7 @@ export default function PerfumeNox() {
   }, []);
 
   const price = 349;
+  const originalPrice = 499;
 
   function handleOrderNow() {
     if (!user) { setAuthType("login"); return; }
@@ -116,6 +117,8 @@ export default function PerfumeNox() {
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
 
+      <style>{css}</style>
+
       <section
         ref={productRef}
         style={{
@@ -150,8 +153,18 @@ export default function PerfumeNox() {
             <h1 style={styles.productTitle}>NOX</h1>
             <span style={styles.volume}>10 g</span>
 
+            {/* ── SALE BANNER ── */}
+            <div style={styles.saleBanner}>
+              <span style={styles.saleBannerDot} />
+              <span style={styles.saleBannerText}>New Arrival Sale · Limited Period</span>
+              <span style={styles.saleBannerDot} />
+            </div>
+
+            {/* ── PRICE BLOCK ── */}
             <div style={styles.priceWrap}>
               <span style={styles.price}>₹{price}</span>
+              <span style={styles.originalPrice}>₹{originalPrice}</span>
+              <span style={styles.saveBadge}>30% OFF</span>
             </div>
 
             <p style={styles.subtitle}>
@@ -248,6 +261,17 @@ export default function PerfumeNox() {
   );
 }
 
+/* ── SCOPED CSS ── */
+const css = `
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .nox-sale-banner {
+    animation: slideIn 0.5s ease forwards;
+  }
+`;
+
 /* ── STYLES ── */
 const styles = {
   productSection: {
@@ -301,8 +325,64 @@ const styles = {
     display: "block",
     marginBottom: "16px",
   },
-  priceWrap: { display: "flex", gap: 12, alignItems: "center", marginBottom: 16 },
-  price: { fontSize: 28, fontWeight: 500 },
+
+  /* ── SALE BANNER ── */
+  saleBanner: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "#b91c1c",
+    padding: "8px 16px",
+    marginBottom: "18px",
+    fontFamily: "'DM Mono', monospace",
+  },
+  saleBannerText: {
+    fontSize: "0.58rem",
+    letterSpacing: "0.2em",
+    textTransform: "uppercase",
+    color: "#fff",
+  },
+  saleBannerDot: {
+    display: "inline-block",
+    width: "4px",
+    height: "4px",
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.5)",
+    flexShrink: 0,
+  },
+
+  /* ── PRICE ── */
+  priceWrap: {
+    display: "flex",
+    gap: 12,
+    alignItems: "baseline",
+    marginBottom: 16,
+    flexWrap: "wrap",
+  },
+  price: {
+    fontSize: 28,
+    fontWeight: 500,
+    color: "#b91c1c",
+    fontFamily: "'Cormorant Garamond', serif",
+  },
+  originalPrice: {
+    fontSize: 18,
+    fontWeight: 400,
+    color: "#aaa",
+    textDecoration: "line-through",
+    fontFamily: "'Cormorant Garamond', serif",
+  },
+  saveBadge: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: "8px",
+    letterSpacing: "0.18em",
+    textTransform: "uppercase",
+    background: "#b91c1c",
+    color: "#fff",
+    padding: "4px 10px",
+    alignSelf: "center",
+  },
+
   subtitle: { fontSize: 15.5, color: "#555", lineHeight: 1.85 },
   ctaRow: { display: "flex", gap: 16, marginTop: 20 },
   buyButton: {

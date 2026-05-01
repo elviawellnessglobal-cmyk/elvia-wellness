@@ -28,12 +28,13 @@ const PRODUCTS = [
     notes: ["Rare Oud Wood", "Sandalwood", "Chinese Pepper"],
     desc: "Built around rare oud wood — deep, intimate, and made to stay close to the skin. No projection. Just presence.",
     price: "₹349",
+    originalPrice: "₹499",
     size: "10 g",
     gender: "Unisex",
     img: NOX_IMG,
     accent: "#c9a96e",
     accentText: "#0d0c0b",
-    tag: "New",
+    tag: "Sale",
   },
   {
     id: "velion",
@@ -44,12 +45,13 @@ const PRODUCTS = [
     notes: ["Exotic Saffron", "Radiant Cedar", "Golden Amber"],
     desc: "An ode to radiant warmth — sheer florals lifted by amberwood and saffron. Inspired by the world's most coveted crystals.",
     price: "₹349",
+    originalPrice: "₹499",
     size: "10 g",
     gender: "Unisex",
     img: VELION_IMG,
     accent: "#c9a96e",
     accentText: "#1a0f0a",
-    tag: "New",
+    tag: "Sale",
   },
 ];
 
@@ -94,12 +96,6 @@ function ArrivalCard({
     >
       {/* ── IMAGE ── */}
       <div style={cardStyles.imageCol}>
-        {/*
-          FIX: imageFrame now has explicit width + height via paddingBottom trick
-          (aspect-ratio has inconsistent support in older Safari).
-          The img is absolutely positioned to fill the frame, ensuring both
-          cards render identical box dimensions regardless of source image size.
-        */}
         <div
           style={cardStyles.imageFrame}
           className="na-img-frame"
@@ -124,14 +120,8 @@ function ArrivalCard({
             <span style={cardStyles.chipLabel}>{product.size}</span>
           </div>
 
-          {/* new badge */}
-          <div
-            style={{
-              ...cardStyles.newBadge,
-              background: product.accent,
-              color: product.accentText,
-            }}
-          >
+          {/* sale badge */}
+          <div style={cardStyles.newBadge}>
             {product.tag}
           </div>
         </div>
@@ -144,6 +134,7 @@ function ArrivalCard({
           alignItems: isRight ? "flex-end" : "flex-start",
         }}
       >
+        {/* eyebrow */}
         <p style={cardStyles.eyebrow}>Solid Balm · New Arrival</p>
 
         <h2 style={cardStyles.name}>{product.name}</h2>
@@ -172,11 +163,27 @@ function ArrivalCard({
           ))}
         </div>
 
+        {/* ── SALE BANNER ── */}
+        <div style={{
+          ...cardStyles.saleBanner,
+          alignSelf: isRight ? "flex-end" : "flex-start",
+        }}>
+          <span style={cardStyles.saleBannerDot} />
+          <span style={cardStyles.saleBannerText}>New Arrival Sale · Limited Period</span>
+          <span style={cardStyles.saleBannerDot} />
+        </div>
+
         {/* price + cta */}
         <div style={cardStyles.footer}>
           <div>
             <p style={cardStyles.priceLabel}>Balm · 10 g</p>
-            <p style={cardStyles.price}>{product.price}</p>
+            <div
+              style={{ display: "flex", alignItems: "baseline", gap: "10px" }}
+            >
+              <p style={cardStyles.price}>{product.price}</p>
+              <p style={cardStyles.originalPrice}>{product.originalPrice}</p>
+              <span style={cardStyles.saveBadge}>30% OFF</span>
+            </div>
           </div>
           <div style={cardStyles.ctaRow}>
             <button
@@ -349,19 +356,13 @@ const cardStyles = {
     flex: "0 0 auto",
     width: "clamp(260px, 40vw, 460px)",
   },
-  /*
-    FIX: Use position:relative + paddingBottom to create a locked 3:4 box.
-    The img is absolutely positioned to fill it entirely.
-    This guarantees both cards are pixel-identical in size regardless of the
-    natural dimensions or focal point of the source image.
-  */
   imageFrame: {
     position: "relative",
     width: "100%",
-    paddingBottom: "133.33%" /* 4/3 = 133.33% → enforces 3:4 ratio */,
+    paddingBottom: "133.33%",
     overflow: "hidden",
     cursor: "pointer",
-    backgroundColor: "#f5f0eb" /* neutral placeholder while image loads */,
+    backgroundColor: "#f5f0eb",
   },
   img: {
     position: "absolute",
@@ -420,6 +421,8 @@ const cardStyles = {
     textTransform: "uppercase",
     padding: "6px 12px",
     zIndex: 2,
+    background: "#b91c1c",
+    color: "#fff",
   },
   copyCol: {
     flex: 1,
@@ -464,7 +467,7 @@ const cardStyles = {
     display: "flex",
     flexWrap: "wrap",
     gap: "8px",
-    marginBottom: "2.8rem",
+    marginBottom: "1.6rem",
     color: "rgb(201, 169, 110)",
   },
   notePill: {
@@ -475,6 +478,30 @@ const cardStyles = {
     padding: "6px 14px",
     border: "1px solid var(--border, #ddd)",
     color: "var(--ink, #333)",
+  },
+  /* ── SALE BANNER ── */
+  saleBanner: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "#b91c1c",
+    padding: "8px 16px",
+    marginBottom: "2rem",
+  },
+  saleBannerText: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: "0.58rem",
+    letterSpacing: "0.2em",
+    textTransform: "uppercase",
+    color: "#fff",
+  },
+  saleBannerDot: {
+    display: "inline-block",
+    width: "4px",
+    height: "4px",
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.5)",
+    flexShrink: 0,
   },
   footer: {
     display: "flex",
@@ -497,8 +524,26 @@ const cardStyles = {
     fontFamily: "'Cormorant Garamond', serif",
     fontSize: "2.2rem",
     fontWeight: 300,
-    color: "var(--ink, #0d0c0b)",
+    color: "#b91c1c",
     lineHeight: 1,
+  },
+  originalPrice: {
+    fontFamily: "'Cormorant Garamond', serif",
+    fontSize: "1.3rem",
+    fontWeight: 300,
+    color: "var(--muted, #aaa)",
+    lineHeight: 1,
+    textDecoration: "line-through",
+  },
+  saveBadge: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: "8px",
+    letterSpacing: "0.18em",
+    textTransform: "uppercase",
+    background: "#b91c1c",
+    color: "#fff",
+    padding: "4px 10px",
+    alignSelf: "center",
   },
   ctaRow: {
     display: "flex",
@@ -532,7 +577,6 @@ const cardStyles = {
 
 /* ── SCOPED CSS ── */
 const css = `
-  /* FIX: corrected class selectors to match actual className props */
   .na-img-frame:hover .na-img {
     transform: scale(1.05);
     filter: saturate(1.06) contrast(1.04);
