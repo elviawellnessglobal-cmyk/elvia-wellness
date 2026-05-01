@@ -28,6 +28,8 @@ import BlogPost from "./pages/BlogPost";
 import PerfumeSoftSkin from "./pages/PerfumeSoftSkin";
 import PerfumeMorningVeil from "./pages/PerfumeMorningVeil";
 import PerfumeQuietWoods from "./pages/PerfumeQuietWoods";
+import PerfumeNox from "./pages/PerfumeNox";
+import PerfumeVelion from "./pages/PerfumeVelion";
 
 import About from "./components/legal/About";
 import Contact from "./components/legal/Contact";
@@ -161,6 +163,8 @@ function AppRoot() {
           <Route path="/perfume/soft-skin" element={<PerfumeSoftSkin />} />
           <Route path="/perfume/morning-veil" element={<PerfumeMorningVeil />} />
           <Route path="/perfume/quiet-woods" element={<PerfumeQuietWoods />} />
+          <Route path="/perfume/nox" element={<PerfumeNox />} />
+          <Route path="/perfume/velion" element={<PerfumeVelion />} />
 
           {/* ── BLOG ── */}
           <Route path="/blogs" element={<Blogs />} />
