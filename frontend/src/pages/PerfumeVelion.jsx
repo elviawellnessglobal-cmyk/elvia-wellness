@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import AuthModal from "../components/AuthModal";
 
-/* ── Replace with real Cloudinary URLs when ready ── */
+/* ── IMAGES ── */
 const images = [
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777636662/velion_home_xpbqlc.png",
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777638826/velion_2_2_bdkhld.png",
@@ -18,7 +18,6 @@ const bg =
 
 const NOTES = [
   {
-    /* Replace src with Cloudinary icon when ready */
     src: "https://res.cloudinary.com/dhh2i1soo/image/upload/v1777627256/saffron_ey2cwd.png",
     name: "Exotic Saffron",
     desc: "Rich & Aromatic",
@@ -58,6 +57,7 @@ const REVIEWS = [
   },
 ];
 
+/* ── ACCORDION ── */
 function Accordion({ title, id, open, setOpen, children }) {
   const isOpen = open === id;
   return (
@@ -95,6 +95,7 @@ export default function PerfumeVelion() {
   }, []);
 
   const price = 349;
+  const originalPrice = 499;
 
   function handleOrderNow() {
     if (!user) {
@@ -144,6 +145,8 @@ export default function PerfumeVelion() {
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
 
+      <style>{css}</style>
+
       <section
         ref={productRef}
         style={{
@@ -177,8 +180,18 @@ export default function PerfumeVelion() {
             <h1 style={styles.productTitle}>VELION</h1>
             <span style={styles.volume}>10 g</span>
 
+            {/* ── SALE BANNER ── */}
+            <div style={styles.saleBanner}>
+              <span style={styles.saleBannerDot} />
+              <span style={styles.saleBannerText}>New Arrival Sale · Limited Period</span>
+              <span style={styles.saleBannerDot} />
+            </div>
+
+            {/* ── PRICE BLOCK ── */}
             <div style={styles.priceWrap}>
               <span style={styles.price}>₹{price}</span>
+              <span style={styles.originalPrice}>₹{originalPrice}</span>
+              <span style={styles.saveBadge}>30% OFF</span>
             </div>
 
             <p style={styles.subtitle}>
@@ -310,6 +323,14 @@ export default function PerfumeVelion() {
   );
 }
 
+/* ── SCOPED CSS ── */
+const css = `
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+`;
+
 /* ── STYLES ── */
 const styles = {
   productSection: {
@@ -363,13 +384,64 @@ const styles = {
     display: "block",
     marginBottom: "16px",
   },
+
+  /* ── SALE BANNER ── */
+  saleBanner: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "#b91c1c",
+    padding: "8px 16px",
+    marginBottom: "18px",
+    fontFamily: "'DM Mono', monospace",
+  },
+  saleBannerText: {
+    fontSize: "0.58rem",
+    letterSpacing: "0.2em",
+    textTransform: "uppercase",
+    color: "#fff",
+  },
+  saleBannerDot: {
+    display: "inline-block",
+    width: "4px",
+    height: "4px",
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.5)",
+    flexShrink: 0,
+  },
+
+  /* ── PRICE ── */
   priceWrap: {
     display: "flex",
     gap: 12,
-    alignItems: "center",
+    alignItems: "baseline",
     marginBottom: 16,
+    flexWrap: "wrap",
   },
-  price: { fontSize: 28, fontWeight: 500 },
+  price: {
+    fontSize: 28,
+    fontWeight: 500,
+    color: "#b91c1c",
+    fontFamily: "'Cormorant Garamond', serif",
+  },
+  originalPrice: {
+    fontSize: 18,
+    fontWeight: 400,
+    color: "#aaa",
+    textDecoration: "line-through",
+    fontFamily: "'Cormorant Garamond', serif",
+  },
+  saveBadge: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: "8px",
+    letterSpacing: "0.18em",
+    textTransform: "uppercase",
+    background: "#b91c1c",
+    color: "#fff",
+    padding: "4px 10px",
+    alignSelf: "center",
+  },
+
   subtitle: { fontSize: 15.5, color: "#555", lineHeight: 1.85 },
   ctaRow: { display: "flex", gap: 16, marginTop: 20 },
   buyButton: {
