@@ -85,6 +85,18 @@ export default function PerfumeVelion() {
   const [added, setAdded] = useState(false);
   const [open, setOpen] = useState("description");
 
+  const galleryRef = useRef(null);
+  const [currentImage, setCurrentImage] = useState(0);
+
+  function goTo(n) {
+    const idx = (n + images.length) % images.length;
+    setCurrentImage(idx);
+    galleryRef.current?.scrollTo({
+      left: idx * galleryRef.current.offsetWidth,
+      behavior: "smooth",
+    });
+  }
+
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => e.isIntersecting && setVisible(true),
@@ -155,16 +167,69 @@ export default function PerfumeVelion() {
         }}
       >
         {/* ── GALLERY ── */}
-        <div style={styles.gallery}>
-          {images.map((img, i) => (
-            <div key={i} style={styles.slide}>
-              <img
-                src={img}
-                alt={`VELION Solid Perfume Balm by KAEORN — view ${i + 1}`}
-                style={styles.mainImage}
+        <div style={styles.galleryWrap}>
+          <div
+            ref={galleryRef}
+            className="gallery-scroll"
+            style={styles.gallery}
+            onScroll={(e) => {
+              const idx = Math.round(
+                e.target.scrollLeft / e.target.offsetWidth,
+              );
+              setCurrentImage(idx);
+            }}
+          >
+            {images.map((img, i) => (
+              <div key={i} style={styles.slide}>
+                <img
+                  src={img}
+                  alt={`VELION Solid Perfume Balm by KAEORN — view ${i + 1}`}
+                  style={styles.mainImage}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button style={styles.navBtn} onClick={() => goTo(currentImage - 1)}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M9 2L4 7L9 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-            </div>
-          ))}
+            </svg>
+          </button>
+
+          <button
+            style={{ ...styles.navBtn, left: "auto", right: 16 }}
+            onClick={() => goTo(currentImage + 1)}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M5 2L10 7L5 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <div style={styles.dots}>
+            {images.map((_, i) => (
+              <div
+                key={i}
+                onClick={() => goTo(i)}
+                style={{
+                  ...styles.dot,
+                  width: i === currentImage ? 20 : 6,
+                  background: i === currentImage ? "#111" : "rgba(0,0,0,0.25)",
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* ── DETAILS ── */}
@@ -183,7 +248,9 @@ export default function PerfumeVelion() {
             {/* ── SALE BANNER ── */}
             <div style={styles.saleBanner}>
               <span style={styles.saleBannerDot} />
-              <span style={styles.saleBannerText}>New Arrival Sale · Limited Period</span>
+              <span style={styles.saleBannerText}>
+                New Arrival Sale · Limited Period
+              </span>
               <span style={styles.saleBannerDot} />
             </div>
 
@@ -329,6 +396,8 @@ const css = `
     from { opacity: 0; transform: translateY(-6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  .nox-sale-banner { animation: slideIn 0.5s ease forwards; }
+  .gallery-scroll::-webkit-scrollbar { display: none; }
 `;
 
 /* ── STYLES ── */
@@ -344,13 +413,51 @@ const styles = {
   },
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
+  // REPLACE gallery with:
   gallery: {
-    flex: 1,
-    minWidth: 320,
     display: "flex",
     overflowX: "auto",
-    gap: 24,
     scrollSnapType: "x mandatory",
+    scrollbarWidth: "none",
+  },
+
+  // ADD these four new ones anywhere in the styles object:
+  galleryWrap: {
+    flex: 1,
+    minWidth: 320,
+    position: "relative",
+    borderRadius: 24,
+    overflow: "hidden",
+  },
+  navBtn: {
+    position: "absolute",
+    left: 16,
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 40,
+    height: 40,
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.85)",
+    border: "0.5px solid rgba(0,0,0,0.1)",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2,
+  },
+  dots: {
+    position: "absolute",
+    bottom: 18,
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    gap: 6,
+  },
+  dot: {
+    height: 6,
+    borderRadius: 3,
+    cursor: "pointer",
+    transition: "all 0.3s ease",
   },
   slide: { minWidth: "100%", scrollSnapAlign: "center" },
   mainImage: {

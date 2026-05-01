@@ -35,10 +35,22 @@ const NOTES = [
 ];
 
 const REVIEWS = [
-  { stars: 5, name: "Riya, Delhi", text: "Feels like a niche European perfume." },
+  {
+    stars: 5,
+    name: "Riya, Delhi",
+    text: "Feels like a niche European perfume.",
+  },
   { stars: 5, name: "Aarav, Mumbai", text: "Very calming and classy." },
-  { stars: 4, name: "Meera, Bangalore", text: "Perfect everyday luxury scent." },
-  { stars: 5, name: "Nikhil, Pune", text: "Subtle, clean and quietly addictive." },
+  {
+    stars: 4,
+    name: "Meera, Bangalore",
+    text: "Perfect everyday luxury scent.",
+  },
+  {
+    stars: 5,
+    name: "Nikhil, Pune",
+    text: "Subtle, clean and quietly addictive.",
+  },
 ];
 
 /* ── ACCORDION — moved outside to avoid recreation on every render ── */
@@ -69,10 +81,22 @@ export default function PerfumeMorningVeil() {
   const [added, setAdded] = useState(false);
   const [open, setOpen] = useState("description");
 
+  const galleryRef = useRef(null);
+  const [currentImage, setCurrentImage] = useState(0);
+
+  function goTo(n) {
+    const idx = (n + images.length) % images.length;
+    setCurrentImage(idx);
+    galleryRef.current?.scrollTo({
+      left: idx * galleryRef.current.offsetWidth,
+      behavior: "smooth",
+    });
+  }
+
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => e.isIntersecting && setVisible(true),
-      { threshold: 0.25 }
+      { threshold: 0.25 },
     );
     productRef.current && obs.observe(productRef.current);
     return () => obs.disconnect();
@@ -80,16 +104,24 @@ export default function PerfumeMorningVeil() {
 
   const originalPrice = 1499;
   const price = 1399;
-  const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
+  const discountPercent = Math.round(
+    ((originalPrice - price) / originalPrice) * 100,
+  );
 
   function handleOrderNow() {
-    if (!user) { setAuthType("login"); return; }
+    if (!user) {
+      setAuthType("login");
+      return;
+    }
     addToCart("/perfume/morning-veil");
     navigate("/cart");
   }
 
   function handleAddToCartOnly() {
-    if (!user) { setAuthType("login"); return; }
+    if (!user) {
+      setAuthType("login");
+      return;
+    }
     addToCart("/perfume/morning-veil");
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
@@ -103,17 +135,36 @@ export default function PerfumeMorningVeil() {
           name="description"
           content="Morning Veil by Kaeorn — a clean, airy unisex Eau de Parfum with notes of Bergamot, Pink Pepper, and Sandalwood. Quiet luxury, made in India."
         />
-        <link rel="canonical" href="https://www.kaeorn.com/perfume/morning-veil" />
-        <meta property="og:title" content="Morning Veil — Unisex Eau de Parfum | KAEORN" />
-        <meta property="og:description" content="A clean, airy unisex Eau de Parfum. Notes of Bergamot, Pink Pepper & Sandalwood. ₹1,199 — Made in India." />
-        <meta property="og:image" content="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775280305/ChatGPT_Image_Apr_4_2026_10_54_03_AM_fjvuq2.png" />
-        <meta property="og:url" content="https://www.kaeorn.com/perfume/morning-veil" />
+        <link
+          rel="canonical"
+          href="https://www.kaeorn.com/perfume/morning-veil"
+        />
+        <meta
+          property="og:title"
+          content="Morning Veil — Unisex Eau de Parfum | KAEORN"
+        />
+        <meta
+          property="og:description"
+          content="A clean, airy unisex Eau de Parfum. Notes of Bergamot, Pink Pepper & Sandalwood. ₹1,199 — Made in India."
+        />
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775280305/ChatGPT_Image_Apr_4_2026_10_54_03_AM_fjvuq2.png"
+        />
+        <meta
+          property="og:url"
+          content="https://www.kaeorn.com/perfume/morning-veil"
+        />
         <meta property="og:type" content="product" />
       </Helmet>
 
       {authType && (
         <AuthModal type={authType} onClose={() => setAuthType(null)} />
       )}
+
+      <style>{`
+  .gallery-scroll::-webkit-scrollbar { display: none; }
+`}</style>
 
       <section
         ref={productRef}
@@ -123,16 +174,70 @@ export default function PerfumeMorningVeil() {
         }}
       >
         {/* ── GALLERY ── */}
-        <div style={styles.gallery}>
-          {images.map((img, i) => (
-            <div key={i} style={styles.slide}>
-              <img
-                src={img}
-                alt={`KAEORN Morning Veil Eau de Parfum — view ${i + 1}`}
-                style={styles.mainImage}
+        {/* ── GALLERY ── */}
+        <div style={styles.galleryWrap}>
+          <div
+            ref={galleryRef}
+            className="gallery-scroll"
+            style={styles.gallery}
+            onScroll={(e) => {
+              const idx = Math.round(
+                e.target.scrollLeft / e.target.offsetWidth,
+              );
+              setCurrentImage(idx);
+            }}
+          >
+            {images.map((img, i) => (
+              <div key={i} style={styles.imageSlide}>
+                <img
+                  src={img}
+                  alt={`MORNING VEIL Eau de Parfum by KAEORN— view ${i + 1}`}
+                  style={styles.galleryImage}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button style={styles.navBtn} onClick={() => goTo(currentImage - 1)}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M9 2L4 7L9 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-            </div>
-          ))}
+            </svg>
+          </button>
+
+          <button
+            style={{ ...styles.navBtn, left: "auto", right: 16 }}
+            onClick={() => goTo(currentImage + 1)}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M5 2L10 7L5 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <div style={styles.dots}>
+            {images.map((_, i) => (
+              <div
+                key={i}
+                onClick={() => goTo(i)}
+                style={{
+                  ...styles.dot,
+                  width: i === currentImage ? 20 : 6,
+                  background: i === currentImage ? "#111" : "rgba(0,0,0,0.25)",
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* ── DETAILS ── */}
@@ -144,7 +249,6 @@ export default function PerfumeMorningVeil() {
         >
           <div style={styles.overlay} />
           <div style={styles.inner}>
-
             <p style={styles.category}>UNISEX · EAU DE PARFUM</p>
             <h1 style={styles.productTitle}>MORNING VEIL</h1>
             <span style={styles.volume}>100 ml</span>
@@ -178,8 +282,12 @@ export default function PerfumeMorningVeil() {
 
             {/* ── ACCORDIONS ── */}
             <div style={styles.accordionWrap}>
-
-              <Accordion title="DESCRIPTION" id="description" open={open} setOpen={setOpen}>
+              <Accordion
+                title="DESCRIPTION"
+                id="description"
+                open={open}
+                setOpen={setOpen}
+              >
                 Morning Veil opens with a clean, creamy softness that feels
                 instantly refined. Rather than projecting outward, it stays
                 close to the skin — creating an intimate warmth that's neither
@@ -189,7 +297,12 @@ export default function PerfumeMorningVeil() {
                 to feel special.
               </Accordion>
 
-              <Accordion title="HOW IT MAKES YOU FEEL" id="feel" open={open} setOpen={setOpen}>
+              <Accordion
+                title="HOW IT MAKES YOU FEEL"
+                id="feel"
+                open={open}
+                setOpen={setOpen}
+              >
                 Calm. Composed. Quietly confident. Morning Veil doesn't demand
                 attention — it earns it. The feeling is somewhere between clean
                 skin, soft linen, and the kind of stillness you carry when
@@ -209,14 +322,24 @@ export default function PerfumeMorningVeil() {
                 </div>
               </Accordion>
 
-              <Accordion title="PERFORMANCE" id="performance" open={open} setOpen={setOpen}>
+              <Accordion
+                title="PERFORMANCE"
+                id="performance"
+                open={open}
+                setOpen={setOpen}
+              >
                 Morning Veil is an Eau de Parfum built for quiet presence, not
                 projection. On skin, it lasts 8–10 hours with a soft sillage —
                 noticeable only when someone is close. The kind of scent that
                 makes people lean in, not step back.
               </Accordion>
 
-              <Accordion title="HOW TO APPLY" id="apply" open={open} setOpen={setOpen}>
+              <Accordion
+                title="HOW TO APPLY"
+                id="apply"
+                open={open}
+                setOpen={setOpen}
+              >
                 Apply to clean, moisturized skin — 2 to 4 sprays is enough.
                 Pulse points work best: sides of the neck, wrists, behind the
                 ears, collarbone. Don't rub after spraying. Let it settle and
@@ -224,12 +347,18 @@ export default function PerfumeMorningVeil() {
                 result.
               </Accordion>
 
-              <Accordion title="REVIEWS" id="reviews" open={open} setOpen={setOpen}>
+              <Accordion
+                title="REVIEWS"
+                id="reviews"
+                open={open}
+                setOpen={setOpen}
+              >
                 <div style={styles.reviewsWrap}>
                   {REVIEWS.map((r, i) => (
                     <div key={i} style={styles.reviewItem}>
                       <div style={styles.reviewStars}>
-                        {"★".repeat(r.stars)}{"☆".repeat(5 - r.stars)}
+                        {"★".repeat(r.stars)}
+                        {"☆".repeat(5 - r.stars)}
                       </div>
                       <p style={styles.reviewText}>"{r.text}"</p>
                       <span style={styles.reviewName}>— {r.name}</span>
@@ -238,13 +367,17 @@ export default function PerfumeMorningVeil() {
                 </div>
               </Accordion>
 
-              <Accordion title="KAEORN PHILOSOPHY" id="philosophy" open={open} setOpen={setOpen}>
+              <Accordion
+                title="KAEORN PHILOSOPHY"
+                id="philosophy"
+                open={open}
+                setOpen={setOpen}
+              >
                 Kaeorn was built on the belief that luxury should feel
-                effortless, not loud. Every fragrance is designed to enhance
-                who you already are — not to make a statement, but to leave an
+                effortless, not loud. Every fragrance is designed to enhance who
+                you already are — not to make a statement, but to leave an
                 impression. Quiet. Intentional. Made in India, for the world.
               </Accordion>
-
             </div>
           </div>
         </div>
@@ -266,21 +399,67 @@ const styles = {
   },
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
-  gallery: {
-    flex: 1,
-    minWidth: 320,
-    display: "flex",
-    overflowX: "auto",
-    gap: 24,
-    scrollSnapType: "x mandatory",
-  },
-  slide: { minWidth: "100%", scrollSnapAlign: "center" },
-  mainImage: {
-    width: "100%",
-    borderRadius: 24,
-    objectFit: "cover",
-    boxShadow: "0 30px 60px rgba(0,0,0,0.12)",
-  },
+ // REPLACE gallery with:
+gallery: {
+  display: "flex",
+  overflowX: "auto",
+  scrollSnapType: "x mandatory",
+  scrollbarWidth: "none",
+},
+
+// ADD these four:
+// UPDATE galleryWrap:
+galleryWrap: {
+  flex: 1,
+  minWidth: 320,
+  position: "relative",
+  borderRadius: 26,
+  overflow: "hidden",
+  aspectRatio: "3 / 4",   // ← add this
+},
+
+// ADD these two:
+imageSlide: {
+  minWidth: "100%",
+  scrollSnapAlign: "center",
+},
+galleryImage: {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  borderRadius: 26,
+  display: "block",
+},
+navBtn: {
+  position: "absolute",
+  left: 16,
+  top: "50%",
+  transform: "translateY(-50%)",
+  width: 40,
+  height: 40,
+  borderRadius: "50%",
+  background: "rgba(255,255,255,0.85)",
+  border: "0.5px solid rgba(0,0,0,0.1)",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 2,
+},
+dots: {
+  position: "absolute",
+  bottom: 18,
+  left: "50%",
+  transform: "translateX(-50%)",
+  display: "flex",
+  gap: 6,
+},
+dot: {
+  height: 6,
+  borderRadius: 3,
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+},
   detailsColumn: {
     flex: 1,
     minWidth: 320,
@@ -306,7 +485,12 @@ const styles = {
     display: "block",
     marginBottom: "16px",
   },
-  priceWrap: { display: "flex", gap: 12, alignItems: "center", marginBottom: 16 },
+  priceWrap: {
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
+    marginBottom: 16,
+  },
   price: { fontSize: 28, fontWeight: 500 },
   originalPrice: { textDecoration: "line-through", color: "#888" },
   discount: { color: "#e91e63", fontSize: 13 },
@@ -362,7 +546,12 @@ const styles = {
   },
   noteImage: { width: 42, height: 42, objectFit: "contain", marginBottom: 6 },
   noteTitle: { fontSize: 14, letterSpacing: 1.2, fontWeight: 500 },
-  noteDesc: { fontSize: 12.5, color: "#777", fontStyle: "italic", textAlign: "center" },
+  noteDesc: {
+    fontSize: 12.5,
+    color: "#777",
+    fontStyle: "italic",
+    textAlign: "center",
+  },
   reviewsWrap: {
     display: "flex",
     flexDirection: "column",

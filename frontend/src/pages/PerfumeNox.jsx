@@ -35,10 +35,22 @@ const NOTES = [
 ];
 
 const REVIEWS = [
-  { stars: 5, name: "Riya, Delhi", text: "Feels like a niche European perfume." },
+  {
+    stars: 5,
+    name: "Riya, Delhi",
+    text: "Feels like a niche European perfume.",
+  },
   { stars: 5, name: "Aarav, Mumbai", text: "Very calming and classy." },
-  { stars: 4, name: "Meera, Bangalore", text: "Perfect everyday luxury scent." },
-  { stars: 5, name: "Nikhil, Pune", text: "Subtle, clean and quietly addictive." },
+  {
+    stars: 4,
+    name: "Meera, Bangalore",
+    text: "Perfect everyday luxury scent.",
+  },
+  {
+    stars: 5,
+    name: "Nikhil, Pune",
+    text: "Subtle, clean and quietly addictive.",
+  },
 ];
 
 /* ── ACCORDION ── */
@@ -69,10 +81,22 @@ export default function PerfumeNox() {
   const [added, setAdded] = useState(false);
   const [open, setOpen] = useState("description");
 
+  const galleryRef = useRef(null);
+  const [currentImage, setCurrentImage] = useState(0);
+
+  function goTo(n) {
+    const idx = (n + images.length) % images.length;
+    setCurrentImage(idx);
+    galleryRef.current?.scrollTo({
+      left: idx * galleryRef.current.offsetWidth,
+      behavior: "smooth",
+    });
+  }
+
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => e.isIntersecting && setVisible(true),
-      { threshold: 0.25 }
+      { threshold: 0.25 },
     );
     productRef.current && obs.observe(productRef.current);
     return () => obs.disconnect();
@@ -82,13 +106,19 @@ export default function PerfumeNox() {
   const originalPrice = 499;
 
   function handleOrderNow() {
-    if (!user) { setAuthType("login"); return; }
+    if (!user) {
+      setAuthType("login");
+      return;
+    }
     addToCart("/perfume/nox");
     navigate("/cart");
   }
 
   function handleAddToCartOnly() {
-    if (!user) { setAuthType("login"); return; }
+    if (!user) {
+      setAuthType("login");
+      return;
+    }
     addToCart("/perfume/nox");
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
@@ -103,7 +133,10 @@ export default function PerfumeNox() {
           content="NOX is a warm, smoky solid perfume built around rare oud wood. Smooth, deep and intimate — designed to stay close yet noticeable. 10g balm, ₹349."
         />
         <link rel="canonical" href="https://www.kaeorn.com/perfume/nox" />
-        <meta property="og:title" content="NOX — Unisex Solid Perfume Balm | KAEORN" />
+        <meta
+          property="og:title"
+          content="NOX — Unisex Solid Perfume Balm | KAEORN"
+        />
         <meta
           property="og:description"
           content="A warm, smoky solid perfume. Notes of Rare Oud Wood, Sandalwood & Chinese Pepper. ₹349 — Made in India."
@@ -127,16 +160,69 @@ export default function PerfumeNox() {
         }}
       >
         {/* ── GALLERY ── */}
-        <div style={styles.gallery}>
-          {images.map((img, i) => (
-            <div key={i} style={styles.slide}>
-              <img
-                src={img}
-                alt={`NOX Solid Perfume Balm by KAEORN — view ${i + 1}`}
-                style={styles.mainImage}
+        <div style={styles.galleryWrap}>
+          <div
+            ref={galleryRef}
+            className="gallery-scroll"
+            style={styles.gallery}
+            onScroll={(e) => {
+              const idx = Math.round(
+                e.target.scrollLeft / e.target.offsetWidth,
+              );
+              setCurrentImage(idx);
+            }}
+          >
+            {images.map((img, i) => (
+              <div key={i} style={styles.slide}>
+                <img
+                  src={img}
+                  alt={`NOX Solid Perfume Balm by KAEORN — view ${i + 1}`}
+                  style={styles.mainImage}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button style={styles.navBtn} onClick={() => goTo(currentImage - 1)}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M9 2L4 7L9 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-            </div>
-          ))}
+            </svg>
+          </button>
+
+          <button
+            style={{ ...styles.navBtn, left: "auto", right: 16 }}
+            onClick={() => goTo(currentImage + 1)}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M5 2L10 7L5 12"
+                stroke="#111"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <div style={styles.dots}>
+            {images.map((_, i) => (
+              <div
+                key={i}
+                onClick={() => goTo(i)}
+                style={{
+                  ...styles.dot,
+                  width: i === currentImage ? 20 : 6,
+                  background: i === currentImage ? "#111" : "rgba(0,0,0,0.25)",
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* ── DETAILS ── */}
@@ -148,7 +234,6 @@ export default function PerfumeNox() {
         >
           <div style={styles.overlay} />
           <div style={styles.inner}>
-
             <p style={styles.category}>Unisex Perfume Balm</p>
             <h1 style={styles.productTitle}>NOX</h1>
             <span style={styles.volume}>10 g</span>
@@ -156,7 +241,9 @@ export default function PerfumeNox() {
             {/* ── SALE BANNER ── */}
             <div style={styles.saleBanner}>
               <span style={styles.saleBannerDot} />
-              <span style={styles.saleBannerText}>New Arrival Sale · Limited Period</span>
+              <span style={styles.saleBannerText}>
+                New Arrival Sale · Limited Period
+              </span>
               <span style={styles.saleBannerDot} />
             </div>
 
@@ -189,20 +276,31 @@ export default function PerfumeNox() {
 
             {/* ── ACCORDIONS ── */}
             <div style={styles.accordionWrap}>
-
-              <Accordion title="DESCRIPTION" id="description" open={open} setOpen={setOpen}>
-                NOX opens with a deep, warm richness that feels quietly powerful. Rather than
-                projecting outward, it stays close to the skin — creating an intimate presence
-                that feels smooth, smoky and balanced. As it settles, it reveals layers of oud,
-                softened by sandalwood and grounded with earthy vetiver. Over time, tonka bean
-                and amber emerge, adding a gentle warmth that feels personal and refined. A
-                scent that adapts to your skin, your mood, and your moments. Made for closeness,
-                not attention.
+              <Accordion
+                title="DESCRIPTION"
+                id="description"
+                open={open}
+                setOpen={setOpen}
+              >
+                NOX opens with a deep, warm richness that feels quietly
+                powerful. Rather than projecting outward, it stays close to the
+                skin — creating an intimate presence that feels smooth, smoky
+                and balanced. As it settles, it reveals layers of oud, softened
+                by sandalwood and grounded with earthy vetiver. Over time, tonka
+                bean and amber emerge, adding a gentle warmth that feels
+                personal and refined. A scent that adapts to your skin, your
+                mood, and your moments. Made for closeness, not attention.
               </Accordion>
 
-              <Accordion title="HOW IT MAKES YOU FEEL" id="feel" open={open} setOpen={setOpen}>
-                A distinctive, intimate scent built around rare oud wood, blended with soft
-                woods and warm resins for a smooth, skin-close presence.
+              <Accordion
+                title="HOW IT MAKES YOU FEEL"
+                id="feel"
+                open={open}
+                setOpen={setOpen}
+              >
+                A distinctive, intimate scent built around rare oud wood,
+                blended with soft woods and warm resins for a smooth, skin-close
+                presence.
               </Accordion>
 
               <Accordion title="NOTES" id="notes" open={open} setOpen={setOpen}>
@@ -217,28 +315,45 @@ export default function PerfumeNox() {
                 </div>
               </Accordion>
 
-              <Accordion title="PERFORMANCE" id="performance" open={open} setOpen={setOpen}>
-                NOX is a solid perfume with a surprisingly strong and lasting presence.
-                It melts into the skin yet remains clearly noticeable throughout the day.
-                Lasting around 8 to 10 hours, it holds depth without fading away.
-                Rather than overwhelming, it stays balanced, warm, and consistently felt.
-                A scent that stays with you and leaves a quiet impression.
+              <Accordion
+                title="PERFORMANCE"
+                id="performance"
+                open={open}
+                setOpen={setOpen}
+              >
+                NOX is a solid perfume with a surprisingly strong and lasting
+                presence. It melts into the skin yet remains clearly noticeable
+                throughout the day. Lasting around 8 to 10 hours, it holds depth
+                without fading away. Rather than overwhelming, it stays
+                balanced, warm, and consistently felt. A scent that stays with
+                you and leaves a quiet impression.
               </Accordion>
 
-              <Accordion title="HOW TO APPLY" id="apply" open={open} setOpen={setOpen}>
-                Apply a small amount of NOX onto clean, moisturized skin.
-                Use your fingertip to warm the perfume before gently pressing.
-                Focus on pulse points like the neck, wrists, and behind ears.
-                Let it settle naturally without rubbing for a smoother finish.
-                Reapply lightly whenever you want to refresh the scent.
+              <Accordion
+                title="HOW TO APPLY"
+                id="apply"
+                open={open}
+                setOpen={setOpen}
+              >
+                Apply a small amount of NOX onto clean, moisturized skin. Use
+                your fingertip to warm the perfume before gently pressing. Focus
+                on pulse points like the neck, wrists, and behind ears. Let it
+                settle naturally without rubbing for a smoother finish. Reapply
+                lightly whenever you want to refresh the scent.
               </Accordion>
 
-              <Accordion title="REVIEWS" id="reviews" open={open} setOpen={setOpen}>
+              <Accordion
+                title="REVIEWS"
+                id="reviews"
+                open={open}
+                setOpen={setOpen}
+              >
                 <div style={styles.reviewsWrap}>
                   {REVIEWS.map((r, i) => (
                     <div key={i} style={styles.reviewItem}>
                       <div style={styles.reviewStars}>
-                        {"★".repeat(r.stars)}{"☆".repeat(5 - r.stars)}
+                        {"★".repeat(r.stars)}
+                        {"☆".repeat(5 - r.stars)}
                       </div>
                       <p style={styles.reviewText}>"{r.text}"</p>
                       <span style={styles.reviewName}>— {r.name}</span>
@@ -247,12 +362,17 @@ export default function PerfumeNox() {
                 </div>
               </Accordion>
 
-              <Accordion title="KAEORN PHILOSOPHY" id="philosophy" open={open} setOpen={setOpen}>
-                Kaeorn was built on the belief that luxury should feel effortless, not loud.
-                Every fragrance is designed to enhance who you already are — not to make a
-                statement, but to leave an impression. Quiet. Intentional. Made in India, for the world.
+              <Accordion
+                title="KAEORN PHILOSOPHY"
+                id="philosophy"
+                open={open}
+                setOpen={setOpen}
+              >
+                Kaeorn was built on the belief that luxury should feel
+                effortless, not loud. Every fragrance is designed to enhance who
+                you already are — not to make a statement, but to leave an
+                impression. Quiet. Intentional. Made in India, for the world.
               </Accordion>
-
             </div>
           </div>
         </div>
@@ -267,9 +387,8 @@ const css = `
     from { opacity: 0; transform: translateY(-6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .nox-sale-banner {
-    animation: slideIn 0.5s ease forwards;
-  }
+  .nox-sale-banner { animation: slideIn 0.5s ease forwards; }
+  .gallery-scroll::-webkit-scrollbar { display: none; }
 `;
 
 /* ── STYLES ── */
@@ -285,14 +404,52 @@ const styles = {
   },
   hide: { opacity: 0, transform: "translateY(40px)" },
   show: { opacity: 1, transform: "translateY(0)", transition: "0.9s ease" },
-  gallery: {
-    flex: 1,
-    minWidth: 320,
-    display: "flex",
-    overflowX: "auto",
-    gap: 24,
-    scrollSnapType: "x mandatory",
-  },
+ // REPLACE gallery with:
+gallery: {
+  display: "flex",
+  overflowX: "auto",
+  scrollSnapType: "x mandatory",
+  scrollbarWidth: "none",
+},
+
+// ADD these four new ones anywhere in the styles object:
+galleryWrap: {
+  flex: 1,
+  minWidth: 320,
+  position: "relative",
+  borderRadius: 24,
+  overflow: "hidden",
+},
+navBtn: {
+  position: "absolute",
+  left: 16,
+  top: "50%",
+  transform: "translateY(-50%)",
+  width: 40,
+  height: 40,
+  borderRadius: "50%",
+  background: "rgba(255,255,255,0.85)",
+  border: "0.5px solid rgba(0,0,0,0.1)",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 2,
+},
+dots: {
+  position: "absolute",
+  bottom: 18,
+  left: "50%",
+  transform: "translateX(-50%)",
+  display: "flex",
+  gap: 6,
+},
+dot: {
+  height: 6,
+  borderRadius: 3,
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+},
   slide: { minWidth: "100%", scrollSnapAlign: "center" },
   mainImage: {
     width: "100%",
@@ -435,7 +592,12 @@ const styles = {
   },
   noteImage: { width: 42, height: 42, objectFit: "contain", marginBottom: 6 },
   noteTitle: { fontSize: 14, letterSpacing: 1.2, fontWeight: 500 },
-  noteDesc: { fontSize: 12.5, color: "#777", fontStyle: "italic", textAlign: "center" },
+  noteDesc: {
+    fontSize: 12.5,
+    color: "#777",
+    fontStyle: "italic",
+    textAlign: "center",
+  },
   reviewsWrap: {
     display: "flex",
     flexDirection: "column",
