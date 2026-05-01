@@ -14,7 +14,7 @@ import { useState, useRef, useEffect } from "react";
 
 /* ── Replace these with real Cloudinary URLs when ready ── */
 const NOX_IMG =
-  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777185696/ChatGPT_Image_Apr_26_2026_12_11_20_PM_uecc1c.png";
+  "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777184309/ChatGPT_Image_Apr_26_2026_11_47_58_AM_dycgoa.png";
 const VELION_IMG =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777636662/velion_home_xpbqlc.png";
 
