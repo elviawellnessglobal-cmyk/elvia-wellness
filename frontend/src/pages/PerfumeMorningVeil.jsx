@@ -151,7 +151,7 @@ export default function PerfumeMorningVeil() {
         />
         <meta
           property="og:description"
-          content="A clean, airy unisex Eau de Parfum. Notes of Bergamot, Pink Pepper & Sandalwood. ₹1,199 — Made in India."
+          content="A clean, airy unisex Eau de Parfum. Notes of Bergamot, Pink Pepper & Sandalwood. ₹1,399 — Made in India."
         />
         <meta
           property="og:image"

@@ -130,7 +130,7 @@ export default function PerfumeQuietWoods() {
         <title>Soie Femme — Women's Eau de Parfum | KAEORN</title>
         <meta
           name="description"
-          content="Soie Femme by Kaeorn — a luminous feminine Eau de Parfum with notes of Coffee, Jasmine, and Vanilla. Quiet luxury, made in India. ₹1,199."
+          content="Soie Femme by Kaeorn — a luminous feminine Eau de Parfum with notes of Coffee, Jasmine, and Vanilla. Quiet luxury, made in India. ₹1,399."
         />
         <link
           rel="canonical"
@@ -142,7 +142,7 @@ export default function PerfumeQuietWoods() {
         />
         <meta
           property="og:description"
-          content="A luminous feminine fragrance with Coffee, Jasmine & Vanilla. Soft, intimate, unforgettable. ₹1,199 — Made in India."
+          content="A luminous feminine fragrance with Coffee, Jasmine & Vanilla. Soft, intimate, unforgettable. ₹1,399 — Made in India."
         />
         <meta
           property="og:image"
@@ -249,7 +249,7 @@ export default function PerfumeQuietWoods() {
             <h1 style={styles.productTitle}>SOIE FEMME</h1>
             <span style={styles.volume}>100 ml</span>
             <span style={styles.volume}>Longevity: 8-10hrs</span>
-            <span>25% Natural Oils Concentration</span>
+            <span>30% Natural Oils Concentration</span>
             <br />
             <button style={styles.readMore} onClick={scrollToDesc}>Read more about this fragrance</button>
 
