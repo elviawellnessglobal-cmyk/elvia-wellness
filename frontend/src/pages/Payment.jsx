@@ -9,8 +9,15 @@ export default function Payment() {
   const [loading, setLoading] = useState(false);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
-  const address =
-    JSON.parse(localStorage.getItem("deliveryAddress")) || {};
+  // add near top of Payment component
+  const appliedCoupon = JSON.parse(
+    localStorage.getItem("appliedCoupon") || "null",
+  );
+  const finalTotal = parseInt(
+    localStorage.getItem("cartFinalTotal") || getCartTotal(),
+  );
+
+  const address = JSON.parse(localStorage.getItem("deliveryAddress")) || {};
 
   /* ---------------- LOAD RAZORPAY SAFELY ---------------- */
   useEffect(() => {
@@ -83,7 +90,7 @@ export default function Payment() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            amount: getCartTotal(),
+            amount: finalTotal,
             cartItems: cartItems.map((item) => ({
               productId: item.id,
               name: item.name,
@@ -102,14 +109,14 @@ export default function Payment() {
               country: "India",
             },
           }),
-        }
+        },
       );
 
       const razorpayOrder = await orderRes.json();
 
       if (!orderRes.ok) {
         throw new Error(
-          razorpayOrder.message || "Payment initialization failed"
+          razorpayOrder.message || "Payment initialization failed",
         );
       }
 
@@ -138,7 +145,7 @@ export default function Payment() {
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                 }),
-              }
+              },
             );
 
             const verifyData = await verifyRes.json();
@@ -174,14 +181,16 @@ export default function Payment() {
                     postalCode: address.pincode,
                     country: "India",
                   },
-                  totalAmount: getCartTotal(),
+                  totalAmount: finalTotal,
+                  originalAmount: getCartTotal(), 
+                  couponCode: appliedCoupon?.code || null,
                   payment: {
                     razorpayOrderId: response.razorpay_order_id,
                     razorpayPaymentId: response.razorpay_payment_id,
                   },
                   status: "Paid",
                 }),
-              }
+              },
             );
 
             if (!saveOrder.ok) {
@@ -195,7 +204,7 @@ export default function Payment() {
           } catch (err) {
             console.error("Post-payment error:", err);
             alert(
-              "Payment completed but order saving failed. Contact support."
+              "Payment completed but order saving failed. Contact support.",
             );
             setLoading(false);
           }
@@ -229,7 +238,9 @@ export default function Payment() {
       <h1 style={styles.heading}>Confirm & Pay</h1>
 
       <div style={styles.card}>
-        <p><strong>{address.name}</strong></p>
+        <p>
+          <strong>{address.name}</strong>
+        </p>
         <p>{address.address}</p>
         <p>
           {address.city}, {address.state} - {address.pincode}
@@ -237,7 +248,7 @@ export default function Payment() {
         <p>{address.phone}</p>
       </div>
 
-      <h2>Total ₹{getCartTotal()}</h2>
+      <h2>Total ₹{finalTotal}</h2>
 
       <button
         onClick={handlePay}
@@ -247,7 +258,7 @@ export default function Payment() {
           opacity: loading ? 0.6 : 1,
         }}
       >
-        {loading ? "Processing..." : `Pay ₹${getCartTotal()}`}
+        {loading ? "Processing..." : `Pay ₹${finalTotal}`}
       </button>
     </div>
   );

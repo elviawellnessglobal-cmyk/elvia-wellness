@@ -11,7 +11,55 @@ export default function Cart() {
 
   const [navigating, setNavigating] = useState(false);
 
+  // add at top of Cart.jsx
+const [couponCode, setCouponCode] = useState('')
+const [couponStatus, setCouponStatus] = useState(null) // null | 'loading' | 'valid' | 'invalid'
+const [couponData, setCouponData] = useState(null) // { discountPercent, influencerName }
+
   if (navigating) return <PageLoader />;
+
+async function applyCoupon() {
+  if (!couponCode.trim()) return
+  setCouponStatus('loading')
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_INFLUENCER_API}/api/coupon/validate/${couponCode.trim().toUpperCase()}`
+    )
+    const data = await res.json()
+    if (data.success) {
+      setCouponStatus('valid')
+      setCouponData(data.data)
+      localStorage.setItem('appliedCoupon', JSON.stringify({
+        code: couponCode.trim().toUpperCase(),
+        discountPercent: data.data.discountPercent,
+        influencerName: data.data.influencerName,
+      }))
+    } else {
+      setCouponStatus('invalid')
+      setCouponData(null)
+      localStorage.removeItem('appliedCoupon')
+    }
+  } catch {
+    setCouponStatus('invalid')
+  }
+}
+
+function removeCoupon() {
+  setCouponCode('')
+  setCouponStatus(null)
+  setCouponData(null)
+  localStorage.removeItem('appliedCoupon')
+}
+
+const discount = couponData
+  ? Math.round(getCartTotal() * couponData.discountPercent / 100)
+  : 0
+
+const finalTotal = getCartTotal() - discount
+
+
+
+
 
   /* ---------------- EMPTY CART ---------------- */
   if (!cartItems || cartItems.length === 0) {
@@ -85,28 +133,72 @@ export default function Cart() {
         </div>
 
         {/* OFFER CODE */}
-        <div style={styles.offerBox}>
-          <input placeholder="Enter offer code" style={styles.offerInput} />
-          <button style={styles.applyBtn}>Apply</button>
-        </div>
+        {/* OFFER CODE */}
+<div style={styles.offerBox}>
+  <input
+    placeholder="Enter influencer / offer code"
+    style={styles.offerInput}
+    value={couponCode}
+    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+    disabled={couponStatus === 'valid'}
+  />
+  {couponStatus === 'valid' ? (
+    <button style={{ ...styles.applyBtn, background: '#c00' }} onClick={removeCoupon}>
+      Remove
+    </button>
+  ) : (
+    <button style={styles.applyBtn} onClick={applyCoupon} disabled={couponStatus === 'loading'}>
+      {couponStatus === 'loading' ? '...' : 'Apply'}
+    </button>
+  )}
+</div>
+
+{/* COUPON FEEDBACK */}
+{couponStatus === 'valid' && couponData && (
+  <div style={{ background: '#f0fdf0', border: '1px solid #bbf7d0', borderRadius: 10, padding: '12px 16px', marginBottom: 16, fontSize: 13, color: '#166534' }}>
+    ✓ Code <strong>{couponCode}</strong> applied — {couponData.discountPercent}% off via {couponData.influencerName}
+  </div>
+)}
+{couponStatus === 'invalid' && (
+  <div style={{ background: '#fff5f5', border: '1px solid #fecaca', borderRadius: 10, padding: '12px 16px', marginBottom: 16, fontSize: 13, color: '#c00' }}>
+    ✗ Invalid or expired coupon code
+  </div>
+)}
 
         {/* SUMMARY */}
-        <div style={styles.summary}>
-          <div style={styles.row}>
-            <span>Subtotal</span>
-            <span>₹{getCartTotal()}</span>
-          </div>
+       {/* SUMMARY */}
+<div style={styles.summary}>
+  <div style={styles.row}>
+    <span>Subtotal</span>
+    <span>₹{getCartTotal()}</span>
+  </div>
+  {discount > 0 && (
+    <div style={{ ...styles.row, color: '#166534' }}>
+      <span>Discount ({couponData.discountPercent}%)</span>
+      <span>−₹{discount}</span>
+    </div>
+  )}
+  <div style={styles.row}>
+    <span>Delivery</span>
+    <span>Free</span>
+  </div>
+  <div style={styles.totalRow}>
+    <span>Total</span>
+    <span>₹{finalTotal}</span>
+  </div>
+</div>
 
-          <div style={styles.row}>
-            <span>Delivery</span>
-            <span>Free</span>
-          </div>
-
-          <div style={styles.totalRow}>
-            <span>Total</span>
-            <span>₹{getCartTotal()}</span>
-          </div>
-        </div>
+<button
+  style={styles.checkoutBtn}
+  onClick={() => {
+    setNavigating(true)
+    // save final total so Payment.jsx uses discounted amount
+    localStorage.setItem('cartFinalTotal', finalTotal)
+    setTimeout(() => navigate('/checkout/address'), 300)
+  }}
+>
+  Proceed to Checkout
+</button>
 
         {/* CHECKOUT */}
         <button
