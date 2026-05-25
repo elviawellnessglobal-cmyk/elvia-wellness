@@ -111,7 +111,7 @@ function buildEmail(order) {
 
           <!-- SOCIAL LINKS -->
           <div style="margin-top:28px;text-align:center;">
-            <a href="https://www.instagram.com/kaeornwellness/" 
+            <a href="https://www.instagram.com/kaeorn.co/" 
                style="margin:0 12px;color:#111;text-decoration:none;font-weight:500;">
                Instagram
             </a>

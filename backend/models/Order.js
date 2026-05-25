@@ -8,9 +8,8 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: false,
     },
-
     userEmail: {
-      type: String, // ✅ logged-in account email
+      type: String,
     },
 
     /* ---------- ITEMS ---------- */
@@ -27,7 +26,7 @@ const orderSchema = new mongoose.Schema(
     /* ---------- DELIVERY ADDRESS ---------- */
     address: {
       fullName: String,
-      email: String, // ✅ delivery email
+      email: String,
       phone: String,
       street: String,
       city: String,
@@ -37,6 +36,17 @@ const orderSchema = new mongoose.Schema(
     },
 
     totalAmount: Number,
+    originalAmount: Number,      // amount before coupon discount
+
+    /* ---------- INFLUENCER COUPON ---------- */
+    couponCode: {
+      type: String,
+      default: null,
+    },
+    commissionRecorded: {
+      type: Boolean,
+      default: false,            // flips to true when commission is sent
+    },
 
     status: {
       type: String,

@@ -5,11 +5,10 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const userAuth = require("../middleware/userAuth");
 const adminAuth = require("../middleware/adminAuth");
-
 const queueOrderEmail = require("../utils/emailQueue");
 
 /* =========================================================
-   CREATE ORDER  (LOCKED: ALWAYS SAVE userEmail)
+   CREATE ORDER
    ========================================================= */
 router.post("/", userAuth, async (req, res) => {
   try {
@@ -54,7 +53,10 @@ router.post("/", userAuth, async (req, res) => {
       userEmail,
       items: validatedItems,
       address: req.body.address || null,
-      totalAmount,
+      totalAmount: req.body.totalAmount || totalAmount,
+      originalAmount: req.body.originalAmount || totalAmount,
+      couponCode: req.body.couponCode || null,
+      commissionRecorded: false,
       status: "Pending",
     });
 
@@ -70,10 +72,7 @@ router.post("/", userAuth, async (req, res) => {
    ========================================================= */
 router.get("/my-orders", userAuth, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user }).sort({
-      createdAt: -1,
-    });
-
+    const orders = await Order.find({ user: req.user }).sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     console.error("My orders error:", error);
@@ -86,15 +85,8 @@ router.get("/my-orders", userAuth, async (req, res) => {
    ========================================================= */
 router.get("/my-orders/:id", userAuth, async (req, res) => {
   try {
-    const order = await Order.findOne({
-      _id: req.params.id,
-      user: req.user,
-    });
-
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
+    const order = await Order.findOne({ _id: req.params.id, user: req.user });
+    if (!order) return res.status(404).json({ message: "Order not found" });
     res.json(order);
   } catch (error) {
     console.error("Single order error:", error);
@@ -113,10 +105,7 @@ router.get("/", adminAuth, async (req, res) => {
 
     const formatted = orders.map((order) => ({
       ...order.toObject(),
-      customerEmail:
-        order.userEmail ||
-        order.user?.email ||
-        "N/A",
+      customerEmail: order.userEmail || order.user?.email || "N/A",
     }));
 
     res.json(formatted);
@@ -131,19 +120,12 @@ router.get("/", adminAuth, async (req, res) => {
    ========================================================= */
 router.get("/:id", adminAuth, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id)
-      .populate("user", "email name");
-
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
+    const order = await Order.findById(req.params.id).populate("user", "email name");
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
     res.json({
       ...order.toObject(),
-      customerEmail:
-        order.userEmail ||
-        order.user?.email ||
-        "N/A",
+      customerEmail: order.userEmail || order.user?.email || "N/A",
     });
   } catch (error) {
     console.error("Admin single order error:", error);
@@ -152,16 +134,13 @@ router.get("/:id", adminAuth, async (req, res) => {
 });
 
 /* =========================================================
-   ADMIN – UPDATE STATUS (ENTERPRISE EMAIL SYSTEM)
+   ADMIN – UPDATE STATUS
+   Records commission only when status becomes "Delivered"
    ========================================================= */
 router.put("/:id/status", adminAuth, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id)
-      .populate("user", "email name");
-
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
+    const order = await Order.findById(req.params.id).populate("user", "email name");
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
     const previousStatus = order.status;
     const newStatus = req.body.status;
@@ -169,8 +148,52 @@ router.put("/:id/status", adminAuth, async (req, res) => {
     order.status = newStatus;
     await order.save();
 
+    // send status update email
     if (previousStatus !== newStatus) {
       queueOrderEmail(order);
+    }
+
+    // ── COMMISSION: only when Delivered, only once, only if coupon was used ──
+    if (
+      newStatus === "Delivered" &&
+      previousStatus !== "Delivered" &&
+      order.couponCode &&
+      !order.commissionRecorded
+    ) {
+      try {
+        const influencerApiUrl = process.env.INFLUENCER_API_URL;
+
+        const commissionRes = await fetch(
+          `${influencerApiUrl}/api/coupon/apply`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: order._id.toString(),
+              couponCode: order.couponCode,
+              productName: order.items.map((i) => i.name).join(", "),
+              originalAmount: order.originalAmount || order.totalAmount,
+              finalAmount: order.totalAmount,
+              customerName: order.address?.fullName || "",
+              customerEmail: order.userEmail || order.address?.email || "",
+            }),
+          }
+        );
+
+        const commissionData = await commissionRes.json();
+
+        if (commissionRes.ok && commissionData.success) {
+          // mark so it never fires twice even if status is toggled
+          order.commissionRecorded = true;
+          await order.save();
+          console.log(`✅ Commission recorded for order ${order._id} — code ${order.couponCode}`);
+        } else {
+          console.error("Commission recording failed:", commissionData.message);
+        }
+      } catch (commissionErr) {
+        // never block the admin action if influencer portal is down
+        console.error("Commission API unreachable:", commissionErr.message);
+      }
     }
 
     res.json(order);

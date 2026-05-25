@@ -16,10 +16,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/**
- * GET product by productId (USED BY CART & ORDERS)
- * /api/products/by-product-id/perfume-soft-skin
- */
+
 router.get("/by-product-id/:productId", async (req, res) => {
   try {
     const product = await Product.findOne({
