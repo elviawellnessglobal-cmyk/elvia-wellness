@@ -65,7 +65,7 @@ export default function Navbar() {
               <ArrowLeft size={16} />
             </button>
           )}
-          <a className="nav-logo" onClick={() => navigate("/")}>KAEORN</a>
+          <a className="nav-logo" onClick={() => navigate("https://kaeorn.com")}>KAEORN</a>
         </div>
 
         {/* ── CENTER ── */}
