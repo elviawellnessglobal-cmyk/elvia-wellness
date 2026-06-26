@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../styles/Program/Ambassador.css";
+import "../styles/Program/AmbassadorProgram.css";
 
 const TIERS = [
   {
