@@ -94,8 +94,8 @@ export default function PerfumeQuietWoods() {
     return () => obs.disconnect();
   }, []);
 
-  const originalPrice = 3599;
-  const price = 1799;
+  const originalPrice = 1399;
+  const price = 950;
   const discountPercent = Math.round(
     ((originalPrice - price) / originalPrice) * 100,
   );
