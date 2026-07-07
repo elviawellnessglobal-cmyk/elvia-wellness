@@ -17,8 +17,27 @@ const NOX_IMG =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777184309/ChatGPT_Image_Apr_26_2026_11_47_58_AM_dycgoa.png";
 const VELION_IMG =
   "https://res.cloudinary.com/dvmntn6vf/image/upload/v1777636662/velion_home_xpbqlc.png";
+const DISCOVERY_IMG = "REPLACE_WITH_DISCOVERY_SET_IMAGE";
 
 const PRODUCTS = [
+  // {
+  //   id: "discovery-set",
+  //   route: "/perfume/discovery-set",
+  //   name: "DISCOVERY SET",
+  //   subtitle: "3 × 30 ml Fragrance Collection",
+  //   character: "Discover Every Signature",
+  //   notes: ["NOIR", "SOIE FEMME", "VEIL"],
+  //   desc: "Experience all three signature KAEORN fragrances in one collection. Includes: • KAEORN NOIR (Men) • KAEORN SOIE FEMME (Women) • KAEORN VEIL (Unisex). Perfect for discovering your signature scent or gifting someone the complete KAEORN experience.",
+  //   price: "₹1999",
+  //   originalPrice: "",
+  //   size: "3 × 30 ml",
+  //   gender: "Men • Women • Unisex",
+  //   img: DISCOVERY_IMG,
+  //   accent: "#c9a96e",
+  //   accentText: "#0d0c0b",
+  //   tag: "New",
+  //   priceLabel: "Collection · 3 × 30 ml",
+  // },
   {
     id: "nox",
     route: "/perfume/nox",
@@ -27,14 +46,15 @@ const PRODUCTS = [
     character: "Warm · Smoky · Skin-close",
     notes: ["Rare Oud Wood", "Sandalwood", "Chinese Pepper"],
     desc: "Built around rare oud wood — deep, intimate, and made to stay close to the skin. No projection. Just presence.",
-    price: "₹599",
-    originalPrice: "₹1199",
+    price: "₹499",
+    originalPrice: "₹999 ",
     size: "10 g",
     gender: "Unisex",
     img: NOX_IMG,
     accent: "#c9a96e",
     accentText: "#0d0c0b",
     tag: "Sale",
+    priceLabel: "Balm · 10 g",
   },
   {
     id: "velion",
@@ -44,14 +64,15 @@ const PRODUCTS = [
     character: "Fresh · Floral · Luminous",
     notes: ["Exotic Saffron", "Radiant Cedar", "Golden Amber"],
     desc: "An ode to radiant warmth — sheer florals lifted by amberwood and saffron. Inspired by the world's most coveted crystals.",
-    price: "₹599",
-    originalPrice: "₹1199",
+    price: "₹499",
+    originalPrice: "₹999 ",
     size: "10 g",
     gender: "Unisex",
     img: VELION_IMG,
     accent: "#c9a96e",
     accentText: "#1a0f0a",
     tag: "Sale",
+    priceLabel: "Balm · 10 g",
   },
 ];
 
@@ -162,29 +183,37 @@ function ArrivalCard({
         </div>
 
         {/* ── SALE BANNER ── */}
-        <div
-          style={{
-            ...cardStyles.saleBanner,
-            alignSelf: isRight ? "flex-end" : "flex-start",
-          }}
-        >
-          <span style={cardStyles.saleBannerDot} />
-          <span style={cardStyles.saleBannerText}>
-            New Arrival Sale · Limited Period
-          </span>
-          <span style={cardStyles.saleBannerDot} />
-        </div>
+        {product.originalPrice && (
+          <div
+            style={{
+              ...cardStyles.saleBanner,
+              alignSelf: isRight ? "flex-end" : "flex-start",
+            }}
+          >
+            <span style={cardStyles.saleBannerDot} />
+            <span style={cardStyles.saleBannerText}>
+              New Arrival Sale · Limited Period
+            </span>
+            <span style={cardStyles.saleBannerDot} />
+          </div>
+        )}
 
         {/* price + cta */}
         <div style={cardStyles.footer}>
           <div>
-            <p style={cardStyles.priceLabel}>Balm · 10 g</p>
+            <p style={cardStyles.priceLabel}>
+              {product.priceLabel || "Balm · 10 g"}
+            </p>
             <div
               style={{ display: "flex", alignItems: "baseline", gap: "10px" }}
             >
               <p style={cardStyles.price}>{product.price}</p>
-              <p style={cardStyles.originalPrice}>{product.originalPrice}</p>
-              <span style={cardStyles.saveBadge}>50% OFF</span>
+              {product.originalPrice && (
+                <p style={cardStyles.originalPrice}>{product.originalPrice}</p>
+              )}
+              {product.originalPrice && (
+                <span style={cardStyles.saveBadge}>50% OFF</span>
+              )}
             </div>
           </div>
           <div style={cardStyles.ctaRow}>
@@ -200,8 +229,18 @@ function ArrivalCard({
                 background: added ? "#2a2520" : "#0d0c0b",
               }}
               onClick={handleAdd}
+              disabled
             >
               {added ? "Added ✓" : "+ Cart"}
+            </button>
+             <button
+              style={{
+                ...cardStyles.btnFill,
+                background: added ? "#2a2520" : "#0d0c0b",
+              }}
+             >
+              Out of Stock!
+             
             </button>
           </div>
         </div>
@@ -228,7 +267,7 @@ export default function NewArrivals({
           <div style={sectionStyles.headerLeft}>
             <p style={sectionStyles.eyebrow}>
               <span style={sectionStyles.eyebrowLine} />
-              Just Arrived
+              New Arrivals
             </p>
             <h2 style={sectionStyles.title}>
               Solid.
@@ -240,12 +279,13 @@ export default function NewArrivals({
           </div>
           <div style={sectionStyles.headerRight}>
             <p style={sectionStyles.intro}>
-              Our newest format — a concentrated solid balm that melts into
-              skin, not air. Two characters. One obsession with staying power.
+              Discover the latest additions to KAEORN. From our signature
+              fragrances to our newest creations, crafted to leave a lasting
+              impression.
             </p>
             <div style={sectionStyles.headerRule} />
             <p style={sectionStyles.headerMeta}>
-              NOX &amp; VELION · Solid Perfume Collection · 2026
+              DISCOVERY SET · NOX · VELION · New Arrivals
             </p>
           </div>
         </div>

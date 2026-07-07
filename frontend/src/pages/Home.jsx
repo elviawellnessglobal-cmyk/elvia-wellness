@@ -96,7 +96,7 @@ function PerfumeCard({
       style={styles.perfumeCard}
       onClick={() => navigate(to)}
     >
-      <div style={styles.perfumeImageWrap}> 
+      <div style={styles.perfumeImageWrap}>
         <img
           src={img}
           alt={`${name} – ${gender} Eau de Parfum by Kaeorn`}
@@ -362,8 +362,8 @@ export default function Home() {
                 name: "THÉ NOIR",
                 mood: "Fruity · Aromatic · Gourmand",
                 concentration: "25%",
-                price: "₹1,799",
-                mrp: "₹3,599",
+                price: "₹950",
+                mrp: "₹1,399",
               },
               {
                 to: "/perfume/veil-fresh-perfume",
@@ -372,8 +372,8 @@ export default function Home() {
                 name: "VEIL",
                 mood: "Citrus · Spicy · Woody",
                 concentration: "25%",
-                price: "₹1,799",
-                mrp: "₹3,599",
+                price: "₹950",
+                mrp: "₹1,399",
               },
               {
                 to: "/perfume/soie-femme-floral-perfume",
@@ -382,8 +382,8 @@ export default function Home() {
                 name: "SOIE FEMME",
                 mood: "Floral · Roasted · Gourmand",
                 concentration: "30%",
-                price: "₹1,799",
-                mrp: "₹3,599",
+                price: "₹950",
+                mrp: "₹1,399",
               },
             ].map((p) => (
               <PerfumeCard
@@ -449,7 +449,7 @@ export default function Home() {
                 <div className="stat-l">Fragrances Crafted</div>
               </div>
               <div ref={addReveal} className="stat reveal reveal-delay-1">
-                <div className="stat-n">30</div>
+                <div className="stat-n">40</div>
                 <div className="stat-l">Happy Wearers</div>
               </div>
               <div ref={addReveal} className="stat reveal reveal-delay-2">
@@ -462,10 +462,8 @@ export default function Home() {
 
         {/*-- Ambassador Program --*/}
         <div id="ambassador">
-          <AmbassadorSection addReveal={addReveal} navigate={navigate}/>
-          </div>
-        
-        
+          <AmbassadorSection addReveal={addReveal} navigate={navigate} />
+        </div>
 
         {/* ── COMING SOON ── */}
         <section className="coming" id="coming">

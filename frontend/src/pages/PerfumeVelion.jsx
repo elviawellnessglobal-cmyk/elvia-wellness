@@ -106,8 +106,8 @@ export default function PerfumeVelion() {
     return () => obs.disconnect();
   }, []);
 
-  const price = 599;
-  const originalPrice = 1199;
+  const price = 499;
+  const originalPrice = 999;
 
   function handleOrderNow() {
     if (!user) {
@@ -266,7 +266,11 @@ export default function PerfumeVelion() {
             </p>
 
             <div style={styles.ctaRow}>
-              <button style={styles.buyButton} onClick={handleOrderNow}>
+              <button
+                style={styles.buyButton}
+                onClick={handleOrderNow}
+                disabled
+              >
                 Order Now
               </button>
               <button
@@ -275,8 +279,19 @@ export default function PerfumeVelion() {
                   ...(added ? styles.addedBtn : {}),
                 }}
                 onClick={handleAddToCartOnly}
+                disabled
               >
                 {added ? "Added ✓" : "Add to Cart"}
+              </button>
+              <button
+                style={{
+                  ...styles.addToCartBtn,
+                  ...(added ? styles.addedBtn : {}),
+                }}
+                onClick={handleAddToCartOnly}
+                disabled
+              >
+                OUT OF STOCK!
               </button>
             </div>
 
