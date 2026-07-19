@@ -14,7 +14,7 @@ export const certificates = [
 
         status: "Verified",
 
-        signedBy: "Lakshay Malik (CTO)",
+        signedBy: "Lakshay Malik (Founder & Chief Technical Officer)",
 
         technologies: [
             "React",
