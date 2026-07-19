@@ -55,6 +55,7 @@ import AdminProtected from "./components/AdminProtected";
 
 
 import "./index.css";
+import VerifyCertificate from "./pages/VerifyCertificate";
 
 /* ── LAYOUT ── hides Navbar + Footer on all /admin routes */
 function Layout({ children }) {
@@ -182,6 +183,9 @@ function AppRoot() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/shipping" element={<Shipping />} />
+
+          {/*---- Certificate Verification----- */}
+          <Route path="/verify/:token" element={<VerifyCertificate/>} />
 
           {/* ── AUTH ── */}
           <Route path="/success" element={<Success />} />
