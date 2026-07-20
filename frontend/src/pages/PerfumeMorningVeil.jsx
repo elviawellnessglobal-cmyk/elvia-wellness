@@ -104,7 +104,7 @@ export default function PerfumeMorningVeil() {
   }, []);
 
   const originalPrice = 1399;
-  const price = 950;
+  const price = 1399;
   const discountPercent = Math.round(
     ((originalPrice - price) / originalPrice) * 100,
   );
@@ -266,8 +266,8 @@ export default function PerfumeMorningVeil() {
 
             <div style={styles.priceWrap}>
               <span style={styles.price}>₹{price}</span>
-              <span style={styles.originalPrice}>₹{originalPrice}</span>
-              <span style={styles.discount}>{discountPercent}% OFF</span>
+              {/* <span style={styles.originalPrice}>₹{originalPrice}</span> */}
+              {/* <span style={styles.discount}>{discountPercent}% OFF</span> */}
             </div>
 
             <p style={styles.subtitle}>

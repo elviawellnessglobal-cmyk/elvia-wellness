@@ -56,6 +56,10 @@ const ORGANIZATION_SCHEMA = {
   sameAs: ["https://instagram.com/kaeorn.co", "https://facebook.com/kaeorn"],
 };
 
+/* ----- WAITLIST------*/
+const NOTIFY_WAITLIST_URL =
+  "https://script.google.com/macros/s/AKfycbyvEJM9wEdqZJ3wqsCWtUKwtCh2UkzTL6PEVyshRBcp_R8BJ-vGtpQONN76tciLQl8n/exec";
+
 function PerfumeCard({
   to,
   img,
@@ -173,15 +177,28 @@ export default function Home() {
     const id = product === "cream" ? "emailCream" : "emailSpray";
     const input = document.getElementById(id);
     const email = input?.value?.trim();
+
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       alert("Please enter a valid email address.");
       return;
     }
-    // TODO: connect to your backend or email service (e.g. Mailchimp, Resend)
+
+    const productName =
+      product === "cream" ? "Haetsal Veil™ Cream" : "Haetsal Veil™ Spray";
+
+    // Fire and forget — no-cors means we can't read the response anyway,
+    // so there's no reason to block the UI on the network round trip.
+    fetch(NOTIFY_WAITLIST_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ email, product: productName }),
+    }).catch((err) => {
+      console.error("Notify signup failed:", err);
+    });
+
     alert(
-      `Thank you. We'll reach you at ${email} when ${
-        product === "cream" ? "Haetsal Veil™ Cream" : "Haetsal Veil™ Spray"
-      } arrives.`,
+      `Thank you. We'll reach you at ${email} when ${productName} arrives.`,
     );
     if (input) input.value = "";
   }
@@ -362,8 +379,8 @@ export default function Home() {
                 name: "THÉ NOIR",
                 mood: "Fruity · Aromatic · Gourmand",
                 concentration: "25%",
-                price: "₹950",
-                mrp: "₹1,399",
+                price: "₹1399",
+                // mrp: "₹1,399",
               },
               {
                 to: "/perfume/veil-fresh-perfume",
@@ -372,8 +389,8 @@ export default function Home() {
                 name: "VEIL",
                 mood: "Citrus · Spicy · Woody",
                 concentration: "25%",
-                price: "₹950",
-                mrp: "₹1,399",
+                price: "₹1399",
+                // mrp: "₹1,399",
               },
               {
                 to: "/perfume/soie-femme-floral-perfume",
@@ -382,8 +399,8 @@ export default function Home() {
                 name: "SOIE FEMME",
                 mood: "Floral · Roasted · Gourmand",
                 concentration: "30%",
-                price: "₹950",
-                mrp: "₹1,399",
+                price: "₹1399",
+                // mrp: "₹1,399",
               },
             ].map((p) => (
               <PerfumeCard
