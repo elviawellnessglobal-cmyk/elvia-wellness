@@ -49,7 +49,7 @@ router.post("/", userAuth, async (req, res) => {
     const userEmail = req.user?.email || null;
 
     const order = await Order.create({
-      user: req.user || null,
+      user: req.user?._id || null,
       userEmail,
       items: validatedItems,
       address: req.body.address || null,
@@ -72,11 +72,24 @@ router.post("/", userAuth, async (req, res) => {
    ========================================================= */
 router.get("/my-orders", userAuth, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user }).sort({ createdAt: -1 });
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Please log in to view your orders",
+      });
+    }
+
+    const orders = await Order.find({
+      user: req.user._id,
+    }).sort({
+      createdAt: -1,
+    });
+
     res.json(orders);
   } catch (error) {
     console.error("My orders error:", error);
-    res.status(500).json({ message: "Failed to fetch orders" });
+    res.status(500).json({
+      message: "Failed to fetch orders",
+    });
   }
 });
 
@@ -85,12 +98,29 @@ router.get("/my-orders", userAuth, async (req, res) => {
    ========================================================= */
 router.get("/my-orders/:id", userAuth, async (req, res) => {
   try {
-    const order = await Order.findOne({ _id: req.params.id, user: req.user });
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Please log in to view your orders",
+      });
+    }
+
+    const order = await Order.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
     res.json(order);
   } catch (error) {
     console.error("Single order error:", error);
-    res.status(500).json({ message: "Failed to fetch order" });
+    res.status(500).json({
+      message: "Failed to fetch order",
+    });
   }
 });
 

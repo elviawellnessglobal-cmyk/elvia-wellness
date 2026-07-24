@@ -8,6 +8,7 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: false,
     },
+
     userEmail: {
       type: String,
     },
@@ -35,25 +36,50 @@ const orderSchema = new mongoose.Schema(
       country: String,
     },
 
-    totalAmount: Number,
-    originalAmount: Number,      // amount before coupon discount
+    /* ---------- PAYMENT ---------- */
+    payment: {
+      razorpayPaymentId: {
+        type: String,
+        unique: true,
+        sparse: true,
+      },
+
+      razorpayOrderId: {
+        type: String,
+      },
+    },
+
+    /* ---------- AMOUNTS ---------- */
+    totalAmount: {
+      type: Number,
+    },
+
+    originalAmount: {
+      type: Number,
+      // Amount before coupon discount
+    },
 
     /* ---------- INFLUENCER COUPON ---------- */
     couponCode: {
       type: String,
       default: null,
     },
+
     commissionRecorded: {
       type: Boolean,
-      default: false,            // flips to true when commission is sent
+      default: false,
+      // Flips to true when commission is successfully sent
     },
 
+    /* ---------- ORDER STATUS ---------- */
     status: {
       type: String,
       default: "Pending",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("Order", orderSchema);

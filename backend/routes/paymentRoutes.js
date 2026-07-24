@@ -43,11 +43,11 @@ router.post("/create-order", userAuth, async (req, res) => {
       currency: "INR",
       receipt: "kaeorn_" + Date.now(),
       notes: {
-        userId: req.user || "guest",
-        email: req.userEmail || "guest",
-        cart: JSON.stringify(cartItems),
-        address: JSON.stringify(address || {}),
-      },
+  userId: req.user?._id?.toString() || "guest",
+  email: req.userEmail || "guest",
+  cart: JSON.stringify(cartItems),
+  address: JSON.stringify(address || {}),
+},
     };
 
     const order = await razorpay.orders.create(options);
@@ -139,10 +139,15 @@ router.post(
           return res.json({ status: "duplicate ignored" });
         }
 
-        const notes = payment.notes || {};
-        const cartItems = JSON.parse(notes.cart || "[]");
-        const address = JSON.parse(notes.address || "{}");
+        const razorpayOrder = await razorpay.orders.fetch(payment.order_id);
+const notes = razorpayOrder.notes || {};
+const userId =
+  notes.userId && notes.userId !== "guest"
+    ? notes.userId
+    : null;
 
+const cartItems = JSON.parse(notes.cart || "[]");
+const address = JSON.parse(notes.address || "{}");
         const validatedItems = [];
 
         for (const item of cartItems) {
@@ -168,16 +173,17 @@ router.post(
         );
 
         await Order.create({
-          userEmail: notes.email,
-          items: validatedItems,
-          address,
-          totalAmount,
-          payment: {
-            razorpayPaymentId: payment.id,
-            razorpayOrderId: payment.order_id,
-          },
-          status: "Paid",
-        });
+  user: userId,
+  userEmail: notes.email,
+  items: validatedItems,
+  address,
+  totalAmount,
+  payment: {
+    razorpayPaymentId: payment.id,
+    razorpayOrderId: payment.order_id,
+  },
+  status: "Paid",
+});
 
         console.log("✅ ORDER CREATED VIA WEBHOOK");
       }
