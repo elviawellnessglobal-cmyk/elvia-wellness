@@ -176,9 +176,15 @@ export default function Home() {
   // Dussehra festive offer (signature perfumes only — never the Halloween pair)
   const festivePhase = useFestivePhase();
   const festiveBadge =
-    festivePhase === "live" ? "Dussehra offer · up to 25% off" : festivePhase === "upcoming" ? "Dussehra offer · 20 Oct" : null;
+    festivePhase === "live"
+      ? "Dussehra offer · up to 25% off"
+      : festivePhase === "upcoming"
+        ? "Dussehra offer · 20 Oct"
+        : null;
   const scrollToSignature = () =>
-    document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("collection")
+      ?.scrollIntoView({ behavior: "smooth" });
 
   /* ── PAGE ENTER ── */
   useEffect(() => {
@@ -263,89 +269,92 @@ export default function Home() {
   }, []);
 
   const signatureNode = (
-        <section style={styles.perfumeSection} id="collection">
-          <div ref={addReveal} className="reveal">
-            <div className="collection-header">
-              <div>
-                <p className="section-eyebrow">THE SIGNATURE COLLECTION</p>
-                <h2 className="section-title">
-                  {halloween ? "Three moods." : "Five moods."}
-                  <br />
-                  <em>One skin.</em>
-                </h2>
-              </div>
-              <div>
-                <p className="collection-intro">
-                  Each Kaeorn scent is built around a feeling — not a trend.
-                  Wear the one that finds you.
-                </p>
-              </div>
-            </div>
+    <section style={styles.perfumeSection} id="collection">
+      <div ref={addReveal} className="reveal">
+        <div className="collection-header">
+          <div>
+            <p className="section-eyebrow">THE SIGNATURE COLLECTION</p>
+            <h2 className="section-title">
+              {halloween ? "Three moods." : "Five moods."}
+              <br />
+              <em>One skin.</em>
+            </h2>
           </div>
+          <div>
+            <p className="collection-intro">
+              Each Kaeorn scent is built around a feeling — not a trend. Wear
+              the one that finds you.
+            </p>
+          </div>
+        </div>
+      </div>
 
-          <div style={styles.perfumeRow}>
-            {[
-              {
-                to: "/perfume/noir-party-perfume",
-                img: softSkinImg,
-                gender: "MEN",
-                name: "THÉ NOIR",
-                mood: "Fruity · Aromatic · Gourmand",
-                concentration: "25%",
-                price: "₹1399",
-                // mrp: "₹1,399",
-              },
-              {
-                to: "/perfume/veil-fresh-perfume",
-                img: morningVeilImg,
-                gender: "UNISEX",
-                name: "VEIL",
-                mood: "Citrus · Spicy · Woody",
-                concentration: "25%",
-                price: "₹1399",
-                // mrp: "₹1,399",
-              },
-              {
-                to: "/perfume/soie-femme-floral-perfume",
-                img: quietWoodsImg,
-                gender: "WOMEN",
-                name: "SOIE FEMME",
-                mood: "Floral · Roasted · Gourmand",
-                concentration: "25%",
-                price: "₹1399",
-                // mrp: "₹1,399",
-              },
-            ]
-              .concat(
-                halloween
-                  ? []
-                  : HALLOWEEN_PRODUCT_LIST.map((p) => ({
-                      to: p.route,
-                      img: p.images.front,
-                      gender: p.mood.toUpperCase(),
-                      name: p.name,
-                      mood: p.tagline,
-                      price: `₹${p.price}`,
-                      mrp: p.mrp > p.price ? `₹${p.mrp}` : undefined,
-                      size: p.size,
-                      showClaims: false,
-                      imgStyle: { objectFit: "contain", background: `linear-gradient(180deg, ${p.theme.bgFrom}, ${p.theme.bgTo})` },
-                    })),
-              )
-              .map((p) => (
-              <PerfumeCard
-                key={p.name}
-                {...p}
-                navigate={navigate}
-                addToCart={addToCart}
-                user={user}
-                setShowAuth={setShowAuth}
-                addReveal={addReveal}
-                badge={p.showClaims === false ? null : festiveBadge}
-              />
-            ))}
-          </div>
-        </section>
+      <div style={styles.perfumeRow}>
+        {[
+          {
+            to: "/perfume/noir-party-perfume",
+            img: softSkinImg,
+            gender: "MEN",
+            name: "THÉ NOIR",
+            mood: "Fruity · Aromatic · Gourmand",
+            concentration: "25%",
+            price: "₹1399",
+            // mrp: "₹1,399",
+          },
+          {
+            to: "/perfume/veil-fresh-perfume",
+            img: morningVeilImg,
+            gender: "UNISEX",
+            name: "VEIL",
+            mood: "Citrus · Spicy · Woody",
+            concentration: "25%",
+            price: "₹1399",
+            // mrp: "₹1,399",
+          },
+          {
+            to: "/perfume/soie-femme-floral-perfume",
+            img: quietWoodsImg,
+            gender: "WOMEN",
+            name: "SOIE FEMME",
+            mood: "Floral · Roasted · Gourmand",
+            concentration: "25%",
+            price: "₹1399",
+            // mrp: "₹1,399",
+          },
+        ]
+          .concat(
+            halloween
+              ? []
+              : HALLOWEEN_PRODUCT_LIST.map((p) => ({
+                  to: p.route,
+                  img: p.images.front,
+                  gender: p.mood.toUpperCase(),
+                  name: p.name,
+                  mood: p.tagline,
+                  price: `₹${p.price}`,
+                  mrp: p.mrp > p.price ? `₹${p.mrp}` : undefined,
+                  size: p.size,
+                  showClaims: false,
+                  imgStyle: {
+                    objectFit: "contain",
+                    background: `linear-gradient(180deg, ${p.theme.bgFrom}, ${p.theme.bgTo})`,
+                  },
+                })),
+          )
+          .map((p) => (
+            <PerfumeCard
+              key={p.name}
+              {...p}
+              navigate={navigate}
+              addToCart={addToCart}
+              user={user}
+              setShowAuth={setShowAuth}
+              addReveal={addReveal}
+              badge={p.showClaims === false ? null : festiveBadge}
+            />
+          ))}
+      </div>
+    </section>
   );
 
   const halloweenNode = halloween ? (
@@ -359,13 +368,13 @@ export default function Home() {
   ) : null;
 
   const newArrivalsNode = (
-        <NewArrivals
-          navigate={navigate}
-          addReveal={addReveal}
-          user={user}
-          addToCart={addToCart}
-          setShowAuth={setShowAuth}
-        />
+    <NewArrivals
+      navigate={navigate}
+      addReveal={addReveal}
+      user={user}
+      addToCart={addToCart}
+      setShowAuth={setShowAuth}
+    />
   );
 
   return (
@@ -389,7 +398,7 @@ export default function Home() {
         <meta property="og:url" content="https://kaeorn.com/" />
         <meta
           property="og:image"
-          content="https://res.cloudinary.com/dvmntn6vf/image/upload/v1775275614/ChatGPT_Image_Apr_4_2026_09_35_50_AM_pkb6za.png"
+          content="https://res.cloudinary.com/dhh2i1soo/image/upload/v1793121600/7bcb779b-94a1-40d4-9154-ce1cc164ee3a_mfd4k0.png"
         />
         <meta property="og:site_name" content="Kaeorn" />
 
@@ -410,80 +419,82 @@ export default function Home() {
         {halloween ? (
           <HalloweenHero />
         ) : (
-        <section className="hero" id="hero">
-          {heroVideoSrc && (
-            <video
-              key={heroVideoSrc}
-              className="hero-video"
-              data-boot-wait=""
-              src={heroVideoSrc}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              aria-hidden="true"
-              ref={(el) => {
-                if (el) {
-                  el.muted = true;
-                  el.play().catch(() => {});
-                }
-              }}
-            />
-          )}
-          <div className="hero-video-overlay" />
-          <div className="hero-ambient" />
-          <div className="hero-content">
-            {/* eyebrow: brand · product type */}
-            <p className="hero-eyebrow">KAEORN · EAU DE PARFUM</p>
-            <h1 className="hero-title">
-              Scent that
-              <br />
-              <em>stays with</em>
-              <br />
-              you.
-            </h1>
-            <p className="hero-sub">
-              Not a statement. Not a performance.
-              <br />A quiet presence — intimate, lasting, entirely your own.
-            </p>
-            <div className="hero-actions">
-              <button
-                onClick={() => {
-                  document
-                    .getElementById("collection")
-                    ?.scrollIntoView({ behavior: "smooth" });
+          <section className="hero" id="hero">
+            {heroVideoSrc && (
+              <video
+                key={heroVideoSrc}
+                className="hero-video"
+                data-boot-wait=""
+                src={heroVideoSrc}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                aria-hidden="true"
+                ref={(el) => {
+                  if (el) {
+                    el.muted = true;
+                    el.play().catch(() => {});
+                  }
                 }}
-                className="btn-primary"
-              >
-                Explore Collection
-              </button>
-              <button
-                onClick={() => {
-                  document
-                    .getElementById("about")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="btn-outline"
-              >
-                Our Story
-              </button>
+              />
+            )}
+            <div className="hero-video-overlay" />
+            <div className="hero-ambient" />
+            <div className="hero-content">
+              {/* eyebrow: brand · product type */}
+              <p className="hero-eyebrow">KAEORN · EAU DE PARFUM</p>
+              <h1 className="hero-title">
+                Scent that
+                <br />
+                <em>stays with</em>
+                <br />
+                you.
+              </h1>
+              <p className="hero-sub">
+                Not a statement. Not a performance.
+                <br />A quiet presence — intimate, lasting, entirely your own.
+              </p>
+              <div className="hero-actions">
+                <button
+                  onClick={() => {
+                    document
+                      .getElementById("collection")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="btn-primary"
+                >
+                  Explore Collection
+                </button>
+                <button
+                  onClick={() => {
+                    document
+                      .getElementById("about")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="btn-outline"
+                >
+                  Our Story
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="hero-scroll">
-            <span>Scroll</span>
-            <div className="scroll-track">
-              <div className="scroll-thumb" />
+            <div className="hero-scroll">
+              <span>Scroll</span>
+              <div className="scroll-track">
+                <div className="scroll-thumb" />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
         )}
 
         {/* ── MARQUEE ── */}
         <div className={`marquee-wrap${halloween ? " hw-marquee" : ""}`}>
           <div className="marquee-track">
             {(() => {
-              const items = halloween ? [...HALLOWEEN_MARQUEE_ITEMS, ...MARQUEE_ITEMS] : MARQUEE_ITEMS;
+              const items = halloween
+                ? [...HALLOWEEN_MARQUEE_ITEMS, ...MARQUEE_ITEMS]
+                : MARQUEE_ITEMS;
               return [...items, ...items];
             })().map((item, i) => (
               <span
@@ -502,7 +513,10 @@ export default function Home() {
             Otherwise the original order is kept (new arrivals, then the signature scents). ── */}
         {halloween ? (
           <>
-            <FestiveOffer unitPrice={PRODUCTS["/perfume/noir-party-perfume"].price} onChoose={scrollToSignature} />
+            <FestiveOffer
+              unitPrice={PRODUCTS["/perfume/noir-party-perfume"].price}
+              onChoose={scrollToSignature}
+            />
             {signatureNode}
             {halloweenNode}
             {newArrivalsNode}
@@ -510,7 +524,10 @@ export default function Home() {
         ) : (
           <>
             {newArrivalsNode}
-            <FestiveOffer unitPrice={PRODUCTS["/perfume/noir-party-perfume"].price} onChoose={scrollToSignature} />
+            <FestiveOffer
+              unitPrice={PRODUCTS["/perfume/noir-party-perfume"].price}
+              onChoose={scrollToSignature}
+            />
             {signatureNode}
           </>
         )}
