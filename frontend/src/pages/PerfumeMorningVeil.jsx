@@ -150,7 +150,7 @@ export default function PerfumeMorningVeil() {
         />
         <meta
           property="og:image"
-          content="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775280305/ChatGPT_Image_Apr_4_2026_10_54_03_AM_fjvuq2.png"
+          content="https://res.cloudinary.com/dhh2i1soo/image/upload/v1789834176/f2560d35-eddb-4828-922f-6aae483047c8_hr1fvr.png"
         />
         <meta
           property="og:url"
@@ -158,7 +158,17 @@ export default function PerfumeMorningVeil() {
         />
         <meta property="og:type" content="product" />
         <script type="application/ld+json">
-          {ld(productJsonLd("/perfume/veil-fresh-perfume", { description: "VEIL by KAEORN — a clean, airy unisex Eau de Parfum with notes of Bergamot, Pink Pepper and Sandalwood. Made in India.", category: "Unisex · Eau de Parfum", availability: "InStock", images: images.slice(0, 3), rating: reviewsData.summary, reviews: reviewsData.reviews }))}
+          {ld(
+            productJsonLd("/perfume/veil-fresh-perfume", {
+              description:
+                "VEIL by KAEORN — a clean, airy unisex Eau de Parfum with notes of Bergamot, Pink Pepper and Sandalwood. Made in India.",
+              category: "Unisex · Eau de Parfum",
+              availability: "InStock",
+              images: images.slice(0, 3),
+              rating: reviewsData.summary,
+              reviews: reviewsData.reviews,
+            }),
+          )}
         </script>
         <script type="application/ld+json">
           {ld(
@@ -373,7 +383,6 @@ export default function PerfumeMorningVeil() {
                 result.
               </Accordion>
 
-
               <Accordion
                 title="KAEORN PHILOSOPHY"
                 id="philosophy"
@@ -422,27 +431,27 @@ const styles = {
 
   // ADD these four:
   // UPDATE galleryWrap:
- galleryWrap: {
-  flex: 1,
-  minWidth: 320,
-  position: "relative",
-  borderRadius: 26,
-  overflow: "hidden",
-  aspectRatio: "3 / 4",
-},
+  galleryWrap: {
+    flex: 1,
+    minWidth: 320,
+    position: "relative",
+    borderRadius: 26,
+    overflow: "hidden",
+    aspectRatio: "3 / 4",
+  },
 
-imageSlide: {
-  minWidth: "100%",
-  scrollSnapAlign: "center",
-},
+  imageSlide: {
+    minWidth: "100%",
+    scrollSnapAlign: "center",
+  },
 
-galleryImage: {
-  width: "100%",
-  height: "85%",
-  objectFit: "cover",
-  borderRadius: 26,
-  display: "block",
-},
+  galleryImage: {
+    width: "100%",
+    height: "85%",
+    objectFit: "cover",
+    borderRadius: 26,
+    display: "block",
+  },
   navBtn: {
     position: "absolute",
     left: 16,

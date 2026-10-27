@@ -150,7 +150,7 @@ export default function PerfumeQuietWoods() {
         />
         <meta
           property="og:image"
-          content="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775490008/ChatGPT_Image_Apr_6_2026_09_02_53_PM_vcfbtm.png"
+          content="https://res.cloudinary.com/dhh2i1soo/image/upload/v1789834177/1e43d3c0-73c1-4212-b1ef-e14bdf3cbdf0_nqswic.png"
         />
         <meta
           property="og:url"

@@ -140,7 +140,7 @@ export default function PerfumeSoftSkin() {
         />
         <meta
           property="og:image"
-          content="https://res.cloudinary.com/dvmntn6vf/image/upload/f_auto,q_auto,w_900/v1775277347/ChatGPT_Image_Apr_4_2026_10_05_23_AM_heqntp.png"
+          content="https://res.cloudinary.com/dhh2i1soo/image/upload/v1789834772/copy_of_untitled_2_tv5rbj.png"
         />
         <meta
           property="og:url"
