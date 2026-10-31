@@ -15,6 +15,7 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const adminAnalyticsRoutes = require("./routes/adminAnalyticsRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const { startReferralReconciler } = require("./services/referralService");
 
 
 /* ---------------- APP ---------------- */
@@ -76,7 +77,10 @@ app.use("/api/reviews", reviewRoutes);
 /* ---------------- DATABASE ---------------- */
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    startReferralReconciler(); // retries any referral sale the portal missed
+  })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);

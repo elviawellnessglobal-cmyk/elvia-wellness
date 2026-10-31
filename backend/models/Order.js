@@ -340,6 +340,15 @@ const orderSchema = new mongoose.Schema(
       default: false,
     },
 
+    /* Sync state with the influencer portal (see services/referralService.js) */
+    referralSync: {
+      status: { type: String, default: null }, // last order status the portal acknowledged
+      syncedAt: { type: Date, default: null },
+      lastAttemptAt: { type: Date, default: null },
+      attempts: { type: Number, default: 0 },
+      lastError: { type: String, default: null },
+    },
+
     /* ======================================
        ORDER STATUS
     ====================================== */
