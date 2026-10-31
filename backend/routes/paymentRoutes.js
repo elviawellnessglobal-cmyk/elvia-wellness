@@ -6,6 +6,7 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const userAuth = require("../middleware/userAuth");
 const PartnerUser = require("../models/PartnerUser");
+const { syncReferralInBackground } = require("../services/referralService");
 // Tiered signature-fragrance festive offer (Dussehra). Pure rules; prices come from MongoDB below.
 const { FESTIVE, computeFestiveDiscount, resolveDiscounts } = require("../config/festiveOffer");
 
@@ -120,7 +121,7 @@ async function validateCoupon(couponCode, originalAmount) {
       couponCode: normalizedCode,
       role: "influencer",
       isActive: true,
-    }).select("name couponCode discountPercent commissionPercent");
+    }).select("_id name couponCode discountPercent commissionPercent");
 
     if (!partner) {
       return {
@@ -144,6 +145,7 @@ async function validateCoupon(couponCode, originalAmount) {
       couponCode: partner.couponCode,
       discountAmount,
       discountPercent,
+      partnerId: partner._id ? String(partner._id) : null,
       influencerName: partner.name,
       commissionPercent: Number(partner.commissionPercent || 0),
     };
@@ -419,6 +421,27 @@ router.post("/create-order", userAuth, async (req, res) => {
     }
 
     /* ======================================
+       PARTNER SNAPSHOT + COMMISSION
+
+       Frozen at purchase time so later rate
+       changes never alter this order.
+    ====================================== */
+
+    const partnerSnapshot = finalCouponCode
+      ? {
+          partnerId: couponResult.partnerId || null,
+          name: couponResult.influencerName || null,
+          couponCode: finalCouponCode,
+          discountPercent: couponResult.discountPercent || 0,
+          commissionPercent: couponResult.commissionPercent || 0,
+        }
+      : undefined;
+
+    const commissionAmount = finalCouponCode
+      ? roundMoney(totalAmount * ((couponResult.commissionPercent || 0) / 100))
+      : 0;
+
+    /* ======================================
        CREATE MONGODB ORDER
 
        IMPORTANT:
@@ -449,6 +472,8 @@ router.post("/create-order", userAuth, async (req, res) => {
       discountAmount,
       totalAmount,
       couponCode: finalCouponCode,
+      partner: partnerSnapshot,
+      commissionAmount,
       festiveOffer: festiveSnapshot,
 
       payment: {
@@ -648,6 +673,8 @@ router.post("/verify", userAuth, async (req, res) => {
 
     await order.save();
 
+    syncReferralInBackground(order._id); // record the referral sale in the influencer portal
+
     console.log("======================================");
     console.log("✅ PAYMENT VERIFIED");
     console.log("Mongo Order:", order._id.toString());
@@ -815,12 +842,39 @@ router.post(
 
         await order.save();
 
+        syncReferralInBackground(order._id);
+
         console.log("✅ WEBHOOK PAYMENT CAPTURED");
         console.log("Order:", order._id.toString());
         console.log("User:", order.user.toString());
         console.log("Email:", order.userEmail);
         console.log("Coupon:", order.couponCode);
         console.log("Amount:", order.totalAmount);
+      }
+
+      /* ======================================
+         REFUND PROCESSED (full refunds only)
+         Reverses the partner's commission.
+         Enable the "refund.processed" event in the Razorpay webhook.
+      ====================================== */
+
+      if (event.event === "refund.processed") {
+        const refund = event.payload?.refund?.entity;
+
+        const order = refund
+          ? await Order.findOne({ "payment.razorpayPaymentId": refund.payment_id })
+          : null;
+
+        if (order && order.status !== "Refunded") {
+          if (Number(refund.amount) >= Math.round(Number(order.totalAmount) * 100)) {
+            order.payment.status = "Refunded";
+            order.status = "Refunded";
+            await order.save();
+            syncReferralInBackground(order._id);
+          } else {
+            console.warn("⚠️ Partial refund - commission not adjusted:", order._id.toString());
+          }
+        }
       }
 
       /* ======================================

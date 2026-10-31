@@ -8,6 +8,10 @@ import { CartProvider } from "./context/CartContext";
 import AppRoot from "./App";
 
 import "./index.css";
+import { captureReferralFromUrl } from "./utils/referral";
+
+// Remember ?coupon= / ?ref= from whatever page the visitor lands on
+captureReferralFromUrl();
 
 /* ── RENDER ──
    The build step (scripts/prerender.mjs) writes fully rendered HTML for every public

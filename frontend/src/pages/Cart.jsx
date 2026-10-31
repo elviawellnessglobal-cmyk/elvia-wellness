@@ -1,3 +1,4 @@
+import { getPendingReferral, clearPendingReferral } from "../utils/referral";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -51,7 +52,7 @@ export default function Cart() {
 
     if (!cleanCode) {
       setCouponStatus("invalid");
-      return;
+      return false;
     }
 
     setCouponStatus("loading");
@@ -71,7 +72,7 @@ export default function Cart() {
         // Clear old coupon if user tries invalid coupon
         clearCoupon();
 
-        return;
+        return "invalid";
       }
 
       const coupon = data.data;
@@ -107,10 +108,12 @@ export default function Cart() {
 
       setCouponCode(cleanCode);
       setCouponStatus("valid");
+      return "valid";
     } catch (error) {
       console.error("Coupon validation error:", error);
 
       setCouponStatus("invalid");
+      return "error"; // network problem - keep a saved referral for next time
     }
   }
 
@@ -149,14 +152,15 @@ export default function Cart() {
 
     const couponFromUrl = params.get("coupon");
 
-    const pendingCoupon = localStorage.getItem("pendingCoupon");
+    const pendingCoupon = getPendingReferral();
 
     const codeToApply = couponFromUrl || pendingCoupon;
 
     if (codeToApply) {
-      applyCouponByCode(codeToApply);
-
-      localStorage.removeItem("pendingCoupon");
+      // keep the saved code unless it was applied or is definitively invalid
+      applyCouponByCode(codeToApply).then((result) => {
+        if (result === "valid" || result === "invalid") clearPendingReferral();
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

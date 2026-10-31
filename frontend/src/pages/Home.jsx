@@ -193,12 +193,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const coupon = params.get("coupon");
-    if (coupon) {
-      // save to localStorage so cart picks it up automatically
-      localStorage.setItem("pendingCoupon", coupon.toUpperCase());
-    }
+    // referral code is now captured globally in main.jsx (utils/referral.js)
   }, []);
 
   /* ── NOTIFY ME ── */

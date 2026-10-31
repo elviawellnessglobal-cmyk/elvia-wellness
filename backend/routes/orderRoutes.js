@@ -6,6 +6,11 @@ const Product = require("../models/Product");
 const userAuth = require("../middleware/userAuth");
 const adminAuth = require("../middleware/adminAuth");
 const queueOrderEmail = require("../utils/emailQueue");
+const {
+  syncReferralOrder,
+  syncReferralInBackground,
+  reconcileReferrals,
+} = require("../services/referralService");
 
 /* =========================================================
    IMAGE HELPER
@@ -256,58 +261,35 @@ router.put("/:id/status", adminAuth, async (req, res) => {
       queueOrderEmail(order);
     }
 
-    // ── COMMISSION: only when Delivered, only once, only if coupon was used ──
-    if (
-      newStatus === "Delivered" &&
-      previousStatus !== "Delivered" &&
-      order.couponCode &&
-      !order.commissionRecorded
-    ) {
-      try {
-        const influencerApiUrl = process.env.INFLUENCER_API_URL;
-
-        const commissionRes = await fetch(
-          `${influencerApiUrl}/api/coupon/apply`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: order._id.toString(),
-              couponCode: order.couponCode,
-              productName: order.items.map((i) => i.name).join(", "),
-              originalAmount: order.originalAmount || order.totalAmount,
-              finalAmount: order.totalAmount,
-              customerName: order.address?.fullName || "",
-              customerEmail: order.userEmail || order.address?.email || "",
-            }),
-          },
-        );
-
-        const commissionData = await commissionRes.json();
-
-        if (commissionRes.ok && commissionData.success) {
-          // mark so it never fires twice even if status is toggled
-          order.commissionRecorded = true;
-          await order.save();
-          console.log(
-            `✅ Commission recorded for order ${order._id} — code ${order.couponCode}`,
-          );
-        } else {
-          console.error(
-            "Commission recording failed:",
-            commissionData.message,
-          );
-        }
-      } catch (commissionErr) {
-        // never block the admin action if influencer portal is down
-        console.error("Commission API unreachable:", commissionErr.message);
-      }
+    // ── REFERRAL: keep the influencer portal in sync on every status change ──
+    // (commission is credited on Delivered and reversed on Cancelled/Refunded inside the portal)
+    if (order.couponCode && previousStatus !== newStatus) {
+      syncReferralInBackground(order._id);
     }
 
     res.json(order);
   } catch (error) {
     console.error("Update status error:", error);
     res.status(500).json({ message: "Failed to update status" });
+  }
+});
+
+/* =========================================================
+   ADMIN – RE-SYNC REFERRALS
+   POST /api/orders/referrals/resync
+   body (optional): { orderId } to force one order, otherwise
+   retries every order the portal is behind on.
+   ========================================================= */
+router.post("/referrals/resync", adminAuth, async (req, res) => {
+  try {
+    if (req.body?.orderId) {
+      const result = await syncReferralOrder(req.body.orderId);
+      return res.json(result);
+    }
+    res.json(await reconcileReferrals({ limit: 500 }));
+  } catch (error) {
+    console.error("Referral resync error:", error);
+    res.status(500).json({ message: "Resync failed" });
   }
 });
 
